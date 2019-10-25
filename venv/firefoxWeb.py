@@ -1,33 +1,55 @@
 #!/usr / bin / env python
 from selenium import webdriver
 import time
+import json
 
-browser = webdriver.Firefox(executable_path="/root/Documents/mj/python/rpaPython/venv/geckodriver")
-website_URL ='https://www.zomato.com/ncr'
-browser.get(website_URL)
+def buttonClick(butonId):
+    browser.find_element_by_xpath("//button[@id ='"+butonId+"']").click()
+
+def findInputAndInsert(fieldIdName, inputValue):
+    a = browser.find_element_by_xpath("//input[@id ='" + fieldIdName + "']")
+    a.send_keys(inputValue)
+
+def loginAdmin(data):
+    findInputAndInsert('username','admin')
+    findInputAndInsert(data['userName'], data['password'])
+    buttonClick('login')
+
+basicData = json.loads(open('PageData/basicData.json','r').read())['profile1']
+
+browser = webdriver.Firefox(executable_path=basicData['executable_path'])
+
+# website_URL ='https://www.zomato.com/ncr'
+# website_URL = 'http://localhost:4200/'
+browser.get(basicData['website_URL'])
 
 time.sleep(3)
+loginAdmin(basicData)
+time.sleep(3)
 
-username = "test"
-password = "test"
 
-# signin element clicked
-browser.find_element_by_xpath("//a[@id ='signin-link']").click()
-time.sleep(2)
 
-# Login clicked
-browser.find_element_by_xpath("//a[@id ='login-email']").click()
 
-# username send
-a = browser.find_element_by_xpath("//input[@id ='ld-email']")
-a.send_keys(username)
-
-# password send
-b = browser.find_element_by_xpath("//input[@id ='ld-password']")
-b.send_keys(password)
-
-# submit button clicked
-browser.find_element_by_xpath("//input[@id ='ld-submit-global']").click()
-
-print('Login Successful')
-browser.close()
+# username = "test"
+# password = "test"
+#
+# # signin element clicked
+# browser.find_element_by_xpath("//a[@id ='signin-link']").click()
+# time.sleep(2)
+#
+# # Login clicked
+# browser.find_element_by_xpath("//a[@id ='login-email']").click()
+#
+# # username send
+# a = browser.find_element_by_xpath("//input[@id ='ld-email']")
+# a.send_keys(username)
+#
+# # password send
+# b = browser.find_element_by_xpath("//input[@id ='ld-password']")
+# b.send_keys(password)
+#
+# # submit button clicked
+# browser.find_element_by_xpath("//input[@id ='ld-submit-global']").click()
+#
+# print('Login Successful')
+# browser.close()

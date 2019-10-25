@@ -1,0 +1,8 @@
+{
+  "profile1": {
+    "userName": "admin",
+    "password": "donotusethispassword",
+    "executable_path" : "/root/Documents/mj/python/rpaPython/venv/geckodriver",
+    "website_URL" : "http://localhost:4200/"
+  }
+}
