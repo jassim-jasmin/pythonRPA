@@ -1,3 +1,5 @@
+import json
+
 class BasicOptions:
     def buttonClick(self, butonId):
         try:
@@ -27,4 +29,5 @@ class BasicOptions:
             return False
 
     def searchGoogle(self,text):
-        return "https://www.google.com/search?client=ubuntu&channel=fs&q=" +text+ "&ie=utf-8&oe=utf-8"
+        url = json.loads(open("/root/Documents/mj/python/rpaPython/venv/PageData/basicData.json","r").read())['profile1']["googleSearchUrl"]
+        return url.replace('text',text)

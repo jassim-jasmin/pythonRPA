@@ -3,6 +3,7 @@
     "userName": "admin",
     "password": "donotusethispassword",
     "executable_path" : "/root/Documents/mj/python/rpaPython/venv/geckodriver",
-    "website_URL" : "http://localhost:4200/"
+    "website_URL" : "http://localhost:4200/",
+    "googleSearchUrl": "https://www.google.com/search?client=ubuntu&channel=fs&q=text&ie=utf-8&oe=utf-8"
   }
 }

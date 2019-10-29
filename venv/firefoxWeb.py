@@ -2,6 +2,9 @@
 from selenium import webdriver
 import time
 import json
+import sys
+sys.path.insert(1,'browserOperationFunction')
+from basicOperations import BasicOptions
 
 def buttonClick(butonId):
     browser.find_element_by_xpath("//button[@id ='"+butonId+"']").click()
@@ -21,8 +24,9 @@ browser = webdriver.Firefox(executable_path=basicData['executable_path'])
 
 # website_URL ='https://www.zomato.com/ncr'
 # website_URL = 'http://localhost:4200/'
-browser.get(basicData['website_URL'])
-
+# browser.get(basicData['website_URL'])
+# browser.get('https://www.google.com/search?client=ubuntu&channel=fs&q=tree&ie=utf-8&oe=utf-8')
+browser.get(BasicOptions.searchGoogle(BasicOptions, 'tree'))
 time.sleep(3)
 loginAdmin(basicData)
 time.sleep(3)
