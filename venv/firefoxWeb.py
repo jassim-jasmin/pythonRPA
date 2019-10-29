@@ -26,10 +26,13 @@ browser = webdriver.Firefox(executable_path=basicData['executable_path'])
 # website_URL = 'http://localhost:4200/'
 # browser.get(basicData['website_URL'])
 # browser.get('https://www.google.com/search?client=ubuntu&channel=fs&q=tree&ie=utf-8&oe=utf-8')
-browser.get(BasicOptions.searchGoogle(BasicOptions, 'tree'))
-time.sleep(3)
-loginAdmin(basicData)
-time.sleep(3)
+browser.get(BasicOptions.searchGoogle(BasicOptions, '10976 LABRADOR AVE'))
+if BasicOptions.custom(BasicOptions,browser):
+    print('address')
+    browser.close()
+# time.sleep(3)
+# loginAdmin(basicData)
+# time.sleep(3)
 
 
 
