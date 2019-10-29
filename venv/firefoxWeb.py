@@ -18,6 +18,14 @@ def loginAdmin(data):
     findInputAndInsert(data['userName'], data['password'])
     buttonClick('login')
 
+def custom():
+    try:
+        browser.find_element_by_xpath("//img[@id ='lu_map']")
+        return True
+    except Exception as e:
+        print(e, 'in BasicOptions custom')
+    return False
+
 basicData = json.loads(open('PageData/basicData.json','r').read())['profile1']
 
 browser = webdriver.Firefox(executable_path=basicData['executable_path'])
@@ -27,9 +35,12 @@ browser = webdriver.Firefox(executable_path=basicData['executable_path'])
 # browser.get(basicData['website_URL'])
 # browser.get('https://www.google.com/search?client=ubuntu&channel=fs&q=tree&ie=utf-8&oe=utf-8')
 browser.get(BasicOptions.searchGoogle(BasicOptions, '10976 LABRADOR AVE'))
-if BasicOptions.custom(BasicOptions,browser):
+if custom():
     print('address')
-    browser.close()
+else:
+    print('not an address')
+
+browser.close()
 # time.sleep(3)
 # loginAdmin(basicData)
 # time.sleep(3)

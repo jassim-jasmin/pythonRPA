@@ -1,14 +1,6 @@
 import json
 
 class BasicOptions:
-    def custom(self,browser):
-        try:
-            browser.find_element_by_xpath("//img[@id ='lu_map']").click()
-            return True
-        except Exception as e:
-            print(e, 'in BasicOptions custom')
-            return False
-
     def buttonClick(self, browser, butonId):
         try:
             browser.find_element_by_xpath("//button[@id ='" + butonId + "']").click()
