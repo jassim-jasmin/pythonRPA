@@ -29,5 +29,16 @@ class BasicOptions:
             return False
 
     def searchGoogle(self,text):
-        url = json.loads(open("/root/Documents/mj/python/rpaPython/venv/PageData/basicData.json","r").read())['profile1']["googleSearchUrl"]
-        return url.replace('text',text)
+        try:
+            url = json.loads(open("/root/Documents/mj/python/rpaPython/venv/PageData/basicData.json","r").read())['profile1']["googleSearchUrl"]
+            return url.replace('text',text)
+        except Exception as e:
+            print(e)
+
+    def findMap(self, browser):
+        try:
+            browser.find_element_by_xpath("//img[@id ='lu_map']")
+            return True
+        except Exception as e:
+            print(e, 'in BasicOptions custom')
+        return False
