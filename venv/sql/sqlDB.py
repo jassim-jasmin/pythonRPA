@@ -20,7 +20,7 @@ class sqlDB:
         print(e)
         return e
 
-    def defaultZillow(self, sqlHost, sqlUserName, sqlPassword):
+    def setDB(self, sqlHost, sqlUserName, sqlPassword):
         self.sqlHost = sqlHost
         self.sqlUserName = sqlUserName
         self.sqlPassword = sqlPassword
