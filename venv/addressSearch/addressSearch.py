@@ -4,32 +4,32 @@ import time
 import json
 import re
 
-try:
-    from googlesearch import search
-except ImportError:
-    print("No module named 'google' found")
+# try:
+#     from googlesearch import search
+# except ImportError:
+#     print("No module named 'google' found")
 
 sys.path.insert(0,'../browserOperationFunction')
 from basicOperations import BasicOptions
 
-sys.path.insert(0,'/root/Documents/Project/izaat/zillow_asmt_standardisation_2/address_name_split/')
-from DB import sqlDB
+sys.path.insert(0,'../sql')
+from sqlDB import sqlDB
 
-def SearchGoogle(search):
-    try:
-        browser = webdriver.Firefox(executable_path=basicData['executable_path'])
-        browser.get(BasicOptions.searchGoogle(BasicOptions, search))
-        if BasicOptions.findMap(BasicOptions, browser):
-            data.append(search)
-            print('find address')
-        else:
-            print('no address')
-        browser.close()
-        return True
-    except Exception as e:
-        browser.close()
-        print(e)
-        return False
+# def SearchGoogle(search):
+#     try:
+#         browser = webdriver.Firefox(executable_path=basicData['executable_path'])
+#         browser.get(BasicOptions.searchGoogle(BasicOptions, search))
+#         if BasicOptions.findMap(BasicOptions, browser):
+#             data.append(search)
+#             print('find address')
+#         else:
+#             print('no address')
+#         browser.close()
+#         return True
+#     except Exception as e:
+#         browser.close()
+#         print(e)
+#         return False
 
 
 start = time.time()
