@@ -1,0 +1,9 @@
+{
+  "windows": {
+    "web": {
+      "firefox": {
+        "firefoxPath": "web\\firefox"
+      }
+    }
+  }
+}

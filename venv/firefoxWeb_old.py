@@ -28,17 +28,19 @@ def custom():
 
 basicData = json.loads(open('PageData/basicData.json','r').read())['profile1']
 
-browser = webdriver.Firefox(executable_path=basicData['executable_path'])
-
+# browser = webdriver.Firefox(executable_path=basicData['executable_path'])
+browser = webdriver.Firefox(executable_path='geckodriver.exe')
 # website_URL ='https://www.zomato.com/ncr'
 # website_URL = 'http://localhost:4200/'
-# browser.get(basicData['website_URL'])
+browser.get('http://www.google.com')
 # browser.get('https://www.google.com/search?client=ubuntu&channel=fs&q=tree&ie=utf-8&oe=utf-8')
-browser.get(BasicOptions.searchGoogle(BasicOptions, '10976 LABRADOR AVE'))
-if custom():
-    print('address')
-else:
-    print('not an address')
+
+
+# browser.get(BasicOptions.searchGoogle(BasicOptions, '10976 LABRADOR AVE'))
+# if custom():
+#     print('address')
+# else:
+#     print('not an address')
 
 browser.close()
 # time.sleep(3)
