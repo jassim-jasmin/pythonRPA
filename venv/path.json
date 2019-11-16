@@ -2,7 +2,18 @@
   "windows": {
     "web": {
       "firefox": {
-        "firefoxPath": "web\\firefox"
+        "firefoxPath": "web\\firefox",
+        "geckodriver": "geckodriver.exe"
+      }
+    }
+  },
+  "linux": {
+    "web": {
+      "firefox": {
+        "firefoxPath": "web/firefox",
+        "geckodriver_old": "/root/Documents/mj/python/rpaPython/venv/web/firefox/",
+        "geckodriver": "/root/mj/python/",
+        "testUrl": "http://www.google.com"
       }
     }
   }
