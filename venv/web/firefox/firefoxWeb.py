@@ -32,6 +32,7 @@ class FireFox():
                 print('browser error :', e)
                 return False
 
+
 # print(os.getcwd())
 # test = webdriver.Firefox(executable_path='/root/Documents/mj/python/rpaPython/venv/web/firefox/geckodriver')
 # test.get("https://stackoverflow.com")

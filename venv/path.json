@@ -3,19 +3,24 @@
     "web": {
       "firefox": {
         "firefoxPath": "web\\firefox",
-        "geckodriver": "geckodriver.exe",
-        "geckodriverPath": ""
+        "geckodriver": {
+          "geckodriverDownloadPath": "https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-win64.zip"
+        }
       }
-    }
+    },
+    "delCommand": "cmd /c del ",
+    "unzip": "cmd /c tar -xf "
   },
   "linux": {
     "web": {
       "firefox": {
         "firefoxPath": "web/firefox",
-        "geckodriver_old": "/root/Documents/mj/python/rpaPython/venv/web/firefox/",
-        "geckodriver": "/root/mj/python/",
-        "testUrl": "http://www.google.com"
+        "geckodriver": {
+          "geckodriverDownloadPath": "https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz"
+        }
       }
-    }
+    },
+    "delCommand": "rm ",
+    "unzip": "tar -xvzf "
   }
 }

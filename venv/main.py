@@ -8,14 +8,24 @@ class MainRPA:
                 sys.path.insert(0, options['firefox']['firefoxPath'])
                 from firefoxWeb import FireFox
 
-                firefox = FireFox(options['firefox']).fireFox()
+                firefoxObj = FireFox(options['firefox'])
+                firefox = firefoxObj.fireFox()
                 if firefox:
                     if firefox == 'newSessionError':
-                        self.webException(self, 'geckodriverException')
+                        if self.webException(self, 'geckodriverException'):
+                            print('Opening Fire Fox')
+                            self.fireFOx(self, options)
+                        else:
+                            return False
                     elif firefox == 'pathError':
-                        self.webException(self, 'geckodriverException')
+                        if self.webException(self, 'geckodriverException'):
+                            print('Opening Fire fox')
+                            self.fireFOx(self, options)
+                        else:
+                            return False
                     else:
                         print('FireFox openning success')
+                        firefoxObj.browser.close()
                         return True
                 else:
                     print('FireFox opening error')
@@ -37,7 +47,11 @@ class MainRPA:
                 sys.path.insert(1,'ExceptionHandling')
                 from webException import ExceptionHandling
 
-                ExceptionHandling().geckodriverException(self.path['web']['firefox'], self.os)
+                exceptionHandling = ExceptionHandling()
+                if exceptionHandling.geckodriverException(self.path):
+                    return True
+                else:
+                    return False
             except Exception as e:
                 print('class ExceptionHandling has issue', e)
         else:
