@@ -25,6 +25,8 @@ class FireFox():
             error = str(e).strip()
             if error == 'Message: newSession':
                 return 'newSessionError'
+            elif error == "Message: 'geckodriver.exegeckodriver' executable needs to be in PATH.":
+                return 'pathError'
             else:
                 print('browser error :', e)
                 return False
