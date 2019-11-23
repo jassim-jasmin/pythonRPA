@@ -3,7 +3,8 @@
     "web": {
       "firefox": {
         "firefoxPath": "web\\firefox",
-        "geckodriver": "geckodriver.exe"
+        "geckodriver": "geckodriver.exe",
+        "geckodriverPath": ""
       }
     }
   },

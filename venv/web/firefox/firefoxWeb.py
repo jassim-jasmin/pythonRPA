@@ -4,6 +4,7 @@ import time
 import json
 import sys
 import os
+import re
 
 # sys.path.insert(1,'browserOperationFunction')
 # from basicOperations import BasicOptions
@@ -18,14 +19,15 @@ class FireFox():
 
     def fireFox(self):
         try:
-            self.browser = webdriver.Firefox(executable_path=self.path['geckodriver']+'geckodriver')
+            print(os.getcwd(),'firefox')
+            self.browser = webdriver.Firefox(executable_path='geckodriver')
 
             return True
         except Exception as e:
             error = str(e).strip()
             if error == 'Message: newSession':
                 return 'newSessionError'
-            elif error == "Message: 'geckodriver.exegeckodriver' executable needs to be in PATH.":
+            elif re.search('needs to be in PATH',error):
                 return 'pathError'
             else:
                 print('browser error :', e)
