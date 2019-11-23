@@ -44,10 +44,10 @@ class MainRPA:
             print('Exception not handling and exiting')
             return False
 
-    def run(self, options):
+    def run(self, options, path):
         try:
             print('Oppening RPA')
-            self.path = json.loads(open('path.json').read())[options]
+            self.path = path[options]
 
             if self.fireFOx(self, self.path['web']):
                 print('FireFox enabling')
@@ -63,7 +63,10 @@ class MainRPA:
 
 if __name__ == '__main__':
     try:
-        if MainRPA.run(MainRPA, sys.argv[1]):
+        pathFile = open('path.json', 'r')
+        path = json.loads(pathFile.read())
+        pathFile.close()
+        if MainRPA.run(MainRPA, sys.argv[1], path):
             print('Process complete')
         else:
             print('Process exit with error')
