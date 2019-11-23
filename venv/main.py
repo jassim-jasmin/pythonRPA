@@ -37,7 +37,7 @@ class MainRPA:
                 sys.path.insert(1,'ExceptionHandling')
                 from webException import ExceptionHandling
 
-                ExceptionHandling().geckodriverException()
+                ExceptionHandling().geckodriverException(self.path['web']['firefox'], self.os)
             except Exception as e:
                 print('class ExceptionHandling has issue', e)
         else:
@@ -47,6 +47,7 @@ class MainRPA:
     def run(self, options, path):
         try:
             print('Oppening RPA')
+            self.os = options
             self.path = path[options]
 
             if self.fireFOx(self, self.path['web']):

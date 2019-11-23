@@ -19,7 +19,6 @@ class FireFox():
 
     def fireFox(self):
         try:
-            print(os.getcwd(),'firefox')
             self.browser = webdriver.Firefox(executable_path='geckodriver')
 
             return True
