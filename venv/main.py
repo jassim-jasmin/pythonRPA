@@ -2,31 +2,37 @@ import json
 import sys
 import os
 class MainRPA:
+    def openFirefox(self, options):
+        print('firefox')
+        sys.path.insert(0, options['firefox']['firefoxPath'])
+        from firefoxWeb import FireFox
+
+        return FireFox(options['firefox'])
+
     def fireFOx(self, options):
         try:
             try:
-                sys.path.insert(0, options['firefox']['firefoxPath'])
-                from firefoxWeb import FireFox
-
-                firefoxObj = FireFox(options['firefox'])
+                firefoxObj = self.openFirefox(self, options)
                 firefox = firefoxObj.fireFox()
                 if firefox:
-                    if firefox == 'newSessionError':
+                    if (firefox == 'pathError' or firefox == 'newSessionError') and self.runCount == 1:
                         if self.webException(self, 'geckodriverException'):
                             print('Opening Fire Fox')
+                            self.runCount = self.runCount + 1
                             self.fireFOx(self, options)
+
                         else:
                             return False
-                    elif firefox == 'pathError':
-                        if self.webException(self, 'geckodriverException'):
-                            print('Opening Fire fox')
-                            self.fireFOx(self, options)
-                        else:
-                            return False
+                    elif firefox == 'pathError' or firefox == 'pathError':
+                        exit()
                     else:
                         print('FireFox openning success')
-                        firefoxObj.browser.close()
-                        return True
+                        try:
+                            firefoxObj.browser.close()
+                            return True
+                        except Exception as e:
+                            print(e)
+                            return False
                 else:
                     print('FireFox opening error')
                     return False
@@ -61,6 +67,7 @@ class MainRPA:
     def run(self, options, path):
         try:
             print('Oppening RPA')
+            self.runCount = 1
             self.os = options
             self.path = path[options]
 

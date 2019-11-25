@@ -13,26 +13,20 @@ class FireFox():
     def __init__(self, path):
         try:
             self.path = path
-            os.chdir(path['firefoxPath'])
         except Exception as e:
             print('FireFox !! ' + path['firefoxPath'] + ' !! has issue (minor)')
 
     def fireFox(self):
         try:
-            self.browser = webdriver.Firefox(executable_path='geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['firefoxPath']+'geckodriver')
 
             return True
         except Exception as e:
             error = str(e).strip()
+            print(e)
             if error == 'Message: newSession':
                 return 'newSessionError'
             elif re.search('needs to be in PATH',error):
                 return 'pathError'
             else:
-                print('browser error :', e)
                 return False
-
-
-# print(os.getcwd())
-# test = webdriver.Firefox(executable_path='/root/Documents/mj/python/rpaPython/venv/web/firefox/geckodriver')
-# test.get("https://stackoverflow.com")
