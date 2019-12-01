@@ -74,7 +74,12 @@ class MainRPA:
             if option == 'firefox':
                 if self.fireFOx(self, self.path['web']):
                     print('FireFox enabling')
-                    return True
+
+                    firefoxObj = self.openFirefox(self, self.path['web'])
+                    if firefoxObj.openWebAddress('http://www.google.com'):
+                        return True
+                    else:
+                        print('process failed')
                 else:
                     print('FireFox failed')
                     return True
