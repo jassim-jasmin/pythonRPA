@@ -64,19 +64,23 @@ class MainRPA:
             print('Exception not handling and exiting')
             return False
 
-    def run(self, options, path):
+    def run(self, os, option, path):
         try:
             print('Oppening RPA')
             self.runCount = 1
-            self.os = options
-            self.path = path[options]
+            self.os = os
+            self.path = path[os]
 
-            if self.fireFOx(self, self.path['web']):
-                print('FireFox enabling')
-                return True
+            if option == 'firefox':
+                if self.fireFOx(self, self.path['web']):
+                    print('FireFox enabling')
+                    return True
+                else:
+                    print('FireFox failed')
+                    return True
             else:
-                print('FireFox failed')
-                return True
+                print('Invalid browser option')
+                return False
 
         except Exception as e:
             print('Exception in main/run (json file issue)', e)
@@ -85,12 +89,15 @@ class MainRPA:
 
 if __name__ == '__main__':
     try:
-        pathFile = open('path.json', 'r')
-        path = json.loads(pathFile.read())
-        pathFile.close()
-        if MainRPA.run(MainRPA, sys.argv[1], path):
-            print('Process complete')
+        if len(sys.argv) == 3:
+            pathFile = open('path.json', 'r')
+            path = json.loads(pathFile.read())
+            pathFile.close()
+            if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path):
+                print('Process complete')
+            else:
+                print('Process exit with error')
         else:
-            print('Process exit with error')
+            print('Error: Proper argument need to run the program')
     except Exception as e:
         print(e)
