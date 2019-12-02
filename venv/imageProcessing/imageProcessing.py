@@ -11,7 +11,7 @@ def ocrImage(image, extension, ocrFileName):
         import os
 
         os.mkdir('../ocrText')
-        fp = open('../ocrText/' + image + '_ocr', 'w')
+        fp = open('../ocrText/' + image + '_ocr.txt', 'w')
 
     fp.write(pytesseract.image_to_string('../images/'+image + '.' + extension))
 
