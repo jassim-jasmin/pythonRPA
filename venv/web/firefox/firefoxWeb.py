@@ -40,7 +40,6 @@ class FireFox():
                 self.browser.save_screenshot(self.path[imageLocation]+fileName)
             except Exception as e:
                 print(e)
-                # print(e + '!! ' + self.path[imageLocation]+fileName)
 
             return True
         except Exception as e:
@@ -75,7 +74,8 @@ class FireFox():
                         if self.webException('geckodriverException'):
                             print('Opening Fire Fox')
                             self.runCount = self.runCount + 1
-                            self.fireFOx(self, options)
+                            # self.fireFOx(self, options)
+                            return True
 
                         else:
                             return False
@@ -95,8 +95,6 @@ class FireFox():
 
             except Exception as e:
                 print('Exception in firefoxWeb/testFirefox opening firefox ', e)
-
-            return True
         except Exception as e:
             print('Exception in main/firefox ', e)
 

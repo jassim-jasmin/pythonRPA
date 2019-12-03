@@ -17,20 +17,15 @@ class MainRPA:
             self.path = path[os]
 
             if option == 'firefox':
-                # if self.openFirefox(self, self.path['web']).testFireFOx(self.path, self.runCount):
-                    print('FireFox enabling')
+                print('FireFox enabling')
+                firefoxObj = self.openFirefox(self, self.path)
 
-                    firefoxObj = self.openFirefox(self, self.path)
-
-                    if firefoxObj.openWebAddress('http://www.google.com', self.runCount):
-                        firefoxObj.saveScreenshot('imageLocation', 'test.png')
-                        firefoxObj.browser.close()
-                        return True
-                    else:
-                        print('process failed')
-                # else:
-                #     print('FireFox failed')
-                #     return True
+                if firefoxObj.openWebAddress('http://www.google.com', self.runCount):
+                    firefoxObj.saveScreenshot('imageLocation', 'test.png')
+                    firefoxObj.browser.close()
+                    return True
+                else:
+                    print('process failed')
             else:
                 print('Invalid browser option')
                 return False
