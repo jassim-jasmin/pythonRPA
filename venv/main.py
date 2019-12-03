@@ -1,12 +1,13 @@
 import json
 import sys
 import os
+
 class MainRPA:
     def openFirefox(self, options):
-        sys.path.insert(0, options['firefox']['firefoxPath'])
+        sys.path.insert(0, options['web']['firefox']['firefoxPath'])
         from firefoxWeb import FireFox
 
-        return FireFox(options['firefox'])
+        return FireFox(options)
 
     def run(self, os, option, path):
         try:
@@ -16,17 +17,20 @@ class MainRPA:
             self.path = path[os]
 
             if option == 'firefox':
-                if self.openFirefox(self, self.path['web']).testFireFOx(self.path, self.runCount):
+                # if self.openFirefox(self, self.path['web']).testFireFOx(self.path, self.runCount):
                     print('FireFox enabling')
 
-                    firefoxObj = self.openFirefox(self, self.path['web'])
-                    if firefoxObj.openWebAddress('http://www.google.com'):
+                    firefoxObj = self.openFirefox(self, self.path)
+
+                    if firefoxObj.openWebAddress('http://www.google.com', self.runCount):
+                        firefoxObj.saveScreenshot('imageLocation', 'test.png')
+                        firefoxObj.browser.close()
                         return True
                     else:
                         print('process failed')
-                else:
-                    print('FireFox failed')
-                    return True
+                # else:
+                #     print('FireFox failed')
+                #     return True
             else:
                 print('Invalid browser option')
                 return False
@@ -42,6 +46,7 @@ if __name__ == '__main__':
             pathFile = open('path.json', 'r')
             path = json.loads(pathFile.read())
             pathFile.close()
+
             if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path):
                 print('Process complete')
             else:

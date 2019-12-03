@@ -28,37 +28,40 @@ class FireFox():
             else:
                 return False
 
-    def saveScreenshot(self, path, fileName):
+    def saveScreenshot(self, imageLocation, fileName):
         try:
-            print('Image saving..', self.path[path]+fileName)
+            print('Image saving..', self.path[imageLocation]+fileName)
             try:
-                os.mkdir(self.path[path])
+                os.mkdir(self.path[imageLocation])
             except Exception as e:
-                print('Location ' + self.path[path] + ' already exist')
+                print('Location "' + self.path[imageLocation] + '" already exist')
 
-            self.browser.save_screenshot(self.path[path]+fileName)
+            try:
+                self.browser.save_screenshot(self.path[imageLocation]+fileName)
+            except Exception as e:
+                print(e)
+                # print(e + '!! ' + self.path[imageLocation]+fileName)
 
             return True
         except Exception as e:
-            print('Error with image loacation')
+            print('Error with image loacation\n', self.path, path)
             self.browser.close()
             return False
 
-    def openWebAddress(self, address):
+    def openWebAddress(self, address, runCount):
         try:
             print('opening address ', address)
-            self.browser = webdriver.Firefox(executable_path=self.path['firefoxPath'] + 'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath'] + 'geckodriver')
             self.browser.get(address)
-            if self.saveScreenshot('imageLocation','test.png'):
-                self.browser.close()
-                
-                return True
-            else:
-                return False
+
+            return True
         except Exception as e:
-            print(e)
-            self.browser.close()
-            return False
+            try:
+                self.browser.close()
+            except Exception as e:
+                print('clossing browser', e)
+            if self.testFireFOx(self.path, runCount):
+                return self.openWebAddress(address, runCount+1)
 
 
     def testFireFOx(self, options, runCount):
