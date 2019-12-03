@@ -102,8 +102,6 @@ class FireFox():
     def webException(self, option):
         if option == 'geckodriverException':
             try:
-                # print(os.getcwd())
-                # os.chdir(os.getcwd().replace(self.path['web']['firefox']['firefoxPath'], ''))
                 sys.path.insert(1,'ExceptionHandling')
                 from webException import ExceptionHandling
 
