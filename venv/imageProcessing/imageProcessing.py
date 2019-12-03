@@ -17,8 +17,13 @@ def ocrImage(image, extension, ocrFileName):
 
     fp.close()
 
+def openCV():
+    import cv2
 
-ocrImage('test', 'png', 'test_ocr.txt')
+    print(cv2.__version__)
+
+openCV()
+# ocrImage('test', 'png', 'test_ocr.txt')
 # print(pytesseract.image_to_string('../images/test.png'))
 # print(pytesseract.image_to_boxes(Image.open('../images/test.png')))
 #

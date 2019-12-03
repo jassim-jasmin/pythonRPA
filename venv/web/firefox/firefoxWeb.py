@@ -6,9 +6,6 @@ import sys
 import os
 import re
 
-# sys.path.insert(1,'browserOperationFunction')
-# from basicOperations import BasicOptions
-
 class FireFox():
     def __init__(self, path):
         try:
@@ -18,7 +15,7 @@ class FireFox():
 
     def fireFox(self):
         try:
-            self.browser = webdriver.Firefox(executable_path=self.path['firefoxPath']+'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath']+'geckodriver')
 
             return True
         except Exception as e:
@@ -61,4 +58,63 @@ class FireFox():
         except Exception as e:
             print(e)
             self.browser.close()
+            return False
+
+
+    def testFireFOx(self, options, runCount):
+        try:
+            self.path = options
+            self.runCount = runCount
+            try:
+                firefox = self.fireFox()
+                if firefox:
+                    if (firefox == 'pathError' or firefox == 'newSessionError') and self.runCount == 1:
+                        if self.webException('geckodriverException'):
+                            print('Opening Fire Fox')
+                            self.runCount = self.runCount + 1
+                            self.fireFOx(self, options)
+
+                        else:
+                            return False
+                    elif firefox == 'pathError' or firefox == 'pathError':
+                        exit()
+                    else:
+                        print('FireFox openning success')
+                        try:
+                            self.browser.close()
+                            return True
+                        except Exception as e:
+                            print('FireFox openning failed: ',e)
+                            return False
+                else:
+                    print('FireFox opening error')
+                    return False
+
+            except Exception as e:
+                print('Exception in firefoxWeb/testFirefox opening firefox ', e)
+
+            return True
+        except Exception as e:
+            print('Exception in main/firefox ', e)
+
+            return False
+
+    def webException(self, option):
+        if option == 'geckodriverException':
+            try:
+                # print(os.getcwd())
+                # os.chdir(os.getcwd().replace(self.path['web']['firefox']['firefoxPath'], ''))
+                sys.path.insert(1,'ExceptionHandling')
+                from webException import ExceptionHandling
+
+                exceptionHandling = ExceptionHandling()
+                if exceptionHandling.geckodriverException(self.path):
+                    print('web handled')
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                print('class ExceptionHandling has issue', e)
+        else:
+            print('Exception not handling and exiting')
             return False
