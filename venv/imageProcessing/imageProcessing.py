@@ -24,6 +24,10 @@ def ocrImage(imageName, imageExtension, ocrFileName, filePath):
         print('Error in ocrImage', e)
         return False
 
+"""
+image @opencv image object
+returns contours or False when error occured
+"""
 def getContours(image):
     try:
         # Grayscale
@@ -43,6 +47,11 @@ def getContours(image):
         print('Error in getContours', e)
         return False
 
+"""
+contours @array
+contorIndex @num data contain index of contours
+imagePath @string path to the image file
+"""
 def cropContors(contours, contorIndex, imagePath):
     try:
         if contours:
