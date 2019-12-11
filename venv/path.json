@@ -21,6 +21,10 @@
         }
       }
     },
+    "imagProcessing": {
+      "path": "imageProcessing/",
+      "imagePath": "../images/"
+    },
      "imageLocation": "images/",
     "delCommand": "rm ",
     "unzip": "tar -xvzf "
