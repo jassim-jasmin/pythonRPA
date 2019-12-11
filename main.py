@@ -18,7 +18,7 @@ class MainRPA:
             print('error from imageProcessing', e)
             return False
 
-    def run(self, os, option, path):
+    def run(self, os, option, path, address='http://www.google.com', imageName='google'):
         try:
             print('Oppening RPA')
             self.runCount = 1
@@ -29,8 +29,8 @@ class MainRPA:
                 print('FireFox enabling')
                 firefoxObj = self.openFirefox(self, self.path)
 
-                if firefoxObj.openWebAddress('http://www.google.com', self.runCount):
-                    firefoxObj.saveScreenshot('imageLocation', 'test.png')
+                if firefoxObj.openWebAddress(address, self.runCount):
+                    firefoxObj.saveScreenshot('imageLocation', imageName + '.png')
                     firefoxObj.browser.close()
                     return True
                 else:
@@ -43,6 +43,7 @@ class MainRPA:
             print('Exception in main/run (json file issue)', e)
 
             return False
+################################
 
 
 if __name__ == '__main__':
@@ -64,6 +65,14 @@ if __name__ == '__main__':
                 print('image processing complete')
             else:
                 print('image processing faild')
+        elif len(sys.argv) == 2:
+            from automation.automation import Automation
+
+            automation = Automation()
+            if automation.automate(sys.argv[1]):
+                print('completed')
+            else:
+                print('failed')
         else:
             print('Error: Proper argument need to run the program')
     except Exception as e:
