@@ -9,10 +9,19 @@ class MainRPA:
 
         return FireFox(options)
 
-    def imageProcessing(self, options):
+    def imageProcessing(self, options, imageName):
         try:
-            os.chdir(options['imagProcessing']['path'])
-            from imageProcessing import imageProcessing
+            # print(os.getcwd())
+            # print('image prcessing',options['imagProcessing']['path'])
+            # os.chdir(options['imagProcessing']['path'])
+            # print(os.getcwd())
+            from imageProcessing.imageProcessing import ImageProcessing
+            # from imageProcessing import ImageProcessing
+            # from imageProcessing import ImageProcessing
+
+            imageProcessingObj =  ImageProcessing()
+
+            imageProcessingObj.drawContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName), imageProcessingObj.getContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName)))
             return True
         except Exception as e:
             print('error from imageProcessing', e)
@@ -43,7 +52,6 @@ class MainRPA:
             print('Exception in main/run (json file issue)', e)
 
             return False
-################################
 
 
 if __name__ == '__main__':

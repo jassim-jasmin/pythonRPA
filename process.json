@@ -6,6 +6,12 @@
                 },
                 {   "open": ["linux", "firefox", "https://www.w3schools.com/js/js_json_arrays.asp","w3school"]
                 }
+            ],
+            "imageProcessing": [
+                {   "open": ["linux","geek"]
+                },
+                {   "open": ["linux","w3school"]
+                }
             ]
         }
     ]

@@ -13,12 +13,29 @@ class Automation:
         except Exception as e:
             print('error in auromatefirefox')
 
+    def automateImageProcessing(self, eachAction):
+        try:
+            print(eachAction)
+            path = self.openPathFile()
+            path = path[eachAction['open'][0]]
+            if MainRPA.imageProcessing(MainRPA, path, eachAction['open'][1]):
+                print('image processing complete')
+            else:
+                print('image processing faild')
+            return True
+        except Exception as e:
+            print('error in automateImageProcessing', e)
+            return False
+
     def processLine(self, process):
         for key, action in process.items():
             # print(key)
             if key == 'web':
                 for eachAction in action:
                     self.automateFirefox(eachAction)
+            elif key == 'imageProcessing':
+                for eachAction in action:
+                    self.automateImageProcessing(eachAction)
 
     def automate(self, option):
         try:
@@ -27,7 +44,6 @@ class Automation:
             processFile.close()
 
             for eachProcessLine in process:
-                # print(eachProcessLine)
                 self.processLine(eachProcessLine)
             return True
         except Exception as e:

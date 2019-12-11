@@ -9,11 +9,11 @@ except ImportError:
 import pytesseract
 import pandas
 
-pathFile = open('../path.json', 'r')
-path = json.loads(pathFile.read())
-pathFile.close()
+# pathFile = open('../path.json', 'r')
+# path = json.loads(pathFile.read())
+# pathFile.close()
 
-class imageProcessing():
+class ImageProcessing():
     """
     image image data
     """
@@ -117,13 +117,26 @@ class imageProcessing():
             print('Error in cropContors main',e)
             return False
 
-    def drawContours(self, imageName, contors, contourldx=-1, color = (0, 255, 0), thickness = 3):
-        # cv2.drawContours(image, contors, contourldx, color, thickness, lineType,hierarchy, maxLevel,offset)
-        cv2.drawContours(imageName, contors, contourldx, color, thickness, lineType=-1)
-        # print(imageName)
-        cv2.imshow('drawContours', imageName)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    def drawContours(self, openCvImage, contors, contourldx=-1, color = (0, 255, 0), thickness = 3):
+        try:
+            # cv2.drawContours(image, contors, contourldx, color, thickness, lineType,hierarchy, maxLevel,offset)
+            cv2.drawContours(openCvImage, contors, contourldx, color, thickness, lineType=-1)
+            # print(imageName)
+            cv2.imshow('drawContours', openCvImage)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        except Exception as e:
+            print('errorn in draw contrours', e)
+
+    def openCVReadImage(self, imageLoaction, imageName):
+        try:
+            import os
+            print('open',os.getcwd(), imageLoaction + imageName + '.png')
+            image = cv2.imread(imageLoaction + imageName + '.png')
+            return image
+        except Exception as e:
+            print('opencvreadimage',e)
+            return False
 
     def openCVdrawContours(self):
         import cv2
@@ -182,35 +195,36 @@ class imageProcessing():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-obj = imageProcessing()
-
-image = cv2.imread('../images/test.png')
-
-contors = obj.getContours(image)
-
-obj.drawContours(image,contors)
-for i in range(0, len(contors)):
-    outputImage = obj.cropContors(obj.getContours(image), i, '../images/test.png')
-    # print(outputImage.shape)
-    try:
-        height, width = outputImage.shape
-
-        # print('!' +getOcr(outputImage) + '!')
-        if obj.getValidOcr(outputImage):
-            confidence = pytesseract.image_to_data(outputImage, output_type='data.frame')
-            # print(type(confidence))
-            confidence =  confidence[confidence.conf != -1]
-            print(confidence)
-            # obj.drawContours(image,contors)
-            # cv2.imshow('Output', outputImage)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
-    except Exception as e:
-        # print((e))
-        continue
-
-cv2.imshow('final', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-# ocrImage('test', 'png', 'test_ocr.txt')
-# print(pytesseract.image_to_string('../images/test.png'))
+#
+# obj = imageProcessing()
+#
+# image = cv2.imread('../images/test.png')
+#
+# contors = obj.getContours(image)
+#
+# obj.drawContours(image,contors)
+# for i in range(0, len(contors)):
+#     outputImage = obj.cropContors(obj.getContours(image), i, '../images/test.png')
+#     # print(outputImage.shape)
+#     try:
+#         height, width = outputImage.shape
+#
+#         # print('!' +getOcr(outputImage) + '!')
+#         if obj.getValidOcr(outputImage):
+#             confidence = pytesseract.image_to_data(outputImage, output_type='data.frame')
+#             # print(type(confidence))
+#             confidence =  confidence[confidence.conf != -1]
+#             print(confidence)
+#             # obj.drawContours(image,contors)
+#             # cv2.imshow('Output', outputImage)
+#             # cv2.waitKey(0)
+#             # cv2.destroyAllWindows()
+#     except Exception as e:
+#         # print((e))
+#         continue
+#
+# cv2.imshow('final', image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+# # ocrImage('test', 'png', 'test_ocr.txt')
+# # print(pytesseract.image_to_string('../images/test.png'))
