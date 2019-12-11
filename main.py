@@ -62,14 +62,14 @@ if __name__ == '__main__':
 
         if len(sys.argv) == 4:
             if sys.argv[3] == 'rpa':
-                if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path):
+                if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path[sys.argv[1]]):
                     print('Process complete')
             else:
                 print('Process exit with error')
         elif len(sys.argv) == 3:
             print('imageProcessing', sys.argv)
             path = path[sys.argv[1]]
-            if MainRPA.imageProcessing(MainRPA, path):
+            if MainRPA.imageProcessing(MainRPA, path, 'geek'):
                 print('image processing complete')
             else:
                 print('image processing faild')
