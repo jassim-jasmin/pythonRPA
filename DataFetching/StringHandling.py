@@ -112,9 +112,15 @@ class StringHandling:
             print('error in addNewStringToDictionary in StringHandling', e)
             return False
 
-    def addLocatorToDictionary(self):
+    def addLocatorToDictionary(self, locationStringArray):
         print('addLocatorToDictionary')
-        print(self.path['DataFetching']['filesPath']+self.path['DataFetching'])
+        print(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'])
+        fp = open(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'], 'a')
+
+        locatorDictionaryValues = ''
+        for loactionString in locationStringArray:
+            print(loactionString)
+            locatorDictionaryValues = locatorDictionaryValues + loactionString
 
     def test(self):
         # self.printAllFuzzyComparison()
@@ -124,5 +130,6 @@ class StringHandling:
         # if self.addNewStringToDictionary('somethingnew', self.path['DataFetching']['endStringFiles']):
         #     print('right added')
 
-        self.addLocatorToDictionary()
+        testLocator = ['GRANT','DEED','Grantor']
+        self.addLocatorToDictionary(testLocator)
     # def getPorttion(self, startString, endString):
