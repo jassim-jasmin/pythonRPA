@@ -27,6 +27,12 @@
     },
      "imageLocation": "images/",
     "delCommand": "rm ",
-    "unzip": "tar -xvzf "
+    "unzip": "tar -xvzf ",
+    "DataFetching": {
+      "filesPath": "DataFetching/files/",
+      "startStringFiles": "startString.txt",
+      "endStringFiles": "endString.txt",
+      "locatorDictionary": "locatorDictionary.txt"
+    }
   }
 }

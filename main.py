@@ -78,7 +78,7 @@ if __name__ == '__main__':
             elif sys.argv[2] == 'dataFetching':
                 from DataFetching.DataFetching import DataFetching
 
-                df = DataFetching()
+                df = DataFetching(path[sys.argv[1]])
                 df.desisionTreeTest()
 
         elif len(sys.argv) == 2:

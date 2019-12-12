@@ -1,7 +1,11 @@
 from sklearn import  tree
+from DataFetching.StringHandling import StringHandling
 
 class DataFetching:
     print('Data fetching')
+    def __init__(self, path):
+        self.path = path
+
     def trainingSet1(self):
         X = [[181, 80, 44], [177, 70, 43], [160, 60, 38],
              [154, 54, 37], [166, 65, 40], [190, 90, 47], [175, 64, 39],
@@ -25,13 +29,17 @@ class DataFetching:
 
     def desisionTreeTest(self):
 
-        X,Y = self.trainingSet2()
-        test_data = self.testData2()
+        X,Y = self.trainingSet1()
+        test_data = self.testData1()
 
         test_labels = ['male', 'female', 'male']
 
 
-        dtc_clf = tree.DecisionTreeClassifier()
-        dtc_clf = dtc_clf.fit(X, Y)
-        dtc_prediction = dtc_clf.predict(test_data)
-        print(dtc_prediction)
+        # dtc_clf = tree.DecisionTreeClassifier()
+        # dtc_clf = dtc_clf.fit(X, Y)
+        # dtc_prediction = dtc_clf.predict(test_data)
+        # print(dtc_prediction)
+
+        stringHandling = StringHandling(self.path)
+
+        stringHandling.test()
