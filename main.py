@@ -3,6 +3,7 @@ import sys
 import os
 
 class MainRPA:
+
     def openFirefox(self, options):
         sys.path.insert(0, options['web']['firefox']['firefoxPath'])
         from firefoxWeb import FireFox
@@ -67,12 +68,19 @@ if __name__ == '__main__':
             else:
                 print('Process exit with error')
         elif len(sys.argv) == 3:
-            print('imageProcessing', sys.argv)
-            path = path[sys.argv[1]]
-            if MainRPA.imageProcessing(MainRPA, path, 'geek'):
-                print('image processing complete')
-            else:
-                print('image processing faild')
+            if sys.argv[2] == 'imageProcessing':
+                print('imageProcessing', sys.argv)
+                path = path[sys.argv[1]]
+                if MainRPA.imageProcessing(MainRPA, path, 'geek'):
+                    print('image processing complete')
+                else:
+                    print('image processing faild')
+            elif sys.argv[2] == 'dataFetching':
+                from DataFetching.DataFetching import DataFetching
+
+                df = DataFetching()
+                df.desisionTreeTest()
+
         elif len(sys.argv) == 2:
             from automation.automation import Automation
 
