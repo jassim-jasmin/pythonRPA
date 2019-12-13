@@ -11,7 +11,7 @@ class FireFox():
         try:
             self.path = path
         except Exception as e:
-            print('FireFox !! ' + path['firefoxPath'] + ' !! has issue (minor)')
+            print('FireFox !! ' + path + ' !! has issue (minor)')
 
     def fireFox(self):
         try:
@@ -50,7 +50,7 @@ class FireFox():
     def openWebAddress(self, address, runCount):
         try:
             print('opening address ', address)
-            self.browser = webdriver.Firefox(executable_path=self.path['web']['Firefox']['firefoxPath'] + 'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath'] + 'geckodriver')
             self.browser.get(address)
 
             return True

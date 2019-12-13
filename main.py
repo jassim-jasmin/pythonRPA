@@ -5,10 +5,16 @@ import os
 class MainRPA:
 
     def openFirefox(self, options):
-        sys.path.insert(0, options['web']['Firefox']['firefoxPath'])
-        from firefoxWeb import FireFox
+        try:
+            # print('this is the path; ', options['web']['firefox']['firefoxPath'])
+            # sys.path.insert(0, options['web']['firefox']['firefoxPath'])
+            from web.Firefox.firefoxWeb import FireFox
+            # from firefoxWeb import FireFox
 
-        return FireFox(options)
+            return FireFox(options)
+        except Exception as e:
+            print(e)
+            return False
 
     def imageProcessing(self, options, imageName):
         try:
@@ -35,16 +41,20 @@ class MainRPA:
             self.os = os
             self.path = path[os]
 
-            if option == 'Firefox':
+            if option == 'firefox':
                 print('FireFox enabling')
                 firefoxObj = self.openFirefox(self, self.path)
 
-                if firefoxObj.openWebAddress(address, self.runCount):
-                    firefoxObj.saveScreenshot('imageLocation', imageName + '.png')
-                    firefoxObj.browser.close()
-                    return True
+                if firefoxObj:
+                    if firefoxObj.openWebAddress(address, self.runCount):
+                        firefoxObj.saveScreenshot('imageLocation', imageName + '.png')
+                        firefoxObj.browser.close()
+                        return True
+                    else:
+                        print('process failed')
                 else:
-                    print('process failed')
+                    print('error opening firefox')
+                    return False
             else:
                 print('Invalid browser option')
                 return False
@@ -63,7 +73,7 @@ if __name__ == '__main__':
 
         if len(sys.argv) == 4:
             if sys.argv[3] == 'rpa':
-                if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path[sys.argv[1]]):
+                if MainRPA.run(MainRPA, sys.argv[1], sys.argv[2], path):
                     print('Process complete')
             else:
                 print('Process exit with error')
