@@ -126,7 +126,7 @@ class StringHandling:
             print('excecption in addLocatorToDictionary', e)
             return False
 
-    def getLocatorData(self):
+    def getLocatorDataArray(self):
         try:
             print(self.path['DataFetching']['locatorDictionary'])
             fp = open(self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary'], 'r')
@@ -152,9 +152,55 @@ class StringHandling:
                 return False
 
     def getSourceFileData(self):
-        fp = open()
+        try:
+            fp = open(self.path['Data']['path'] + self.path['Data']['dataFileName'])
+            sourceData = fp.read()
+
+            return sourceData
+        except Exception as e:
+            print('error in getSourceFileData ', e)
+            return False
+        finally:
+            try:
+                fp.close()
+            except Exception as e:
+                return False
+
     def processLocatorAndGetDataFromFile(self):
-        fp = open()
+        sourceData = self.getSourceFileData()
+
+        if sourceData:
+            try:
+                import re
+
+                locatorDataArray = self.getLocatorDataArray()
+                for eachLocatorArray in locatorDataArray:
+                    patternBuild = '('
+                    # for eachLocator in eachLocatorArray:
+                    for i in range(0,len(eachLocatorArray)):
+                        if i == 0:
+                            patternBuild = patternBuild+eachLocatorArray[i]
+                        else:
+                            patternBuild = patternBuild + '\n*.*' + eachLocatorArray[i]
+
+                    patternBuild = patternBuild + ')'
+                    searhcObj = re.search(patternBuild,sourceData)
+
+                    # print('pattern:', patternBuild)
+                    if searhcObj:
+                        print('Pattern out: ', searhcObj.group())
+                    else:
+                        print('no match')
+
+
+            except Exception as e:
+                print(e)
+                return False
+            return True
+        else:
+            print('error in source file')
+            return False
+
 
     def test(self):
         # self.printAllFuzzyComparison()
@@ -166,10 +212,13 @@ class StringHandling:
 
         testLocator = ['GRANT','DEED','Grantor']
         testLocator2 = ['Dated:', 'April 18', '2019']
+        testLocator3 = ['A.P.N.:', 'Title File']
         self.addLocatorToDictionary(testLocator)
         self.addLocatorToDictionary(testLocator2)
+        self.addLocatorToDictionary(testLocator3)
 
-        print(self.getLocatorData())
+        # print(self.getLocatorData())
+        self.processLocatorAndGetDataFromFile()
     # def getPorttion(self, startString, endString):
 
 
