@@ -110,12 +110,9 @@ class StringHandling:
 
     def addLocatorToDictionary(self, locationStringArray):
         try:
-            print('addLocatorToDictionary')
-            print(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'])
-
             for i in range(0,len(locationStringArray)):
                 if i == 0:
-                    locationString = locationStringArray[i].replace('::',':|:')
+                    locationString = locationStringArray[i].replace(':','-:-')
                     self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['startStringFiles'])
                 else:
                     locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
@@ -129,6 +126,31 @@ class StringHandling:
             print('excecption in addLocatorToDictionary', e)
             return False
 
+    def getLocatorData(self):
+        try:
+            print(self.path['DataFetching']['locatorDictionary'])
+            fp = open(self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary'], 'r')
+            locatorArray = fp.read().split(',')
+
+            locator = []
+
+            for locatorData in locatorArray:
+                indeces = locatorData.split('::')
+                for i in range(0,len(indeces)):
+                    indeces[i] = indeces[i].replace('-:-', ':')
+
+                locator.append(indeces)
+
+            return locator[1:]
+        except Exception as e:
+            print('error in getLocatorData in stringHandling', e)
+            return False
+        finally:
+            try:
+                fp.close()
+            except Exception as e:
+                return False
+
     def test(self):
         # self.printAllFuzzyComparison()
 
@@ -138,5 +160,11 @@ class StringHandling:
         #     print('right added')
 
         testLocator = ['GRANT','DEED','Grantor']
+        testLocator2 = ['Dated:', 'April 18', '2019']
         self.addLocatorToDictionary(testLocator)
+        self.addLocatorToDictionary(testLocator2)
+
+        print(self.getLocatorData())
     # def getPorttion(self, startString, endString):
+
+
