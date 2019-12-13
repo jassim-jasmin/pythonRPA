@@ -87,7 +87,7 @@ class StringHandling:
         except Exception as e:
             return False
 
-     def addNewStringToDictionary(self, string, fileName):
+    def addNewStringToDictionary(self, string, fileName):
         try:
             DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
             fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName)
