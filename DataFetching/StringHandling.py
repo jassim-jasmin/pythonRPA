@@ -151,6 +151,11 @@ class StringHandling:
             except Exception as e:
                 return False
 
+    def getSourceFileData(self):
+        fp = open()
+    def processLocatorAndGetDataFromFile(self):
+        fp = open()
+
     def test(self):
         # self.printAllFuzzyComparison()
 

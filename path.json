@@ -9,8 +9,18 @@
       }
     },
      "imageLocation": "images\\",
-    "delCommand": "cmd /c del ",
-    "unzip": "cmd /c tar -xf "
+      "delCommand": "cmd /c del ",
+      "unzip": "cmd /c tar -xf ",
+      "DataFetching": {
+      "filesPath": "DataFetching\\files\\",
+      "startStringFiles": "startString.txt",
+      "endStringFiles": "endString.txt",
+      "locatorDictionary": "locatorDictionary.txt"
+    },
+    "Data": {
+      "path": "Data\\",
+      "dataFileName": "testData.txt"
+    }
   },
   "linux": {
     "web": {
@@ -33,6 +43,10 @@
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
       "locatorDictionary": "locatorDictionary.txt"
+    },
+    "Data": {
+      "path": "Data/",
+      "dataFileName": "testData.txt"
     }
   }
 }
