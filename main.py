@@ -93,3 +93,10 @@ if __name__ == '__main__':
             print('Error: Proper argument need to run the program')
     except Exception as e:
         print(e)
+
+"""
+    python3 main.py linux dataFetching
+    python3 main.py linux   (works based on process file)
+    python3 main.py linux imageProcessing
+    python3 main.py linux firefox rpa
+"""
