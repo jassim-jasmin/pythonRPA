@@ -15,7 +15,7 @@ class FireFox():
 
     def fireFox(self):
         try:
-            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath']+'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['Firefox']['firefoxPath']+'geckodriver')
 
             return True
         except Exception as e:
@@ -50,7 +50,7 @@ class FireFox():
     def openWebAddress(self, address, runCount):
         try:
             print('opening address ', address)
-            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath'] + 'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['Firefox']['firefoxPath'] + 'geckodriver')
             self.browser.get(address)
 
             return True
@@ -94,9 +94,9 @@ class FireFox():
                     return False
 
             except Exception as e:
-                print('Exception in firefoxWeb/testFirefox opening firefox ', e)
+                print('Exception in firefoxWeb/testFirefox opening Firefox ', e)
         except Exception as e:
-            print('Exception in main/firefox ', e)
+            print('Exception in main/Firefox ', e)
 
             return False
 

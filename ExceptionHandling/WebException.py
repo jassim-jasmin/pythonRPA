@@ -5,7 +5,7 @@ import re
 class ExceptionHandling:
     def geckodriverException(self, path):
         try:
-            os.chdir(path['web']['firefox']['firefoxPath'])
+            os.chdir(path['web']['Firefox']['firefoxPath'])
             if self.installGeckodriver(path):
                 print('geckodriver downloaded')
                 return True
@@ -25,7 +25,7 @@ class ExceptionHandling:
             print(e)
 
         try:
-            wget.download(path['web']['firefox']['geckodriver']['geckodriverDownloadPath'])
+            wget.download(path['web']['Firefox']['geckodriver']['geckodriverDownloadPath'])
         except Exception as e:
             print(e, 'wget error')
             return False

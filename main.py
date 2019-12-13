@@ -5,7 +5,7 @@ import os
 class MainRPA:
 
     def openFirefox(self, options):
-        sys.path.insert(0, options['web']['firefox']['firefoxPath'])
+        sys.path.insert(0, options['web']['Firefox']['firefoxPath'])
         from firefoxWeb import FireFox
 
         return FireFox(options)
@@ -35,7 +35,7 @@ class MainRPA:
             self.os = os
             self.path = path[os]
 
-            if option == 'firefox':
+            if option == 'Firefox':
                 print('FireFox enabling')
                 firefoxObj = self.openFirefox(self, self.path)
 
