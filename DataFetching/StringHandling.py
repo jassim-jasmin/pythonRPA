@@ -126,10 +126,10 @@ class StringHandling:
             print('excecption in addLocatorToDictionary', e)
             return False
 
-    def getLocatorDataArray(self):
+    def getLocatorDataArray(self, locatorFilePathWithFileName):
         try:
-            print(self.path['DataFetching']['locatorDictionary'])
-            fp = open(self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary'], 'r')
+            # fp = open(, 'r')
+            fp = open(locatorFilePathWithFileName, 'r')
             locatorArray = fp.read().split(',')
 
             locator = []
@@ -151,9 +151,10 @@ class StringHandling:
             except Exception as e:
                 return False
 
-    def getSourceFileData(self):
+    def getSourceFileData(self, sourceFilePathWithDataFileName):
         try:
-            fp = open(self.path['Data']['path'] + self.path['Data']['dataFileName'])
+            fp = open(sourceFilePathWithDataFileName, 'r')
+            # fp = open(self.path['Data']['path'] + self.path['Data']['dataFileName'])
             sourceData = fp.read()
 
             return sourceData
@@ -166,14 +167,14 @@ class StringHandling:
             except Exception as e:
                 return False
 
-    def processLocatorAndGetDataFromFile(self):
-        sourceData = self.getSourceFileData()
+    def processLocatorAndGetDataFromFile(self, sourceFilePathWithDataFileName, locatorFilePathWithFileName):
+        sourceData = self.getSourceFileData(sourceFilePathWithDataFileName)
 
         if sourceData:
             try:
                 import re
 
-                locatorDataArray = self.getLocatorDataArray()
+                locatorDataArray = self.getLocatorDataArray(locatorFilePathWithFileName)
                 for eachLocatorArray in locatorDataArray:
                     patternBuild = '('
                     # for eachLocator in eachLocatorArray:
@@ -213,12 +214,16 @@ class StringHandling:
         testLocator = ['GRANT','DEED','Grantor']
         testLocator2 = ['Dated:', 'April 18', '2019']
         testLocator3 = ['A.P.N.:', 'Title File']
+        testLocator4 = ['The exclusive right to','above described']
         self.addLocatorToDictionary(testLocator)
         self.addLocatorToDictionary(testLocator2)
         self.addLocatorToDictionary(testLocator3)
+        self.addLocatorToDictionary(testLocator4)
 
         # print(self.getLocatorData())
-        self.processLocatorAndGetDataFromFile()
+        sourceFilePathAndDataFileName = self.path['Data']['path'] + self.path['Data']['dataFileName']
+        locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary']
+        self.processLocatorAndGetDataFromFile(sourceFilePathAndDataFileName, locatorFilePathWithFileName)
     # def getPorttion(self, startString, endString):
 
 
