@@ -1,5 +1,6 @@
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+from ExceptionHandling.DirecotryHandling import DrectoryHandling
 
 class StringHandling:
     print('string handling')
@@ -86,14 +87,9 @@ class StringHandling:
         except Exception as e:
             return False
 
-    def addNewStringToDictionary(self, string, fileName):
+     def addNewStringToDictionary(self, string, fileName):
         try:
-            try:
-                import os
-                os.mkdir(self.path['DataFetching']['filesPath'])
-            except Exception as e:
-                print('')
-
+            DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
             fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName)
             if fileData:
                 data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
@@ -113,14 +109,25 @@ class StringHandling:
             return False
 
     def addLocatorToDictionary(self, locationStringArray):
-        print('addLocatorToDictionary')
-        print(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'])
-        fp = open(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'], 'a')
+        try:
+            print('addLocatorToDictionary')
+            print(self.path['DataFetching']['filesPath']+self.path['DataFetching']['locatorDictionary'])
 
-        locatorDictionaryValues = ''
-        for loactionString in locationStringArray:
-            print(loactionString)
-            locatorDictionaryValues = locatorDictionaryValues + loactionString
+            for i in range(0,len(locationStringArray)):
+                if i == 0:
+                    locationString = locationStringArray[i].replace('::',':|:')
+                    self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['startStringFiles'])
+                else:
+                    locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
+                    self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['endStringFiles'])
+                    if i != len(locationStringArray)-1:
+                        self.addNewStringToDictionary(locationStringArray[i],
+                                                    self.path['DataFetching']['startStringFiles'])
+            print(locationString)
+            self.addNewStringToDictionary(locationString, self.path['DataFetching']['locatorDictionary'])
+        except Exception as e:
+            print('excecption in addLocatorToDictionary', e)
+            return False
 
     def test(self):
         # self.printAllFuzzyComparison()
