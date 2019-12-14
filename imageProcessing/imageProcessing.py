@@ -68,22 +68,19 @@ class ImageProcessing():
     """
     def getContours(self, image):
         try:
-            if image:
-                # Grayscale
-                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # Grayscale
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-                # Find Canny edges
-                edged = cv2.Canny(gray, 30, 200)
-                cv2.waitKey(0)
+            # Find Canny edges
+            edged = cv2.Canny(gray, 30, 200)
+            cv2.waitKey(0)
 
-                # Finding Contours
-                # Use a copy of the imageName e.g. edged.copy()
-                # since findContours alters the imageName
-                contours, hierarchy = cv2.findContours(edged,
-                                                       cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                return contours
-            else:
-                return False
+            # Finding Contours
+            # Use a copy of the imageName e.g. edged.copy()
+            # since findContours alters the imageName
+            contours, hierarchy = cv2.findContours(edged,
+                                                   cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            return contours
         except Exception as e:
             print('Error in getContours', e)
             return False
@@ -120,26 +117,31 @@ class ImageProcessing():
             print('Error in cropContors main',e)
             return False
 
+    def showImage(self, imagetag, image):
+        cv2.imshow(imagetag, image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
     def drawContours(self, openCvImage, contors, contourldx=-1, color = (0, 255, 0), thickness = 3):
         try:
-            if openCvImage:
-                # cv2.drawContours(image, contors, contourldx, color, thickness, lineType,hierarchy, maxLevel,offset)
-                cv2.drawContours(openCvImage, contors, contourldx, color, thickness, lineType=-1)
-                # print(imageName)
-                cv2.imshow('drawContours', openCvImage)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-            else:
-                print('drawContours image error')
-                return False
+            cv2.drawContours(openCvImage, contors, contourldx, color, thickness, lineType=-1)
+            # print(imageName)
+            cv2.imshow('drawContours', openCvImage)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            return True
         except Exception as e:
             print('errorn in draw contrours', e)
+            return False
 
-    def openCVReadImage(self, imageLoaction, imageName):
+    def openCVReadImage(self, imageLoaction, imageName, arg=None):
         try:
             import os
-            print('open',os.getcwd(), imageLoaction + imageName + '.png')
-            image = cv2.imread(imageLoaction + imageName + '.png')
+            # print('open',os.getcwd(), imageLoaction + imageName + '.png')
+            if arg == None:
+                image = cv2.imread(imageLoaction + imageName + '.png')
+            else:
+                image = cv2.imread(imageLoaction + imageName + '.png', arg)
             return image
         except Exception as e:
             print('opencvreadimage',e)
@@ -188,7 +190,7 @@ class ImageProcessing():
         idx = 190
         image = cv2.imread('../images/test.png', 0)
         mask = np.zeros_like(image)  # Create mask where white is what we want, black otherwise
-        cv2.obj.drawContours(mask, contours, idx, 255, -1)  # Draw filled contour in mask
+        cv2.drawContours(mask, contours, idx, 255, -1)  # Draw filled contour in mask
         out = np.zeros_like(image)  # Extract out the object and place into output imageName
         out[mask == 255] = image[mask == 255]
 

@@ -2,6 +2,8 @@ import json
 import sys
 import os
 
+from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+
 class MainRPA:
 
     def openFirefox(self, options):
@@ -25,9 +27,17 @@ class MainRPA:
 
             imageProcessingObj =  ImageProcessing()
 
-            if imageProcessingObj.drawContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName), imageProcessingObj.getContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName))):
-                return True
+            imageLocation = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imageLocation', options)
+
+            if imageLocation:
+                openCvImage= imageProcessingObj.openCVReadImage(imageLocation, imageName)
+                contors = imageProcessingObj.getContours(imageProcessingObj.openCVReadImage(imageLocation, imageName))
+                if imageProcessingObj.drawContours(openCvImage,contors):
+                    return True
+                else:
+                    return False
             else:
+                print('json error image location')
                 return False
         except Exception as e:
             print('error from imageProcessing', e)
@@ -78,16 +88,25 @@ if __name__ == '__main__':
         elif len(sys.argv) == 3:
             if sys.argv[2] == 'imageProcessing':
                 print('imageProcessing', sys.argv)
-                path = path[sys.argv[1]]
-                if MainRPA.imageProcessing(MainRPA, path, 'geek'):
-                    print('image processing complete')
+                # path = path[sys.argv[1]]
+                path = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
+
+                if path:
+                    if MainRPA.imageProcessing(MainRPA, path, 'geek'):
+                        print('image processing complete')
+                    else:
+                        print('image processing faild')
                 else:
-                    print('image processing faild')
+                    exit()
             elif sys.argv[2] == 'dataFetching':
                 from DataFetching.DataFetching import DataFetching
 
-                df = DataFetching(path[sys.argv[1]])
-                df.desisionTreeTest()
+                pathValues = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
+                if pathValues:
+                    df = DataFetching(pathValues)
+                    df.desisionTreeTest()
+                else:
+                    exit()
 
         elif len(sys.argv) == 2:
             from automation.automation import Automation
