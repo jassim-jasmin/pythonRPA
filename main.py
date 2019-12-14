@@ -6,10 +6,7 @@ class MainRPA:
 
     def openFirefox(self, options):
         try:
-            # print('this is the path; ', options['web']['firefox']['firefoxPath'])
-            # sys.path.insert(0, options['web']['firefox']['firefoxPath'])
             from web.Firefox.firefoxWeb import FireFox
-            # from firefoxWeb import FireFox
 
             return FireFox(options)
         except Exception as e:
@@ -49,8 +46,8 @@ class MainRPA:
 
                 if firefoxObj:
                     if firefoxObj.openWebAddress(address, self.runCount):
-                        firefoxObj.saveScreenshot('imageLocation', imageName + '.png')
-                        firefoxObj.browser.close()
+                        if firefoxObj.saveScreenshot('imageLocation', imageName + '.png'):
+                            firefoxObj.browser.close()
                         return True
                     else:
                         print('process failed')
@@ -65,7 +62,6 @@ class MainRPA:
             print('Exception in main/run (json file issue)', e)
 
             return False
-
 
 if __name__ == '__main__':
     try:

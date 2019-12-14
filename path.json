@@ -10,7 +10,8 @@
     },
      "imageLocation": "images\\",
       "delCommand": "cmd /c del ",
-      "unzip": "cmd /c tar -xf ",
+      "unzip": "cmd /c tar -C ",
+      "unzipOption": " -xvzf ",
       "DataFetching": {
       "filesPath": "DataFetching\\files\\",
       "startStringFiles": "startString.txt",
@@ -37,7 +38,8 @@
     },
      "imageLocation": "images/",
     "delCommand": "rm ",
-    "unzip": "tar -xvzf ",
+    "unzip": "tar -C ",
+    "unzipOption": " -xvzf ",
     "DataFetching": {
       "filesPath": "DataFetching/files/",
       "startStringFiles": "startString.txt",

@@ -1,3 +1,6 @@
-scikit-learn==0.22
+scikit-learn
 fuzzywuzzy
-python-Levenshtein
+wget
+pandas==0.25.3
+pytesseract
+selenium

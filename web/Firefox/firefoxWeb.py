@@ -15,7 +15,8 @@ class FireFox():
 
     def fireFox(self):
         try:
-            self.browser = webdriver.Firefox(executable_path=self.path['web']['Firefox']['firefoxPath']+'geckodriver')
+            self.browser = webdriver.Firefox(executable_path=self.path['web']['firefox']['firefoxPath']+'geckodriver')
+            self.browser.close()
 
             return True
         except Exception as e:
@@ -43,8 +44,12 @@ class FireFox():
 
             return True
         except Exception as e:
-            print('Error with image loacation\n', self.path, path)
-            self.browser.close()
+            print('Error with image loacation\n', self.path)
+            try:
+                self.browser.close()
+            except Exception as e:
+                print('error in clossing browser savescreenshot in firefoxweb', e)
+                return False
             return False
 
     def openWebAddress(self, address, runCount):
@@ -61,6 +66,8 @@ class FireFox():
                 print('clossing browser', e)
             if self.testFireFOx(self.path, runCount):
                 return self.openWebAddress(address, runCount+1)
+            else:
+                return False
 
 
     def testFireFOx(self, options, runCount):
@@ -75,9 +82,17 @@ class FireFox():
                             print('Opening Fire Fox')
                             self.runCount = self.runCount + 1
                             # self.fireFOx(self, options)
+                            try:
+                                self.browser.close()
+                            except Exception as e:
+                                print('error in testfirefox inseie broser close', e)
                             return True
 
                         else:
+                            try:
+                                self.browser.close()
+                            except Exception as e:
+                                print('error in exception inside testfirefox else', e)
                             return False
                     elif firefox == 'pathError' or firefox == 'pathError':
                         exit()
@@ -103,8 +118,8 @@ class FireFox():
     def webException(self, option):
         if option == 'geckodriverException':
             try:
-                sys.path.insert(1,'ExceptionHandling')
-                from webException import ExceptionHandling
+                # sys.path.insert(1,'ExceptionHandling')
+                from ExceptionHandling.WebException import ExceptionHandling
 
                 exceptionHandling = ExceptionHandling()
                 if exceptionHandling.geckodriverException(self.path):

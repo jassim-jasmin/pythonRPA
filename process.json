@@ -14,5 +14,19 @@
                 }
             ]
         }
+    ],
+    "windows": [
+        {
+            "web": [
+                {
+                    "open": ["windows", "firefox", "https://en.wikipedia.org/wiki/Enigma_machine","enigma_machine"]
+                }
+            ],
+            "imageProcessing": [
+                {
+                    "open": ["windows","enigma_machine"]
+                }
+            ]
+        }
     ]
 }
