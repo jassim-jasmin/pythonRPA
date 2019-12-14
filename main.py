@@ -28,8 +28,10 @@ class MainRPA:
 
             imageProcessingObj =  ImageProcessing()
 
-            imageProcessingObj.drawContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName), imageProcessingObj.getContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName)))
-            return True
+            if imageProcessingObj.drawContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName), imageProcessingObj.getContours(imageProcessingObj.openCVReadImage(options['imageLocation'],imageName))):
+                return True
+            else:
+                return False
         except Exception as e:
             print('error from imageProcessing', e)
             return False
