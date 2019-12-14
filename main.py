@@ -17,13 +17,7 @@ class MainRPA:
 
     def imageProcessing(self, options, imageName):
         try:
-            # print(os.getcwd())
-            # print('image prcessing',options['imagProcessing']['path'])
-            # os.chdir(options['imagProcessing']['path'])
-            # print(os.getcwd())
             from imageProcessing.imageProcessing import ImageProcessing
-            # from imageProcessing import ImageProcessing
-            # from imageProcessing import ImageProcessing
 
             imageProcessingObj =  ImageProcessing()
 

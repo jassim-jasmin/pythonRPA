@@ -7,11 +7,6 @@ try:
 except ImportError:
     import Image
 import pytesseract
-import pandas
-
-# pathFile = open('../path.json', 'r')
-# path = json.loads(pathFile.read())
-# pathFile.close()
 
 class ImageProcessing():
     """
@@ -45,15 +40,15 @@ class ImageProcessing():
             print('Error in imageProcessing getValidOcr() ', e)
             return False
 
-    def ocrImage(self, imageName, imageExtension, ocrFileName, filePath):
+    def ocrImage(self, imageName, imageExtension, ocrDocumentName, filePath):
         try:
             # fp = open('../ocrText/' + ocrFileName,'w')
-            fp = open(filePath + ocrFileName, 'w')
+            fp = open(filePath + ocrDocumentName, 'w')
         except Exception as e:
             import os
 
             os.mkdir(filePath)
-            fp = open(filePath + ocrFileName, 'w')
+            fp = open(filePath + ocrDocumentName, 'w')
 
         try:
             fp.write(pytesseract.image_to_string(filePath + imageName + '.' + imageExtension))
