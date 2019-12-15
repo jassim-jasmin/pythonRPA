@@ -3,6 +3,30 @@ from main import MainRPA
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
 class Automation:
+    def processLine(self, process):
+        for key, action in process.items():
+            # print(key)
+            if key == 'web':
+                for eachAction in action:
+                    if not self.automateFirefox(eachAction):
+                        return False
+            elif key == 'imageProcessing':
+                for eachAction in action:
+                    if not self.automateImageProcessing(eachAction):
+                        return False
+            elif key == 'ocr':
+                for eachAction in action:
+                    if not self.automateOcrProcess(eachAction):
+                        return False
+        return True
+
+    def automateOcrProcess(self, values):
+        from imageProcessing.imageProcessing import ImageProcessing
+
+        for imageName, imageExtension, ocrDocumentName, filePath in values:
+            if not ImageProcessing.ocrImage(ImageProcessing, imageName,imageExtension, ocrDocumentName, filePath):
+                return False
+
     def automateFirefox(self, values):
         try:
             path = self.openPathFile()
@@ -54,19 +78,6 @@ class Automation:
             print('error in automateImageProcessing', e)
             return False
 
-    def processLine(self, process):
-        for key, action in process.items():
-            # print(key)
-            if key == 'web':
-                for eachAction in action:
-                    if not self.automateFirefox(eachAction):
-                        return False
-            elif key == 'imageProcessing':
-                for eachAction in action:
-                    if not self.automateImageProcessing(eachAction):
-                        return False
-        return True
-
     def automate(self, option):
         try:
             processFile = open('process.json', 'r')
@@ -91,3 +102,4 @@ class Automation:
         path = json.loads(pathFile.read())
         pathFile.close()
         return path
+

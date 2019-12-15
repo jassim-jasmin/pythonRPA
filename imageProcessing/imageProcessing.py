@@ -53,6 +53,7 @@ class ImageProcessing():
         try:
             fp.write(pytesseract.image_to_string(filePath + imageName + '.' + imageExtension))
             fp.close()
+            return True
         except Exception as e:
             print('Error in ocrImage', e)
             return False

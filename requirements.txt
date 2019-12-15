@@ -5,3 +5,4 @@ pandas==0.25.3
 pytesseract
 selenium
 opencv-python
+pytesseract

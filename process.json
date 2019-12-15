@@ -17,14 +17,10 @@
     ],
     "windows": [
         {
-            "web": [
+
+            "ocr": [
                 {
-                    "open": ["windows", "firefox", "https://en.wikipedia.org/wiki/Enigma_machine","enigma_machine"]
-                }
-            ],
-            "imageProcessing": [
-                {
-                    "open": ["windows","enigma_machine"]
+                    "open": ["enigma_machine", "png", "enigma_machine", "ocr"]
                 }
             ]
         }

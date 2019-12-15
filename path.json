@@ -21,7 +21,8 @@
     "Data": {
       "path": "Data\\",
       "dataFileName": "testData.txt"
-    }
+    },
+    "tesseract": "https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-v5.0.0-alpha.20191030.exe"
   },
   "linux": {
     "web": {
