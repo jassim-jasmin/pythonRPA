@@ -6,3 +6,4 @@ pytesseract
 selenium
 opencv-python
 pytesseract
+fuzzysearch
