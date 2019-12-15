@@ -153,7 +153,7 @@ class StringHandling:
 
     def getSourceFileData(self, sourceFilePathWithDataFileName):
         try:
-            fp = open(sourceFilePathWithDataFileName, 'r')
+            fp = open(sourceFilePathWithDataFileName, encoding="utf8")
             # fp = open(self.path['Data']['path'] + self.path['Data']['dataFileName'])
             sourceData = fp.read()
 
@@ -165,6 +165,7 @@ class StringHandling:
             try:
                 fp.close()
             except Exception as e:
+                print('error in cloasing file', e)
                 return False
 
     def processLocatorAndGetDataFromFile(self, sourceFilePathWithDataFileName, locatorFilePathWithFileName):
