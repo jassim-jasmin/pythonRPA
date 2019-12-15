@@ -226,14 +226,17 @@ class StringHandling:
                     # for eachLocator in eachLocatorArray:
                     for i in range(0,len(eachLocatorArray)):
                         matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceData)
+                        bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
                         # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
 
                         if len(matchingFuzzyWord)>0:
                             if i == 0:
+                                patternBuild = patternBuild+bestMatch
                                 # patternBuild = patternBuild+eachLocatorArray[i]
-                                patternBuild = patternBuild+matchingFuzzyWord[0]
+                                # patternBuild = patternBuild+matchingFuzzyWord[0]
                             else:
-                                patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
+                                patternBuild = patternBuild + '(.*)' + bestMatch
+                                # patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
                                 # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
 
                     patternBuild = patternBuild + ')'
@@ -269,10 +272,12 @@ class StringHandling:
         testLocator2 = ['Dated:', 'April 18', '2019', 'AS ABOVE']
         testLocator3 = ['A.P.N.:', 'Title File']
         testLocator4 = ['The exclusive right to','above described']
+        testLocator5 = ['Date:', '04/18/2019']
         self.addLocatorToDictionary(testLocator)
         self.addLocatorToDictionary(testLocator2)
         self.addLocatorToDictionary(testLocator3)
         self.addLocatorToDictionary(testLocator4)
+        self.addLocatorToDictionary(testLocator5)
 
         # print(self.getLocatorData())
         sourceFilePathAndDataFileName = self.path['Data']['path'] + self.path['Data']['dataFileName']
@@ -297,8 +302,9 @@ class StringHandling:
         # for match,index in self.fuzzyExtract(string, large_string, 30):
         #     print('match: {}\nindex: {}'.format(match, index))
         #
-        # array = self.getFuzzySearchData('THE EXCLUSIVE RIGHT TO', sourceData, 30)
-        # print('finnaly ', array)
+        # array = self.getFuzzySearchData('DEED', sourceData, 30)
+        # best = process.extractBests('DEED', array)
+        # print('finnaly ', array,best)
 
         #     print('match: {}\nindex: {}'.format(match, index))
     # def getPorttion(self, startString, endString):
