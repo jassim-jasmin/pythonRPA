@@ -169,7 +169,7 @@ class StringHandling:
                 return False
 
     def processLocatorAndGetDataFromFile(self, sourceFilePathWithDataFileName, locatorFilePathWithFileName):
-        sourceData = self.getSourceFileData(sourceFilePathWithDataFileName)
+        sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
 
         if sourceData:
             try:
@@ -183,16 +183,18 @@ class StringHandling:
                         if i == 0:
                             patternBuild = patternBuild+eachLocatorArray[i]
                         else:
-                            patternBuild = patternBuild + '\n*.*' + eachLocatorArray[i]
+                            patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
 
                     patternBuild = patternBuild + ')'
+                    patternBuild = re.sub(r'\d', '\d', patternBuild)
+                    print(patternBuild)
                     searhcObj = re.search(patternBuild,sourceData)
 
                     # print('pattern:', patternBuild)
                     if searhcObj:
                         print('Pattern out: ', searhcObj.group())
                     else:
-                        print('no match')
+                        print('no match', patternBuild)
 
 
             except Exception as e:
