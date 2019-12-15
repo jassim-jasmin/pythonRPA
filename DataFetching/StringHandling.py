@@ -6,7 +6,7 @@ class StringHandling:
     print('string handling')
     def __init__(self, path):
         self.path = path
-        self.stringMatchConfidence = 89
+        self.stringMatchConfidence = 90
 
     def getMatchOfEach(self,string, stringSet, confidence):
         try:
@@ -32,6 +32,15 @@ class StringHandling:
                 return False
         except Exception as e:
             print('error in getMatchFromSet in StringHandling')
+
+    def getConfidence(self, string, stringSet):
+        try:
+            print('extractone confidence: ', process.extractOne(string, stringSet))
+            print('extract confidence: ', process.extract(string, stringSet))
+            print('extractbests: ', process.extractBests(string, stringSet))
+            print('extractwithoutorder: ', process.extractWithoutOrder(string, stringSet))
+        except Exception as e:
+            print(e)
 
     def getMathcFromSetInverse(self,string, stringSet, confidence):
         try:
@@ -168,22 +177,64 @@ class StringHandling:
                 print('error in cloasing file', e)
                 return False
 
-    def processLocatorAndGetDataFromFile(self, sourceFilePathWithDataFileName, locatorFilePathWithFileName):
-        sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
+    def fuzzyExtract(self, qs, ls, threshold):
+        from fuzzysearch import find_near_matches
+
+        '''fuzzy matches 'qs' in 'ls' and returns list of
+        tuples of (word,index)
+        '''
+        for word, _ in process.extractBests(qs, (ls,), score_cutoff=threshold):
+            print('word {}'.format(word))
+            for match in find_near_matches(qs, word, max_l_dist=1):
+                match = word[match.start:match.end]
+                print('match {}'.format(match))
+                index = ls.find(match)
+                yield (match, index)
+
+    def getFuzzySearchData(self, qs, ls, threshold=30):
+        try:
+            from fuzzysearch import find_near_matches
+
+            '''fuzzy matches 'qs' in 'ls' and returns list of
+            tuples of (word,index)
+            '''
+
+            fuzzyWordArray = []
+            for word, _ in process.extractBests(qs, (ls,), score_cutoff=threshold):
+                # print('word {}'.format(word))
+                for match in find_near_matches(qs, word, max_l_dist=1):
+                    match = word[match.start:match.end]
+                    fuzzyWordArray.append(match)
+            return fuzzyWordArray
+        except Exception as e:
+            print('error in getFuzzySearchData in stringHandling', e)
+            return False
+
+    def processLocatorAndGetDataFromFile(self, sourceFilePathWithDataFileName, locatorFilePathWithFileName, sourceData):
+        # sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
 
         if sourceData:
             try:
                 import re
+
+                sourceData = sourceData.upper()
+                sourceData = sourceData.replace('\n', ' ')
 
                 locatorDataArray = self.getLocatorDataArray(locatorFilePathWithFileName)
                 for eachLocatorArray in locatorDataArray:
                     patternBuild = '('
                     # for eachLocator in eachLocatorArray:
                     for i in range(0,len(eachLocatorArray)):
-                        if i == 0:
-                            patternBuild = patternBuild+eachLocatorArray[i]
-                        else:
-                            patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
+                        matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceData)
+                        # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+
+                        if len(matchingFuzzyWord)>0:
+                            if i == 0:
+                                # patternBuild = patternBuild+eachLocatorArray[i]
+                                patternBuild = patternBuild+matchingFuzzyWord[0]
+                            else:
+                                patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
+                                # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
 
                     patternBuild = patternBuild + ')'
                     patternBuild = re.sub(r'\d', '\d', patternBuild)
@@ -215,7 +266,7 @@ class StringHandling:
         #     print('right added')
 
         testLocator = ['GRANT','DEED','Grantor']
-        testLocator2 = ['Dated:', 'April 18', '2019']
+        testLocator2 = ['Dated:', 'April 18', '2019', 'AS ABOVE']
         testLocator3 = ['A.P.N.:', 'Title File']
         testLocator4 = ['The exclusive right to','above described']
         self.addLocatorToDictionary(testLocator)
@@ -226,7 +277,31 @@ class StringHandling:
         # print(self.getLocatorData())
         sourceFilePathAndDataFileName = self.path['Data']['path'] + self.path['Data']['dataFileName']
         locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary']
-        self.processLocatorAndGetDataFromFile(sourceFilePathAndDataFileName, locatorFilePathWithFileName)
+        fp = open(sourceFilePathAndDataFileName, encoding="utf8")
+        sourceData = fp.read().upper().replace('\n', ' ')
+        print(sourceData)
+        fp.close()
+        self.processLocatorAndGetDataFromFile(sourceFilePathAndDataFileName, locatorFilePathWithFileName, sourceData
+                                              )
+
+        # self.getConfidence('April 18::2019', ['Dated: April 18, 2019 David von Jr. ae ma Mail Tax Statements To: SAME AS ABOVE'])
+        #
+        # fileData = open(sourceFilePathAndDataFileName)
+        # self.fuzzyExtract('GRANT', fileData, self.stringMatchConfidence)
+        # print('FUzzySearch')
+        # string = 'manhattan'
+        large_string = "thelargemanhatanproject is a great project in themanhattincity"
+        # string = 'grnt'
+        # large_string = 'blahfa dfgrant dfas'
+        #
+        # for match,index in self.fuzzyExtract(string, large_string, 30):
+        #     print('match: {}\nindex: {}'.format(match, index))
+        #
+        # array = self.getFuzzySearchData('THE EXCLUSIVE RIGHT TO', sourceData, 30)
+        # print('finnaly ', array)
+
+        #     print('match: {}\nindex: {}'.format(match, index))
     # def getPorttion(self, startString, endString):
+    #fuzzysearch number has limitation
 
 
