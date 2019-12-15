@@ -159,7 +159,7 @@ class StringHandling:
 
             return sourceData
         except Exception as e:
-            print('error in getSourceFileData ', e)
+            print('error in getSourceFileData in stringHandling ', e)
             return False
         finally:
             try:
