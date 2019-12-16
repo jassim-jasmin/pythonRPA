@@ -45,7 +45,7 @@
       "filesPath": "DataFetching/files/",
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
-      "locatorDictionary": "locatorDictionary.txt"
+      "locatorDictionary": "locatorDictionary"
     },
     "Data": {
       "path": "Data/",

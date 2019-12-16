@@ -19,19 +19,23 @@ class PdfHanling:
 
     def highlihtPDF(self, pdfPath, pdfName, highlightTextArray):
         print('highlight ', highlightTextArray)
-        doc = fitz.open(pdfPath+pdfName+'.pdf')
+        if highlightTextArray:
+            doc = fitz.open(pdfPath+pdfName+'.pdf')
 
-        # page = doc[0]
+            # page = doc[0]
 
-        for page in doc:
-            for highlightText in highlightTextArray:
-                # highlightText = 'QUIT CLAIM DEED  Document Number 010-00532-0000 Parcel Identification Number'
-                instance = page.searchFor(highlightText)
+            for page in doc:
+                for highlightText in highlightTextArray:
+                    # highlightText = 'QUIT CLAIM DEED  Document Number 010-00532-0000 Parcel Identification Number'
+                    instance = page.searchFor(highlightText)
 
-                for ins in instance:
-                    highlight = page.addHighlightAnnot(ins)
+                    for ins in instance:
+                        highlight = page.addHighlightAnnot(ins)
 
-        doc.save(pdfPath+pdfName+'_highlightened.pdf', garbage=4, deflate=True, clean=True)
+            doc.save(pdfPath+pdfName+'_highlightened.pdf', garbage=4, deflate=True, clean=True)
+        else:
+            print('hightlight failed')
+            return False
 
 # imageToText('Data/', 'sample','.tif')
 # pdfGenerator(imagePathWithName)

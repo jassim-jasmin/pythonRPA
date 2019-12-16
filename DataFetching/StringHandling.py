@@ -1,3 +1,5 @@
+import json
+
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
@@ -71,45 +73,73 @@ class StringHandling:
         print(self.getMatchOfEach(compareText, dataSet, self.stringMatchConfidence))
         print(self.getMathcFromSet(compareText, dataSet, self.stringMatchConfidence))
 
-    def addStringWriteFile(self, writeData, fileName):
+    def test3(self):
+        self.addStringWriteFile('test2', 'testFile', 'id1')
+
+    def addStringWriteFile(self, writeData, fileName, locatorId):
         try:
-            fp = open(self.path['DataFetching']['filesPath'] + fileName, 'a')
+            try:
+                readFile = open(self.path['DataFetching']['filesPath'] + fileName+'.json', 'r')
+                jsonData = json.loads(readFile.read())
+                readFile.close()
+
+                if locatorId in jsonData:
+                    jsonData[locatorId].append(writeData)
+                else:
+                    jsonData[locatorId] = [writeData]
+            except Exception as e:
+                jsonData = dict()
+                jsonData[locatorId] = [writeData]
+
+            arrayElement = jsonData[locatorId]
+            seen = set()
+
+            arrayElement[:] = [item for item in arrayElement
+                                if item not in seen and not seen.add(item)]
+            jsonData[locatorId] = arrayElement
+
+            fp  = open(self.path['DataFetching']['filesPath'] + fileName+'.json', 'w')
 
             if fp.writable():
-                fp.write(',' + writeData)
+                # fp.write(',' + writeData)
+                jsonObj = json.dumps(jsonData)
+                fp.write(jsonObj)
+                fp.close()
                 return True
             else:
                 return False
         except Exception as e:
-            print('error in addStringWriteFile')
+            print('error in addStringWriteFile', e)
             return False
-        finally:
-            fp.close()
 
-    def getFileData(self, file):
+    def getFileData(self, file, locatorId):
         try:
-            fp = open(file, 'r')
-
-            fileData = fp.read().split(',')
-
-            return fileData[1:]
+            fp = open(file+'.json', 'r')
+            fileData = json.loads(fp.read())
+            # fileData = fp.read().split(',')
+            if locatorId in fileData:
+                return fileData[locatorId]
+            else:
+                print('no data')
+                return False
         except Exception as e:
+            print('error in getFileData', e)
             return False
 
-    def addNewStringToDictionary(self, string, fileName):
+    def addNewStringToDictionary(self, string, fileName, locatorId):
         try:
             DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
-            fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName)
+            fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
             if fileData:
                 data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
                 if data:
-                    if self.addStringWriteFile(string, fileName):
+                    if self.addStringWriteFile(string, fileName, locatorId):
                         return True
                     else:
                         return False
                 else:
                     return False
-            elif self.addStringWriteFile(string, fileName):
+            elif self.addStringWriteFile(string, fileName, locatorId):
                 return True
             else:
                 return False
@@ -117,20 +147,20 @@ class StringHandling:
             print('error in addNewStringToDictionary in StringHandling', e)
             return False
 
-    def addLocatorToDictionary(self, locationStringArray):
+    def addLocatorToDictionary(self, locationStringArray, locatorId):
         try:
             for i in range(0,len(locationStringArray)):
                 if i == 0:
                     locationString = locationStringArray[i].replace(':','-:-')
-                    self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['startStringFiles'])
+                    # self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['startStringFiles'])
                 else:
                     locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
-                    self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['endStringFiles'])
-                    if i != len(locationStringArray)-1:
-                        self.addNewStringToDictionary(locationStringArray[i],
-                                                    self.path['DataFetching']['startStringFiles'])
-            print(locationString)
-            self.addNewStringToDictionary(locationString, self.path['DataFetching']['locatorDictionary'])
+                    # self.addNewStringToDictionary(locationStringArray[i], self.path['DataFetching']['endStringFiles'])
+                    # if i != len(locationStringArray)-1:
+                    #     self.addNewStringToDictionary(locationStringArray[i],
+                    #                                 self.path['DataFetching']['startStringFiles'])
+            # print(locationString)
+            self.addNewStringToDictionary(locationString, self.path['DataFetching']['locatorDictionary'], locatorId)
         except Exception as e:
             print('excecption in addLocatorToDictionary', e)
             return False
@@ -138,19 +168,22 @@ class StringHandling:
     def getLocatorDataArray(self, locatorFilePathWithFileName):
         try:
             # fp = open(, 'r')
-            fp = open(locatorFilePathWithFileName, 'r')
-            locatorArray = fp.read().split(',')
-
+            fp = open(locatorFilePathWithFileName+'.json', 'r')
+            # locatorArray = fp.read().split(',')
+            locatorJson = json.loads(fp.read())
             locator = []
 
-            for locatorData in locatorArray:
-                indeces = locatorData.split('::')
-                for i in range(0,len(indeces)):
-                    indeces[i] = indeces[i].replace('-:-', ':')
+            # print(locatorJson)
+            for locatorId, locatorArray in locatorJson.items():
+                print(locatorArray)
+                for locatorData in locatorArray:
+                    indeces = locatorData.split('::')
+                    for i in range(0,len(indeces)):
+                        indeces[i] = indeces[i].replace('-:-', ':')
 
-                locator.append(indeces)
+                    locator.append(indeces)
 
-            return locator[1:]
+            return locator
         except Exception as e:
             print('error in getLocatorData in stringHandling', e)
             return False
@@ -351,9 +384,9 @@ class StringHandling:
                 return locatorArray
 
             except Exception as e:
-                # print('exception ',e)
+                print('exception ',e)
                 # print('patter: ', patternMatch)
-                print('patter other: ', sourceData, 'exception data')
+                # print('patter other: ', sourceData, 'exception data')
                 return False
             return True
         else:
@@ -364,7 +397,11 @@ class StringHandling:
         testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
         testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
         testLocator = ['GRANTOR:']
-        self.addLocatorToDictionary(testLocator)
+        locatorId = 'head'
+        self.addLocatorToDictionary(testLocator, locatorId)
+        testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+        locatorId = 'parcel'
+        self.addLocatorToDictionary(testLocator, locatorId)
 
         from imageProcessing.imageProcessing import ImageProcessing
 
@@ -441,5 +478,10 @@ class StringHandling:
     #     #     print('match: {}\nindex: {}'.format(match, index))
     # # def getPorttion(self, startString, endString):
     # #fuzzysearch number has limitation
-
-
+#
+# pathFile = open('path.json', 'r')
+#
+# path = json.loads(pathFile.read())
+# pathFile.close()
+# obj = StringHandling(path['linux'])
+# obj.test3()
