@@ -7,3 +7,4 @@ selenium
 opencv-python
 pytesseract
 fuzzysearch
+PyMuPDF

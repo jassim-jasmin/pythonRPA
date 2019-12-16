@@ -212,6 +212,7 @@ class StringHandling:
 
     def regularExpressionHandling(self, data, flag):
         if flag == 0:
+            data = data.replace('\\', '\\\\')
             data = data.replace('(', '\(')
             data = data.replace(')', '\)')
             data = data.replace('.', '\.')
@@ -221,6 +222,8 @@ class StringHandling:
             data = data.replace('|', '\|')
             data = data.replace('/', '\/')
             data = data.replace('?', '\?')
+            data = data.replace('"', '\\"')
+            data = data.replace('*', '\*')
 
             return data
         if flag == 1:
@@ -233,7 +236,9 @@ class StringHandling:
             data = data.replace('\|','|')
             data = data.replace('\/', '/')
             data = data.replace('\?','?')
-
+            data = data.replace('\\"', '"')
+            data = data.replace('\*', '*')
+            data = data.replace('\\\\', '\\')
 
             return data
         else:
@@ -251,7 +256,7 @@ class StringHandling:
             # print('pattern:', patternBuild)
             if searhcObj:
                 # print('Pattern out: ', searhcObj.group())
-                patternMatch = searhcObj.group(0)
+                patternMatch = searhcObj.group()
                 # print('patternMatch', patternMatch)
                 patternMatch = self.regularExpressionHandling(patternMatch, 0)
                 # sourceData = self.regularExpressionHandling(sourceData, 0)
@@ -261,18 +266,22 @@ class StringHandling:
                 sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
 
                 if sourceFileMatch:
-                    sourceFileMatchString = sourceFileMatch.group(0)
+                    sourceFileMatchString = sourceFileMatch.group()
                     sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
-                    print('Pattern from source file:', sourceFileMatchString)
+                    # print('Pattern from source file:', sourceFileMatchString)
+                    return sourceFileMatchString
                 else:
                     print('no match in source file')
                     print('patter: ', patternMatch)
                     print('patter other: ', sourceData)
+                    return False
 
             else:
                 print('no match', patternBuild)
         except Exception as e:
             print('error in searchDataInFuzzySearch\n', e)
+            print('patter: ', patternMatch)
+            print('patter other: ', sourceData)
 
     def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
         # sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
@@ -283,6 +292,7 @@ class StringHandling:
 
                 sourceDataProcessed = sourceData.upper()
                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
+                locatorArray = []
 
                 locatorDataArray = self.getLocatorDataArray(locatorFilePathWithFileName)
                 for eachLocatorArray in locatorDataArray:
@@ -304,7 +314,11 @@ class StringHandling:
                                 # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
 
                     patternBuild = patternBuild + ')'
-                    self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+                    locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+
+                    if locatorData:
+                        locatorArray.append(locatorData)
+
                     # patternBuild = re.sub(r'\d', '\d', patternBuild)
                     # print(patternBuild)
                     # searhcObj = re.search(patternBuild,sourceDataProcessed)
@@ -332,8 +346,9 @@ class StringHandling:
                     #
                     # else:
                     #     print('no match', patternBuild)
-
-
+                # print('finallyaaaa')
+                # print(locatorArray)
+                return locatorArray
 
             except Exception as e:
                 # print('exception ',e)
@@ -345,8 +360,39 @@ class StringHandling:
             print('error in source file')
             return False
 
-
     def test(self):
+        testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
+        testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+        testLocator = ['GRANTOR:']
+        self.addLocatorToDictionary(testLocator)
+
+        from imageProcessing.imageProcessing import ImageProcessing
+
+        if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif',
+                                    self.path['Data']['imageFile'], self.path['Data']['path']):
+            fp = open(self.path['Data']['path']+self.path['Data']['imageFile']+'.txt', encoding="utf8")
+            sourceData = fp.read()
+            fp.close()
+            locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
+                'locatorDictionary']
+            locatorArray = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+
+            from PdfHandling.PdfHandling import PdfHanling
+
+            PdfHanling.pdfGenerator(PdfHanling,self.path['Data']['path'], self.path['Data']['imageFile'],'.tif')
+            PdfHanling.highlihtPDF(PdfHanling, self.path['Data']['path'], self.path['Data']['imageFile'], locatorArray)
+            print('ocr complete')
+        else:
+            print('error')
+
+    def test2(self):
+        from imageProcessing.imageProcessing import ImageProcessing
+
+        if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif', self.path['Data']['imageFile'], self.path['Data']['path']):
+            print('ocr complete')
+        else:
+            print('error')
+
         # self.printAllFuzzyComparison()
 
         # if self.addNewStringToDictionary('somethingnew', self.path['DataFetching']['startStringFiles']):
@@ -354,45 +400,46 @@ class StringHandling:
         # if self.addNewStringToDictionary('somethingnew', self.path['DataFetching']['endStringFiles']):
         #     print('right added')
 
-        testLocator = ['GRANT','DEED','Grantor']
-        testLocator2 = ['Dated:', 'April 18', '2019', 'AS ABOVE']
-        testLocator3 = ['A.P.N.:', 'Title File']
-        testLocator4 = ['The exclusive right to','above described']
-        testLocator5 = ['Date:', '04/18/2019']
-        self.addLocatorToDictionary(testLocator)
-        self.addLocatorToDictionary(testLocator2)
-        self.addLocatorToDictionary(testLocator3)
-        self.addLocatorToDictionary(testLocator4)
-        self.addLocatorToDictionary(testLocator5)
-
-        # print(self.getLocatorData())
-        sourceFilePathAndDataFileName = self.path['Data']['path'] + self.path['Data']['dataFileName']
-        locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary']
-        fp = open(sourceFilePathAndDataFileName, encoding="utf8")
-        sourceData = fp.read()#.upper().replace('\n', ' ')
-        # print(sourceData)
-        fp.close()
-        self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
-
-        # self.getConfidence('April 18::2019', ['Dated: April 18, 2019 David von Jr. ae ma Mail Tax Statements To: SAME AS ABOVE'])
-        #
-        # fileData = open(sourceFilePathAndDataFileName)
-        # self.fuzzyExtract('GRANT', fileData, self.stringMatchConfidence)
-        # print('FUzzySearch')
-        # string = 'manhattan'
-        large_string = "thelargemanhatanproject is a great project in themanhattincity"
-        # string = 'grnt'
-        # large_string = 'blahfa dfgrant dfas'
-        #
-        # for match,index in self.fuzzyExtract(string, large_string, 30):
-        #     print('match: {}\nindex: {}'.format(match, index))
-        #
-        # array = self.getFuzzySearchData('DEED', sourceData, 30)
-        # best = process.extractBests('DEED', array)
-        # print('finnaly ', array,best)
-
-        #     print('match: {}\nindex: {}'.format(match, index))
-    # def getPorttion(self, startString, endString):
-    #fuzzysearch number has limitation
+################
+    #     testLocator = ['GRANT','DEED','Grantor']
+    #     testLocator2 = ['Dated:', 'April 18', '2019', 'AS ABOVE']
+    #     testLocator3 = ['A.P.N.:', 'Title File']
+    #     testLocator4 = ['The exclusive right to','above described']
+    #     testLocator5 = ['Date:', '04/18/2019']
+    #     self.addLocatorToDictionary(testLocator)
+    #     self.addLocatorToDictionary(testLocator2)
+    #     self.addLocatorToDictionary(testLocator3)
+    #     self.addLocatorToDictionary(testLocator4)
+    #     self.addLocatorToDictionary(testLocator5)
+    #
+    #     # print(self.getLocatorData())
+    #     sourceFilePathAndDataFileName = self.path['Data']['path'] + self.path['Data']['dataFileName']
+    #     locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching']['locatorDictionary']
+    #     fp = open(sourceFilePathAndDataFileName, encoding="utf8")
+    #     sourceData = fp.read()#.upper().replace('\n', ' ')
+    #     # print(sourceData)
+    #     fp.close()
+    #     self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+    #
+    #     # self.getConfidence('April 18::2019', ['Dated: April 18, 2019 David von Jr. ae ma Mail Tax Statements To: SAME AS ABOVE'])
+    #     #
+    #     # fileData = open(sourceFilePathAndDataFileName)
+    #     # self.fuzzyExtract('GRANT', fileData, self.stringMatchConfidence)
+    #     # print('FUzzySearch')
+    #     # string = 'manhattan'
+    #     large_string = "thelargemanhatanproject is a great project in themanhattincity"
+    #     # string = 'grnt'
+    #     # large_string = 'blahfa dfgrant dfas'
+    #     #
+    #     # for match,index in self.fuzzyExtract(string, large_string, 30):
+    #     #     print('match: {}\nindex: {}'.format(match, index))
+    #     #
+    #     # array = self.getFuzzySearchData('DEED', sourceData, 30)
+    #     # best = process.extractBests('DEED', array)
+    #     # print('finnaly ', array,best)
+    #
+    #     #     print('match: {}\nindex: {}'.format(match, index))
+    # # def getPorttion(self, startString, endString):
+    # #fuzzysearch number has limitation
 
 

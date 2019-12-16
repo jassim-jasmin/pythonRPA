@@ -49,7 +49,8 @@
     },
     "Data": {
       "path": "Data/",
-      "dataFileName": "testData.txt"
+      "dataFileName": "testData.txt",
+      "imageFile": "sample"
     }
   }
 }

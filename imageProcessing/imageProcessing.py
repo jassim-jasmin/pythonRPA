@@ -43,7 +43,8 @@ class ImageProcessing():
     def ocrImage(self, imageName, imageExtension, ocrDocumentName, filePath):
         try:
             # fp = open('../ocrText/' + ocrFileName,'w')
-            fp = open(filePath + ocrDocumentName, 'w')
+            print('ocr name: ', ocrDocumentName)
+            fp = open(filePath + ocrDocumentName+'.txt', 'w')
         except Exception as e:
             import os
 
