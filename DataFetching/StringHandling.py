@@ -172,18 +172,20 @@ class StringHandling:
             # locatorArray = fp.read().split(',')
             locatorJson = json.loads(fp.read())
             locator = []
+            locatorDictionary = dict()
 
             # print(locatorJson)
             for locatorId, locatorArray in locatorJson.items():
-                print(locatorArray)
+                print(locatorId, locatorArray)
                 for locatorData in locatorArray:
                     indeces = locatorData.split('::')
                     for i in range(0,len(indeces)):
                         indeces[i] = indeces[i].replace('-:-', ':')
-
                     locator.append(indeces)
+                locatorDictionary[locatorId] = locator
+                locator = []
 
-            return locator
+            return locatorDictionary
         except Exception as e:
             print('error in getLocatorData in stringHandling', e)
             return False
@@ -326,62 +328,67 @@ class StringHandling:
                 sourceDataProcessed = sourceData.upper()
                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                 locatorArray = []
+                locatorDataDictionary = dict()
 
-                locatorDataArray = self.getLocatorDataArray(locatorFilePathWithFileName)
-                for eachLocatorArray in locatorDataArray:
-                    patternBuild = '('
-                    # for eachLocator in eachLocatorArray:
-                    for i in range(0,len(eachLocatorArray)):
-                        matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
-                        bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
-                        # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+                locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
 
-                        if len(matchingFuzzyWord)>0:
-                            if i == 0:
-                                patternBuild = patternBuild+bestMatch
-                                # patternBuild = patternBuild+eachLocatorArray[i]
-                                # patternBuild = patternBuild+matchingFuzzyWord[0]
-                            else:
-                                patternBuild = patternBuild + '(.*)' + bestMatch
-                                # patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
-                                # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
+                for locatorId, locatorDataArray in locatorDictionary.items():
+                    for eachLocatorArray in locatorDataArray:
+                        patternBuild = '('
+                        # for eachLocator in eachLocatorArray:
+                        for i in range(0,len(eachLocatorArray)):
+                            matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
+                            bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
+                            # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
 
-                    patternBuild = patternBuild + ')'
-                    locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+                            if len(matchingFuzzyWord)>0:
+                                if i == 0:
+                                    patternBuild = patternBuild+bestMatch
+                                    # patternBuild = patternBuild+eachLocatorArray[i]
+                                    # patternBuild = patternBuild+matchingFuzzyWord[0]
+                                else:
+                                    patternBuild = patternBuild + '(.*)' + bestMatch
+                                    # patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
+                                    # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
 
-                    if locatorData:
-                        locatorArray.append(locatorData)
+                        patternBuild = patternBuild + ')'
+                        locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
 
-                    # patternBuild = re.sub(r'\d', '\d', patternBuild)
-                    # print(patternBuild)
-                    # searhcObj = re.search(patternBuild,sourceDataProcessed)
-                    #
-                    # # print('pattern:', patternBuild)
-                    # if searhcObj:
-                    #     # print('Pattern out: ', searhcObj.group())
-                    #     patternMatch = searhcObj.group(0)
-                    #     # print('patternMatch', patternMatch)
-                    #     patternMatch = self.regularExpressionHandling(patternMatch, 0)
-                    #     sourceData = self.regularExpressionHandling(sourceData, 0)
-                    #     sourceData = sourceData.replace('\n', ' ')
-                    #     print('pattern: ', patternMatch)
-                    #     print('matching string = ', sourceData)
-                    #     sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
-                    #
-                    #     if sourceFileMatch:
-                    #         sourceFileMatchString = sourceFileMatch.group(0)
-                    #         sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
-                    #         print('Pattern from source file:', sourceFileMatchString)
-                    #     else:
-                    #         print('no match in source file')
-                    #         print('patter: ',patternMatch)
-                    #         print('patter other: ',sourceData)
-                    #
-                    # else:
-                    #     print('no match', patternBuild)
-                # print('finallyaaaa')
-                # print(locatorArray)
-                return locatorArray
+                        if locatorData:
+                            locatorArray.append(locatorData)
+
+                        # patternBuild = re.sub(r'\d', '\d', patternBuild)
+                        # print(patternBuild)
+                        # searhcObj = re.search(patternBuild,sourceDataProcessed)
+                        #
+                        # # print('pattern:', patternBuild)
+                        # if searhcObj:
+                        #     # print('Pattern out: ', searhcObj.group())
+                        #     patternMatch = searhcObj.group(0)
+                        #     # print('patternMatch', patternMatch)
+                        #     patternMatch = self.regularExpressionHandling(patternMatch, 0)
+                        #     sourceData = self.regularExpressionHandling(sourceData, 0)
+                        #     sourceData = sourceData.replace('\n', ' ')
+                        #     print('pattern: ', patternMatch)
+                        #     print('matching string = ', sourceData)
+                        #     sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
+                        #
+                        #     if sourceFileMatch:
+                        #         sourceFileMatchString = sourceFileMatch.group(0)
+                        #         sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
+                        #         print('Pattern from source file:', sourceFileMatchString)
+                        #     else:
+                        #         print('no match in source file')
+                        #         print('patter: ',patternMatch)
+                        #         print('patter other: ',sourceData)
+                        #
+                        # else:
+                        #     print('no match', patternBuild)
+                    # print('finallyaaaa')
+                    # print(locatorArray)
+                    locatorDataDictionary[locatorId] = locatorArray
+                    # return locatorArray
+                return locatorDataDictionary
 
             except Exception as e:
                 print('exception ',e)
@@ -394,33 +401,38 @@ class StringHandling:
             return False
 
     def test(self):
-        testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
-        testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
-        testLocator = ['GRANTOR:']
-        locatorId = 'head'
-        self.addLocatorToDictionary(testLocator, locatorId)
-        testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
-        locatorId = 'parcel'
-        self.addLocatorToDictionary(testLocator, locatorId)
+        try:
+            testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
+            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+            testLocator = ['GRANTOR:']
+            locatorId = 'head'
+            self.addLocatorToDictionary(testLocator, locatorId)
+            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+            locatorId = 'parcel'
+            self.addLocatorToDictionary(testLocator, locatorId)
 
-        from imageProcessing.imageProcessing import ImageProcessing
+            from imageProcessing.imageProcessing import ImageProcessing
 
-        if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif',
-                                    self.path['Data']['imageFile'], self.path['Data']['path']):
-            fp = open(self.path['Data']['path']+self.path['Data']['imageFile']+'.txt', encoding="utf8")
-            sourceData = fp.read()
-            fp.close()
-            locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
-                'locatorDictionary']
-            locatorArray = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+            if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif',
+                                        self.path['Data']['imageFile'], self.path['Data']['path']):
+                fp = open(self.path['Data']['path']+self.path['Data']['imageFile']+'.txt', encoding="utf8")
+                sourceData = fp.read()
+                fp.close()
+                locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
+                    'locatorDictionary']
+                locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
 
-            from PdfHandling.PdfHandling import PdfHanling
+                from PdfHandling.PdfHandling import PdfHanling
 
-            PdfHanling.pdfGenerator(PdfHanling,self.path['Data']['path'], self.path['Data']['imageFile'],'.tif')
-            PdfHanling.highlihtPDF(PdfHanling, self.path['Data']['path'], self.path['Data']['imageFile'], locatorArray)
-            print('ocr complete')
-        else:
-            print('error')
+                for locatorFinalId, locatorDataArray in locatorDataDictionary.items():
+                    print(locatorId)
+                    PdfHanling.pdfGenerator(PdfHanling,self.path['Data']['path'], self.path['Data']['imageFile'],'.tif')
+                    PdfHanling.highlihtPDF(PdfHanling, self.path['Data']['path'], self.path['Data']['imageFile'], locatorDataArray)
+                print('ocr complete')
+            else:
+                print('error')
+        except Exception as e:
+            print('error in test ', e)
 
     def test2(self):
         from imageProcessing.imageProcessing import ImageProcessing
