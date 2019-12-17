@@ -136,6 +136,13 @@ class DataFetchingMain:
                 locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
                 print(locatorDataWithValidation)
+                fp = open('DataFetching\\files\\locatorDictionary.json', 'r')
+                import json
+                locatorDictionary = json.loads(fp.read())
+                fp.close()
+                csvHead =['legal','parcel']
+                if locator.saveAsCsv('Data\\final.csv', 'final fetch', locatorDataWithValidation, csvHead):
+                    print('saving')
 
             print('completed')
 

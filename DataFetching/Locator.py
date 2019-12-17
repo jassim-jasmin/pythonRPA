@@ -1,4 +1,5 @@
 import json
+
 from fuzzywuzzy import process
 
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
@@ -272,33 +273,58 @@ class Locator:
                     fp.write(saveMissMatchData)
                     fp.close()
                     # print('file name:: ', fileName)
-                    self.saveAsCsv()
+
+                    csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
+                    headData = 'Locator miss match\n'
+                    locatorMissMatchDictionary = self.locatorMissMatchDictionary
+                    self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
+
+                    return True
                 else:
                     print('error in source file or file name in locatorMissmatch')
+                    return False
                     # print('data: ', saveMissMatchData)
         except Exception as e:
             print('error in saveMissMatch', e)
             # print('data: ', saveMissMatchData)
             return False
 
-    def saveAsCsv(self):
+    def saveAsCsv(self, csvNameWithPath, headData,locatorMissMatchDictionary, csvHead=False):
         try:
             import csv
 
-            with open(self.DataFetchingFilesPath+'missmatch.csv', 'w') as csvfile:
-                csvfile.write('Locator miss match\n')
+            with open(csvNameWithPath, 'w') as csvfile:
+                csvfile.write(headData)
                 fieldNames = ['file name', 'no match']
-                fieldNames.extend(self.locatorId[:])
+                if csvHead:
+                    fieldNames.extend(csvHead)
+                else:
+                    fieldNames.extend(self.locatorId[:])
                 writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
-                csvEacData = []
                 writer.writeheader()
-                print('csv save')
-                for fileName, missmatchFieldData in self.locatorMissMatchDictionary.items():
+                print('csv save file:', csvNameWithPath)
+                for fileName, missmatchFieldData in locatorMissMatchDictionary.items():
                     # print('csv data: ', fileName, missmatchFieldData)
                     csvEacRowLocator = dict()
                     csvEacRowLocator['file name'] = fileName
+
                     for data in missmatchFieldData:
-                        csvEacRowLocator[data] = data
+                        array = []
+                        dictionary = dict()
+
+                        if type(missmatchFieldData) is  type(array):
+                            csvEacRowLocator[data] = data
+                        elif type(missmatchFieldData) is type(dictionary):
+                            if data in missmatchFieldData:
+                                csvEacRowLocator[data] = missmatchFieldData[data]
+                            else:
+                                print('Error json error key' + data + ' not in ')
+                                print(missmatchFieldData)
+                                return False
+                        else:
+                            return False
+
+                        # csvEacRowLocator[data] = data
 
                     writer.writerow(csvEacRowLocator)
                     # print('csv ', csvEacRowLocator)

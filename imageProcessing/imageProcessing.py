@@ -80,26 +80,28 @@ class ImageProcessing():
             DrectoryHandling.createDirectory(DrectoryHandling, ocrFilePath)
             fp = open(ocrFilePath + ocrDocumentName+'.txt', 'w')
 
-            ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension)
-            if ocrData:
-                fp.write(ocrData)
-                fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
-            else:
-                tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing',
-                                                                   self.path)
-                tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'tesseract', tesseract)
-                if tesseract:
-                    ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
-                    if ocrData:
-                        print('installation found saving to file')
-                        fp.write(ocrData)
-                        fp.close()
-                    else:
-                        print('windows handling failed')
-                        fp.close()
-                        return False
-                else:
+            tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing',
+                                                               self.path)
+            tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'tesseract', tesseract)
+            if tesseract:
+                ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
+                if ocrData:
+                    print('installation found saving to file')
+                    fp.write(ocrData)
                     fp.close()
+                else:
+                    print('windows handling failed')
+                    fp.close()
+                    return False
+            else:
+                ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension)
+                if ocrData:
+                    fp.write(ocrData)
+                    fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
+
+                    fp.close()
+                    return True
+                else:
                     return False
 
             return True
