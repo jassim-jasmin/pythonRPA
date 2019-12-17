@@ -18,25 +18,8 @@ class Locator:
                                                                           self.path)
         self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
                                                                           self.DataFetchingFilesPath)
-
-        self.dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        self.dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary', self.dataFetchingLocatorDictionary)
-
-        self.locatorFileName = self.DataFetchingFilesPath+self.dataFetchingLocatorDictionary+'.json'
-
         fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
         self.dataFetchingLocatorMissMatch =  GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorMissMatch', fileName)
-
-    def getLocatorProfile(self):
-        try:
-            locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, self.locatorFileName)
-            locatorData = json.loads(locatorData)
-            # print(sourceDataPath+eachTextFile, 'file')
-            return locatorData
-
-        except Exception as e:
-            print('error in getLocatorProfile', e)
-            return False
 
     def getLocatorDataFromID(self, locatorData, locatorId):
         try:
@@ -49,25 +32,35 @@ class Locator:
             print('error in getFileData', e)
             return False
 
-    def addNewStringToDictionary(self, string, fileName, locatorId):
+    def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory):
         try:
+            for i in range(0,len(locationStringArray)):
+                if i == 0:
+                    locationString = locationStringArray[i].replace(':','-:-')
+                else:
+                    locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
+
             stringHandling = StringHandling(self.path)
-            DrectoryHandling.createDirectory(DrectoryHandling, self.DataFetchingFilesPath)
-            locatorData = self.getLocatorProfile()
+            DrectoryHandling.createDirectory(DrectoryHandling, locatorDirectory)
+
+            locatorJsonFileName = locatorDirectory + locatorJsonFileName + '.json'
+
+            locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileName)
+            locatorData = json.loads(locatorData)
 
             if locatorData:
                 fileData = self.getLocatorDataFromID(locatorData, locatorId)
 
                 if fileData:
-                    data = stringHandling.getMathcFromSetInverse(string, fileData, stringHandling.stringMatchConfidence)
+                    data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence)
                     if data:
-                        if stringHandling.addStringWriteFile(string, fileName, locatorId):
+                        if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId):
                             return True
                         else:
                             return False
                     else:
                         return False
-                elif stringHandling.addStringWriteFile(string, fileName, locatorId):
+                elif stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId):
                     return True
                 else:
                     return False
@@ -75,19 +68,6 @@ class Locator:
                 return False
         except Exception as e:
             print('error in addNewStringToDictionary in StringHandling', e)
-            return False
-
-    def addLocatorToDictionary(self, locationStringArray, locatorId):
-        try:
-            for i in range(0,len(locationStringArray)):
-                if i == 0:
-                    locationString = locationStringArray[i].replace(':','-:-')
-                else:
-                    locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
-            # print(locationString)
-            self.addNewStringToDictionary(locationString, self.dataFetchingLocatorDictionary, locatorId)
-        except Exception as e:
-            print('excecption in addLocatorToDictionary', e)
             return False
 
     def getLocatorDataArray(self, locatorFilePathWithFileName):
@@ -181,7 +161,6 @@ class Locator:
 
                     sourceDataProcessed = sourceData.upper()
                     sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                    locatorArray = []
                     locatorDataDictionary = dict()
 
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
@@ -190,16 +169,13 @@ class Locator:
 
                     for locatorId, locatorDataArray in locatorDictionary.items():
                         self.locatorId.append(locatorId)
-                        # print('locatorId',locatorDataArray)
                         locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
 
                         if locatorArray:
                             locatorDataDictionary[locatorId] = locatorArray
-                            # print('locator success')
                         else:
                             if self.locatorMissMatchFlag:
                                 self.locatorMissMatchArray.append(locatorId)
-                            # print('locator failed')
                     return locatorDataDictionary
 
                 except Exception as e:
@@ -229,12 +205,10 @@ class Locator:
 
                     for eachTextFile in fileNameArray:
                         textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
-                        # print(sourceDataPath+eachTextFile, 'file')
                         if textFileData:
                             locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
                             if locatorDataDictionary:
                                 if self.locatorMissMatchFlag:
-                                    # print('locator misss match ;;;', self.locatorMissMatchArray)
                                     if len(self.locatorMissMatchArray)>0:
                                          self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
                                     else:
@@ -242,8 +216,6 @@ class Locator:
                                 fileNameSplit = eachTextFile.split('.')
                                 if len(fileNameSplit)>0:
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
-
-                    # print('finally ', self.locatorMissMatchDictionary)
 
                     return locatorDirectoryWithFileName
                 else:
@@ -265,14 +237,12 @@ class Locator:
             if self.locatorMissMatchDictionary:
                 saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
                 fileName = self.dataFetchingLocatorMissMatch
-                # print('missmatch data: complete ::', saveMissMatchData)
 
                 if fileName and self.DataFetchingFilesPath:
                     print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
                     fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
                     fp.write(saveMissMatchData)
                     fp.close()
-                    # print('file name:: ', fileName)
 
                     csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
                     headData = 'Locator miss match\n'
@@ -300,11 +270,11 @@ class Locator:
                     fieldNames.extend(csvHead)
                 else:
                     fieldNames.extend(self.locatorId[:])
+                csvfile.newlines
                 writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
                 writer.writeheader()
                 print('csv save file:', csvNameWithPath)
                 for fileName, missmatchFieldData in locatorMissMatchDictionary.items():
-                    # print('csv data: ', fileName, missmatchFieldData)
                     csvEacRowLocator = dict()
                     csvEacRowLocator['file name'] = fileName
 
@@ -324,10 +294,7 @@ class Locator:
                         else:
                             return False
 
-                        # csvEacRowLocator[data] = data
-
                     writer.writerow(csvEacRowLocator)
-                    # print('csv ', csvEacRowLocator)
         except Exception as e:
             print("I/O error", e)
 
@@ -341,18 +308,9 @@ class Locator:
                     for locatorId, validationStatus in validationDirectory.items():
                         if validationStatus:
                             if locatorId in locatorData:
-                                # print('file name: ', fileName, 'locator id: ', locatorId, '\nData: ', locatorData[locatorId])
                                 locatorArray[locatorId] = locatorData[locatorId]
                                 locatorDirectry[fileName] = locatorArray.copy()
             return locatorDirectry
         except Exception as e:
             print('error in printLocatorDataWithLocatorId in locator', e)
-            return False
-
-    def selectData(self, locatorDataWithValidation):
-        try:
-            print('select')
-            return True
-        except Exception as e:
-            print('error in select data in Locator', e)
             return False

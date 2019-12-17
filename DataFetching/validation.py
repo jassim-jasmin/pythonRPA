@@ -97,3 +97,21 @@ class LocatorValidation:
             print('error in addvalidation in validation', e)
             print(locatorId, validation, flag)
             return False
+
+    def getValidatedLocaotr(self, locatorFilePathWithFileNameDictionary, locatorJsonFileNameWithPath):
+        try:
+            if locatorFilePathWithFileNameDictionary:
+                validationDictionary = dict()
+                for fileName, locatorDirectory in locatorFilePathWithFileNameDictionary.items():
+                    # print(fileName)
+                    validity = dict()
+                    for locatorId, locatorData in locatorDirectory.items():
+                        validity[locatorId] = self.getValidity(locatorId, locatorData,
+                                                                            locatorJsonFileNameWithPath)
+                    validationDictionary[fileName] = validity
+                return validationDictionary
+            return False
+
+        except Exception as e:
+            print('error in validatinglocator in validation', e)
+            return False

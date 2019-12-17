@@ -57,7 +57,6 @@ class ImageProcessing():
 
             ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
             ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', ocrTextPath)
-            print('ocr image saving to ', ocrTextPath)
 
             for eachImage in imageList:
                 splitImageName = eachImage.split('.')
@@ -86,11 +85,10 @@ class ImageProcessing():
             if tesseract:
                 ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
                 if ocrData:
-                    print('installation found saving to file')
                     fp.write(ocrData)
                     fp.close()
                 else:
-                    print('windows handling failed')
+                    print('ocr handling failed')
                     fp.close()
                     return False
             else:
