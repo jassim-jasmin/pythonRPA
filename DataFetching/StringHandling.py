@@ -81,10 +81,10 @@ class StringHandling:
     def test3(self):
         self.addStringWriteFile('test2', 'testFile', 'id1')
 
-    def addStringWriteFile(self, writeData, fileName, locatorId):
+    def addStringWriteFile(self, writeData, fileName, locatorId, filePath):
         try:
             try:
-                readFile = open(self.path['DataFetching']['filesPath'] + fileName+'.json', 'r')
+                readFile = open(filePath + fileName+'.json', 'r')
                 jsonData = json.loads(readFile.read())
                 readFile.close()
 
@@ -116,38 +116,6 @@ class StringHandling:
         except Exception as e:
             print('error in addStringWriteFile', e)
             return False
-
-    # def getFileData(self, locatorData, locatorId):
-    #     try:
-    #         if locatorId in locatorData:
-    #             return locatorData[locatorId]
-    #         else:
-    #             print('no data')
-    #             return False
-    #     except Exception as e:
-    #         print('error in getFileData', e)
-    #         return False
-
-    # def addNewStringToDictionary(self, string, fileName, locatorId):
-    #     try:
-    #         DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
-    #         fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
-    #         if fileData:
-    #             data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
-    #             if data:
-    #                 if self.addStringWriteFile(string, fileName, locatorId):
-    #                     return True
-    #                 else:
-    #                     return False
-    #             else:
-    #                 return False
-    #         elif self.addStringWriteFile(string, fileName, locatorId):
-    #             return True
-    #         else:
-    #             return False
-    #     except Exception as e:
-    #         print('error in addNewStringToDictionary in StringHandling', e)
-    #         return False
 
     def getSourceFileData(self, sourceFilePathWithDataFileName):
         try:

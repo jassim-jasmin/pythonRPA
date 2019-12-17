@@ -126,6 +126,7 @@ class DataFetchingMain:
             if not self.generateOCR():
                 exit()
             self.locatorAdding()
+            # self.finalLocatorAdding()
             locatorDataDirectory = self.processLocator()
             if self.addLocatorValidation():
                 print('validation added')
@@ -136,10 +137,15 @@ class DataFetchingMain:
                 locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
                 # print(locatorDataWithValidation)
+                finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+                finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'processedDataPath', finalCsv)
 
-                csvHead =['legal','parcel']
-                if locator.saveAsCsv('Data\\final.csv', 'Final Data\n', locatorDataWithValidation, csvHead):
-                    print('saving')
+                # finalData = self.processLocatorFromDict(locatorDataWithValidation)
+
+                if finalCsv:
+                    csvHead =['legal','parcel']
+                    if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', locatorDataWithValidation, csvHead):
+                        print('saving')
 
             print('completed')
 
@@ -229,4 +235,41 @@ class DataFetchingMain:
 
         except Exception as e:
             print('error in validatinglocator in DataFetching', e)
+            return False
+
+    def finalLocatorAdding(self):
+
+        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
+                                                                             'DataFetching', self.path)
+        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
+                                                                             'locatorFinalDictionary',
+                                                                             dataFetchingLocatorDictionary)
+        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
+                                                                self.path)
+        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                locatorDirectory)
+
+        locator = Locator(self.path)
+        testLocator = ['271-02171-0101', 'parcel']
+        locatorId = 'parcel'
+        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+
+    def processLocatorFromDict(self, locatorData):
+        try:
+            locator = Locator(self.path)
+            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorFilePath)
+
+            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorFinalDictionary',
+                                                                   locatorFileName)
+            if locatorData:
+                locatorDataDictionary = self.processLocatorAndGetDataFromDictionary(locatorFilePath+locatorFileName,
+                                                                                  locatorData)
+                return locatorDataDictionary
+            else:
+                print('error filePath in processLocatorFromDict in DataFetching')
+                return False
+        except Exception as e:
+            print('error in processLocatorFromDict in DataFetching', e)
             return False

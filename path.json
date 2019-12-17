@@ -25,7 +25,9 @@
       "endStringFiles": "endString.txt",
       "locatorDictionary": "locatorDictionary",
       "validationLocator": "validationLocator",
-      "locatorMissMatch": "locatorMissMatch"
+      "locatorMissMatch": "locatorMissMatch",
+      "processedDataPath": "Data\\final.csv",
+      "locatorFinalDictionary": "locatorFinalDictionary"
     },
     "Data": {
       "path": "Data\\",
@@ -58,7 +60,9 @@
       "endStringFiles": "endString.txt",
       "locatorDictionary": "locatorDictionary",
       "validationLocator": "validationLocator",
-      "locatorMissMatch": "locatorMissMatch"
+      "locatorMissMatch": "locatorMissMatch",
+      "processedDataPath": "Data/final.csv",
+      "locatorFinalDictionary": "locatorFinalDictionary"
     },
     "Data": {
       "path": "Data/",
