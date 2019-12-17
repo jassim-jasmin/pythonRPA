@@ -3,6 +3,7 @@ import json
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
+from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
 class StringHandling:
     print('string handling')
@@ -245,40 +246,6 @@ class StringHandling:
             print('error in getFuzzySearchData in stringHandling', e)
             return False
 
-    def regularExpressionHandling(self, data, flag):
-        if flag == 0:
-            data = data.replace('\\', '\\\\')
-            data = data.replace('(', '\(')
-            data = data.replace(')', '\)')
-            data = data.replace('.', '\.')
-            data = data.replace('+', '\+')
-            data = data.replace('[', '\[')
-            data = data.replace(']', '\]')
-            data = data.replace('|', '\|')
-            data = data.replace('/', '\/')
-            data = data.replace('?', '\?')
-            data = data.replace('"', '\\"')
-            data = data.replace('*', '\*')
-
-            return data
-        if flag == 1:
-            data = data.replace('\(', '(')
-            data = data.replace('\)', ')')
-            data = data.replace('\.', '.')
-            data = data.replace('\+', '+')
-            data = data.replace('\[', '[')
-            data = data.replace('\]', ']')
-            data = data.replace('\|','|')
-            data = data.replace('\/', '/')
-            data = data.replace('\?','?')
-            data = data.replace('\\"', '"')
-            data = data.replace('\*', '*')
-            data = data.replace('\\\\', '\\')
-
-            return data
-        else:
-            print('invalid flag in regularExpressionHandling')
-            return False
 
     def searchDataInFuzzySearch(self, patternBuild, sourceDataProcessed, sourceData):
         try:
@@ -290,19 +257,13 @@ class StringHandling:
 
             # print('pattern:', patternBuild)
             if searhcObj:
-                # print('Pattern out: ', searhcObj.group())
                 patternMatch = searhcObj.group()
-                # print('patternMatch', patternMatch)
-                patternMatch = self.regularExpressionHandling(patternMatch, 0)
-                # sourceData = self.regularExpressionHandling(sourceData, 0)
+                patternMatch = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling, patternMatch, 0)
                 sourceData = sourceData.replace('\n', ' ')
-                # print('pattern: ', patternMatch)
-                # print('matching string = ', sourceData)
                 sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
 
                 if sourceFileMatch:
-                    sourceFileMatchString = sourceFileMatch.group()
-                    sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
+                    sourceFileMatchString = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling, patternMatch, 0)
                     # print('Pattern from source file:', sourceFileMatchString)
                     return sourceFileMatchString
                 else:
@@ -318,87 +279,87 @@ class StringHandling:
             print('patter: ', patternMatch)
             print('patter other: ', sourceData)
 
-    def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
-        # sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
-
-        if sourceData:
-            try:
-                import re
-
-                sourceDataProcessed = sourceData.upper()
-                sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                locatorArray = []
-                locatorDataDictionary = dict()
-
-                locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
-
-                for locatorId, locatorDataArray in locatorDictionary.items():
-                    for eachLocatorArray in locatorDataArray:
-                        patternBuild = '('
-                        # for eachLocator in eachLocatorArray:
-                        for i in range(0,len(eachLocatorArray)):
-                            matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
-                            bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
-                            # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
-
-                            if len(matchingFuzzyWord)>0:
-                                if i == 0:
-                                    patternBuild = patternBuild+bestMatch
-                                    # patternBuild = patternBuild+eachLocatorArray[i]
-                                    # patternBuild = patternBuild+matchingFuzzyWord[0]
-                                else:
-                                    patternBuild = patternBuild + '(.*)' + bestMatch
-                                    # patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
-                                    # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
-
-                        patternBuild = patternBuild + ')'
-                        locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
-
-                        if locatorData:
-                            locatorArray.append(locatorData)
-
-                        # patternBuild = re.sub(r'\d', '\d', patternBuild)
-                        # print(patternBuild)
-                        # searhcObj = re.search(patternBuild,sourceDataProcessed)
-                        #
-                        # # print('pattern:', patternBuild)
-                        # if searhcObj:
-                        #     # print('Pattern out: ', searhcObj.group())
-                        #     patternMatch = searhcObj.group(0)
-                        #     # print('patternMatch', patternMatch)
-                        #     patternMatch = self.regularExpressionHandling(patternMatch, 0)
-                        #     sourceData = self.regularExpressionHandling(sourceData, 0)
-                        #     sourceData = sourceData.replace('\n', ' ')
-                        #     print('pattern: ', patternMatch)
-                        #     print('matching string = ', sourceData)
-                        #     sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
-                        #
-                        #     if sourceFileMatch:
-                        #         sourceFileMatchString = sourceFileMatch.group(0)
-                        #         sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
-                        #         print('Pattern from source file:', sourceFileMatchString)
-                        #     else:
-                        #         print('no match in source file')
-                        #         print('patter: ',patternMatch)
-                        #         print('patter other: ',sourceData)
-                        #
-                        # else:
-                        #     print('no match', patternBuild)
-                    # print('finallyaaaa')
-                    # print(locatorArray)
-                    locatorDataDictionary[locatorId] = locatorArray
-                    # return locatorArray
-                return locatorDataDictionary
-
-            except Exception as e:
-                print('exception ',e)
-                # print('patter: ', patternMatch)
-                # print('patter other: ', sourceData, 'exception data')
-                return False
-            return True
-        else:
-            print('error in source file')
-            return False
+    # def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
+    #     # sourceData = self.getSourceFileData(sourceFilePathWithDataFileName).replace('\n', ' ')
+    #
+    #     if sourceData:
+    #         try:
+    #             import re
+    #
+    #             sourceDataProcessed = sourceData.upper()
+    #             sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
+    #             locatorArray = []
+    #             locatorDataDictionary = dict()
+    #
+    #             locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
+    #
+    #             for locatorId, locatorDataArray in locatorDictionary.items():
+    #                 for eachLocatorArray in locatorDataArray:
+    #                     patternBuild = '('
+    #                     # for eachLocator in eachLocatorArray:
+    #                     for i in range(0,len(eachLocatorArray)):
+    #                         matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
+    #                         bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
+    #                         # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+    #
+    #                         if len(matchingFuzzyWord)>0:
+    #                             if i == 0:
+    #                                 patternBuild = patternBuild+bestMatch
+    #                                 # patternBuild = patternBuild+eachLocatorArray[i]
+    #                                 # patternBuild = patternBuild+matchingFuzzyWord[0]
+    #                             else:
+    #                                 patternBuild = patternBuild + '(.*)' + bestMatch
+    #                                 # patternBuild = patternBuild + '(.*)' + matchingFuzzyWord[0]
+    #                                 # patternBuild = patternBuild + '(.*)' + eachLocatorArray[i]
+    #
+    #                     patternBuild = patternBuild + ')'
+    #                     locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+    #
+    #                     if locatorData:
+    #                         locatorArray.append(locatorData)
+    #
+    #                     # patternBuild = re.sub(r'\d', '\d', patternBuild)
+    #                     # print(patternBuild)
+    #                     # searhcObj = re.search(patternBuild,sourceDataProcessed)
+    #                     #
+    #                     # # print('pattern:', patternBuild)
+    #                     # if searhcObj:
+    #                     #     # print('Pattern out: ', searhcObj.group())
+    #                     #     patternMatch = searhcObj.group(0)
+    #                     #     # print('patternMatch', patternMatch)
+    #                     #     patternMatch = self.regularExpressionHandling(patternMatch, 0)
+    #                     #     sourceData = self.regularExpressionHandling(sourceData, 0)
+    #                     #     sourceData = sourceData.replace('\n', ' ')
+    #                     #     print('pattern: ', patternMatch)
+    #                     #     print('matching string = ', sourceData)
+    #                     #     sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
+    #                     #
+    #                     #     if sourceFileMatch:
+    #                     #         sourceFileMatchString = sourceFileMatch.group(0)
+    #                     #         sourceFileMatchString = self.regularExpressionHandling(sourceFileMatchString, 1)
+    #                     #         print('Pattern from source file:', sourceFileMatchString)
+    #                     #     else:
+    #                     #         print('no match in source file')
+    #                     #         print('patter: ',patternMatch)
+    #                     #         print('patter other: ',sourceData)
+    #                     #
+    #                     # else:
+    #                     #     print('no match', patternBuild)
+    #                 # print('finallyaaaa')
+    #                 # print(locatorArray)
+    #                 locatorDataDictionary[locatorId] = locatorArray
+    #                 # return locatorArray
+    #             return locatorDataDictionary
+    #
+    #         except Exception as e:
+    #             print('exception ',e)
+    #             # print('patter: ', patternMatch)
+    #             # print('patter other: ', sourceData, 'exception data')
+    #             return False
+    #         return True
+    #     else:
+    #         print('error in source file')
+    #         return False
 
     def test(self):
         try:
@@ -407,6 +368,7 @@ class StringHandling:
             testLocator = ['GRANTOR:']
             locatorId = 'head'
             self.addLocatorToDictionary(testLocator, locatorId)
+
             testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
             locatorId = 'parcel'
             self.addLocatorToDictionary(testLocator, locatorId)
