@@ -34,6 +34,7 @@ class Locator:
 
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory):
         try:
+
             if locatorDirectory and locationStringArray:
                 for i in range(0,len(locationStringArray)):
                     if i == 0:
@@ -44,9 +45,10 @@ class Locator:
                 stringHandling = StringHandling(self.path)
                 DrectoryHandling.createDirectory(DrectoryHandling, locatorDirectory)
 
-                locatorJsonFileName = locatorDirectory + locatorJsonFileName + '.json'
+                locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
+                print(locatorJsonFileNamewithPath, locatorJsonFileName, locatorDirectory)
 
-                locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileName)
+                locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileNamewithPath)
                 if locatorData:
                     locatorData = json.loads(locatorData)
                     fileData = self.getLocatorDataFromID(locatorData, locatorId)
@@ -54,7 +56,7 @@ class Locator:
                     if fileData:
                         data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence)
                         if data:
-                            if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
+                            if stringHandling.addStringWriteFile(locationString, locatorJsonFileNamewithPath, locatorId, locatorDirectory):
                                 return True
                             else:
                                 return False
@@ -65,9 +67,10 @@ class Locator:
                     else:
                         return False
                 else:
-                    fp = open(locatorJsonFileName, 'w')
-
-                    return False
+                    if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
+                        return True
+                    else:
+                        return False
             else:
                 print('error in locatorDirectory in addLocatorToDictionary in Locator')
         except Exception as e:

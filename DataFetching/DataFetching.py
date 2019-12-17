@@ -126,7 +126,7 @@ class DataFetchingMain:
             if not self.generateOCR():
                 exit()
             self.locatorAdding()
-            # self.finalLocatorAdding()
+            self.finalLocatorAdding()
             locatorDataDirectory = self.processLocator()
             if self.addLocatorValidation():
                 print('validation added')
@@ -250,7 +250,7 @@ class DataFetchingMain:
                                                                 locatorDirectory)
 
         locator = Locator(self.path)
-        testLocator = ['271-02171-0101', 'parcel']
+        testLocator = ['271-02171-0101']
         locatorId = 'parcel'
         locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
 
