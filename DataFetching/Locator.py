@@ -53,19 +53,23 @@ class Locator:
             stringHandling = StringHandling(self.path)
             DrectoryHandling.createDirectory(DrectoryHandling, self.DataFetchingFilesPath)
             locatorData = self.getLocatorProfile()
-            fileData = self.getLocatorDataFromID(locatorData, locatorId)
 
-            if fileData:
-                data = stringHandling.getMathcFromSetInverse(string, fileData, stringHandling.stringMatchConfidence)
-                if data:
-                    if stringHandling.addStringWriteFile(string, fileName, locatorId):
-                        return True
+            if locatorData:
+                fileData = self.getLocatorDataFromID(locatorData, locatorId)
+
+                if fileData:
+                    data = stringHandling.getMathcFromSetInverse(string, fileData, stringHandling.stringMatchConfidence)
+                    if data:
+                        if stringHandling.addStringWriteFile(string, fileName, locatorId):
+                            return True
+                        else:
+                            return False
                     else:
                         return False
+                elif stringHandling.addStringWriteFile(string, fileName, locatorId):
+                    return True
                 else:
                     return False
-            elif stringHandling.addStringWriteFile(string, fileName, locatorId):
-                return True
             else:
                 return False
         except Exception as e:
@@ -215,29 +219,39 @@ class Locator:
             from ExceptionHandling.DirecotryHandling import DrectoryHandling
             drectoryHandling = DrectoryHandling()
 
-            fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
+            if sourceDataPath:
+                fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
 
-            locatorDirectoryWithFileName = dict()
+                if fileNameArray:
 
-            for eachTextFile in fileNameArray:
-                textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
-                # print(sourceDataPath+eachTextFile, 'file')
-                if textFileData:
-                    locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
-                    if locatorDataDictionary:
-                        if self.locatorMissMatchFlag:
-                            # print('locator misss match ;;;', self.locatorMissMatchArray)
-                            if len(self.locatorMissMatchArray)>0:
-                                 self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
-                            else:
-                                self.locatorMissMatchDictionary[eachTextFile] = ['no match']
-                        fileNameSplit = eachTextFile.split('.')
-                        if len(fileNameSplit)>0:
-                            locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
+                    locatorDirectoryWithFileName = dict()
 
-            # print('finally ', self.locatorMissMatchDictionary)
+                    for eachTextFile in fileNameArray:
+                        textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
+                        # print(sourceDataPath+eachTextFile, 'file')
+                        if textFileData:
+                            locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                            if locatorDataDictionary:
+                                if self.locatorMissMatchFlag:
+                                    # print('locator misss match ;;;', self.locatorMissMatchArray)
+                                    if len(self.locatorMissMatchArray)>0:
+                                         self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
+                                    else:
+                                        self.locatorMissMatchDictionary[eachTextFile] = ['no match']
+                                fileNameSplit = eachTextFile.split('.')
+                                if len(fileNameSplit)>0:
+                                    locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
 
-            return locatorDirectoryWithFileName
+                    # print('finally ', self.locatorMissMatchDictionary)
+
+                    return locatorDirectoryWithFileName
+                else:
+                    print('error no data in ', sourceDataPath, ' Processing locator failed')
+                    return False
+            else:
+                print('error in argument sourceDataPath in processLocatorAndGetDataFromFileAll')
+                return False
+
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFileAll in locator', e)
             return False

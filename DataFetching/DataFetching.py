@@ -70,6 +70,7 @@ class DataFetchingMain:
                 # locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
                 return True
             else:
+                print('Ocr could not complete')
                 return False
         except Exception as e:
             print('error in ocrgeneration in DataFetching', e)
@@ -92,6 +93,7 @@ class DataFetchingMain:
                 locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
                 return locatorFilePathWithFileName
             else:
+                print('error filePath in processLocator in DataFetching')
                 return False
         except Exception as e:
             print('error in processLocator in DataFetching', e)
@@ -121,18 +123,20 @@ class DataFetchingMain:
 
     def imageDataProcessing(self):
         try:
-            # self.generateOCR()
+            if not self.generateOCR():
+                exit()
             self.locatorAdding()
             locatorDataDirectory = self.processLocator()
             if self.addLocatorValidation():
                 print('validation added')
 
-            validation = self.validatiingLocator(locatorDataDirectory)
-            locator = Locator(self.path)
+            if locatorDataDirectory:
+                validation = self.validatiingLocator(locatorDataDirectory)
+                locator = Locator(self.path)
+                locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
-            locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
+                print(locatorDataWithValidation)
 
-            print(locatorDataWithValidation)
             print('completed')
 
             # self.pdfHandling(locatorFilePathWithFileName)
@@ -175,9 +179,16 @@ class DataFetchingMain:
             # partial fetch
             locatorValidationDirectoryPath = filesPath + validationLocator + '.json'
             locatorValidation = LocatorValidation(self.path)
-            locatorValidation.addValidation(locatorValidationDirectoryPath, 'parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
-            locatorValidation.addValidation(locatorValidationDirectoryPath, 'legal', '^ *\d', 'False')
-            locatorValidation.addValidation(locatorValidationDirectoryPath,  'parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')
+            locatorData = [('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'),('legal', '^ *\d', 'False'),('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')]
+
+            for eachLocaotrData in locatorData:
+                locatorId, pattern, flag = eachLocaotrData
+                if not locatorValidation.addValidation(locatorValidationDirectoryPath, locatorId, pattern, flag):
+                    print('error in adding locator validation')
+                    return False
+            # locatorValidation.addValidation(locatorValidationDirectoryPath, 'parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
+            # locatorValidation.addValidation(locatorValidationDirectoryPath, 'legal', '^ *\d', 'False')
+            # locatorValidation.addValidation(locatorValidationDirectoryPath,  'parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')
 
             return True
         except Exception as e:
@@ -186,29 +197,29 @@ class DataFetchingMain:
 
     def validatiingLocator(self, locatorFilePathWithFileName):
         try:
-            dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                         dataFetchingFilesPath)
-            dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                         self.path)
-            dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                                     'validationLocator',
-                                                                                     dataFetchingValidationLocatorPath)
+            if locatorFilePathWithFileName:
+                dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+                dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                             dataFetchingFilesPath)
+                dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
+                                                                             self.path)
+                dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
+                                                                                         'validationLocator',
+                                                                                         dataFetchingValidationLocatorPath)
 
-            locatorValidationDirectoryPath = dataFetchingFilesPath + dataFetchingValidationLocatorPath + '.json'
-            print('validation')
-            # print(locatorFilePathWithFileName)
-            locatorValidation = LocatorValidation(self.path)
-            validationProgress = True
+                locatorValidationDirectoryPath = dataFetchingFilesPath + dataFetchingValidationLocatorPath + '.json'
+                # print(locatorFilePathWithFileName)
+                locatorValidation = LocatorValidation(self.path)
 
-            validationDictionary = dict()
-            for fileName, locatorDirectory in locatorFilePathWithFileName.items():
-                # print(fileName)
-                validity = dict()
-                for locatorId, locatorData in locatorDirectory.items():
-                    validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData, locatorValidationDirectoryPath)
-                validationDictionary[fileName] = validity
-            return validationDictionary
+                validationDictionary = dict()
+                for fileName, locatorDirectory in locatorFilePathWithFileName.items():
+                    # print(fileName)
+                    validity = dict()
+                    for locatorId, locatorData in locatorDirectory.items():
+                        validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData, locatorValidationDirectoryPath)
+                    validationDictionary[fileName] = validity
+                return validationDictionary
+            return False
 
         except Exception as e:
             print('error in validatinglocator in DataFetching', e)

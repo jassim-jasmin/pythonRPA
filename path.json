@@ -8,16 +8,24 @@
         }
       }
     },
-     "imageLocation": "images\\",
-      "delCommand": "cmd /c del ",
-      "unzip": "cmd /c tar -C ",
-      "unzipOption": " -xvzf ",
-      "DataFetching": {
+    "imagProcessing": {
+      "path": "imageProcessing\\",
+      "imagePath": "Data\\",
+      "ocrTextPath": "Data\\ocr\\",
+      "pdfPath": "Data\\pdf",
+      "tesseract": "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+    },
+    "imageLocation": "images\\",
+    "delCommand": "cmd /c del ",
+    "unzip": "cmd /c tar -C ",
+    "unzipOption": " -xvzf ",
+    "DataFetching": {
       "filesPath": "DataFetching\\files\\",
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
       "locatorDictionary": "locatorDictionary",
-      "validationLocator": "validationLocator"
+      "validationLocator": "validationLocator",
+      "locatorMissMatch": "locatorMissMatch"
     },
     "Data": {
       "path": "Data\\",
@@ -40,7 +48,7 @@
       "ocrTextPath": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/"
     },
-     "imageLocation": "images/",
+   "imageLocation": "images/",
     "delCommand": "rm ",
     "unzip": "tar -C ",
     "unzipOption": " -xvzf ",

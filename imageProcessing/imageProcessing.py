@@ -3,6 +3,7 @@ import numpy as np
 import json
 
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+from ExceptionHandling.DirecotryHandling import DrectoryHandling
 
 try:
     from PIL import Image
@@ -17,12 +18,14 @@ class ImageProcessing():
     """
     image image data
     """
-    def getOcr(self, image):
-        import pytesseract
+    def getOcr(self, image, tesseractPath=False):
         try:
+            import pytesseract
+            if tesseractPath:
+                pytesseract.pytesseract.tesseract_cmd=tesseractPath
             return pytesseract.image_to_string(image)
         except Exception as e:
-            print('Exception in imageProcessing getOcr ',e)
+            print('Exception in imageProcessing getOcr ', e)
             return False
 
     """
@@ -62,6 +65,7 @@ class ImageProcessing():
                 extension = splitImageName[1]
                 if not self.ocrImage(imageName, extension,imageName, filePath, ocrTextPath):
                     print(eachImage, ' failed')
+                    return False
 
             print('ocr completed')
 
@@ -72,16 +76,32 @@ class ImageProcessing():
 
     def ocrImage(self, imageName, imageExtension, ocrDocumentName, imageFilePath, ocrFilePath):
         try:
+            print('saving ocr: ',ocrFilePath + ocrDocumentName+'.txt')
+            DrectoryHandling.createDirectory(DrectoryHandling, ocrFilePath)
             fp = open(ocrFilePath + ocrDocumentName+'.txt', 'w')
-        except Exception as e:
-            import os
 
-            os.mkdir(ocrFilePath)
-            fp = open(ocrFilePath + ocrDocumentName, 'w')
+            ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension)
+            if ocrData:
+                fp.write(ocrData)
+                fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
+            else:
+                tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing',
+                                                                   self.path)
+                tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'tesseract', tesseract)
+                if tesseract:
+                    ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
+                    if ocrData:
+                        print('installation found saving to file')
+                        fp.write(ocrData)
+                        fp.close()
+                    else:
+                        print('windows handling failed')
+                        fp.close()
+                        return False
+                else:
+                    fp.close()
+                    return False
 
-        try:
-            fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
-            fp.close()
             return True
         except Exception as e:
             print('Error in ocrImage', e)
