@@ -46,7 +46,6 @@ class Locator:
                 DrectoryHandling.createDirectory(DrectoryHandling, locatorDirectory)
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
-                print(locatorJsonFileNamewithPath, locatorJsonFileName, locatorDirectory)
 
                 locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileNamewithPath)
                 if locatorData:
@@ -333,9 +332,10 @@ class Locator:
                     if locatorDictionary and dataDictionary:
                         self.locatorMissMatchArray = []
                         self.locatorId = []
+                        locatorDictionaryMain = dict()
 
                         for fileName, locatorData in dataDictionary.items():
-                            for loactorIdInData, eachLocatorInData in locatorData:
+                            for loactorIdInData, eachLocatorInData in locatorData.items():
                                 for locatorId, locatorDataArray in locatorDictionary.items():
                                     if locatorId == loactorIdInData:
                                         sourceDataProcessed = eachLocatorInData.upper()
@@ -345,10 +345,11 @@ class Locator:
 
                                     if locatorArray:
                                         locatorDataDictionary[locatorId] = locatorArray
+                                        locatorDictionaryMain[fileName] = locatorDataDictionary# need correction
                                     else:
                                         if self.locatorMissMatchFlag:
                                             self.locatorMissMatchArray.append(locatorId)
-                        return locatorDataDictionary
+                        return locatorDictionaryMain
 
                 except Exception as e:
                     print('exception ',e)

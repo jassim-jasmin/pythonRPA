@@ -140,11 +140,11 @@ class DataFetchingMain:
                 finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
                 finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'processedDataPath', finalCsv)
 
-                # finalData = self.processLocatorFromDict(locatorDataWithValidation)
+                finalData = self.processLocatorFromDict(locatorDataWithValidation)
 
                 if finalCsv:
                     csvHead =['legal','parcel']
-                    if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', locatorDataWithValidation, csvHead):
+                    if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', finalData, csvHead):
                         print('saving')
 
             print('completed')
@@ -264,7 +264,7 @@ class DataFetchingMain:
             locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorFinalDictionary',
                                                                    locatorFileName)
             if locatorData:
-                locatorDataDictionary = self.processLocatorAndGetDataFromDictionary(locatorFilePath+locatorFileName,
+                locatorDataDictionary = locator.processLocatorAndGetDataFromDictionary(locatorFilePath+locatorFileName,
                                                                                   locatorData)
                 return locatorDataDictionary
             else:
