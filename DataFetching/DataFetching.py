@@ -1,7 +1,8 @@
 from sklearn import  tree
-from DataFetching.StringHandling import StringHandling
+# from DataFetching.StringHandling import StringHandling
+from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
-class DataFetching:
+class DataFetchingMain:
     print('Data fetching')
     def __init__(self, path):
         self.path = path
@@ -27,6 +28,13 @@ class DataFetching:
     def testData2(self):
         return [['jassim','jasmin']]
 
+    def locatorDemo(self):
+        try:
+            print('locatorDemo')
+            from DataFetching.Locator import Locator
+
+        except Exception as e:
+            print('error in locator demo', e)
     def desisionTreeTest(self):
 
         X,Y = self.trainingSet1()
@@ -40,6 +48,120 @@ class DataFetching:
         # dtc_prediction = dtc_clf.predict(test_data)
         # print(dtc_prediction)
 
-        stringHandling = StringHandling(self.path)
+        # stringHandling = StringHandling(self.path)
 
-        stringHandling.test()
+        # stringHandling.test()
+        # self.test()
+
+    def imageDataProcessing(self):
+        try:
+            self.locatorAdding()
+            from imageProcessing.imageProcessing import ImageProcessing
+            imageProcessing = ImageProcessing(self.path)
+
+            imageNameKey = 'tif'
+            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath', filePath)
+
+            if imageProcessing.ocrAllImage(imageNameKey, filePath):
+                from DataFetching.Locator import Locator
+                locator = Locator(self.path)
+
+                locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
+            else:
+                return False
+
+            # FINAL PROCESS PDF GENERATION
+            from DataFetching.Locator import Locator
+            locator = Locator(self.path)
+
+            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', filePath)
+
+            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorFilePath)
+
+            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary',
+                                                                   locatorFileName)
+            locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
+
+            from PdfHandling.PdfHandling import PdfHanling
+            pdfHandling = PdfHanling()
+
+            pdfPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            pdfPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'pdfPath', pdfPath)
+            imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath',
+                                                                   imagePath)
+
+
+            for fileName, locatorDataDictionary in locatorFilePathWithFileName.items():
+                print('filename: ', fileName)
+                for locatorFinalId, locatorDataArray in locatorDataDictionary.items():
+                    pdfHandling.pdfGenerator(imagePath, fileName, '.tif', pdfPath)
+                    pdfHandling.highlihtPDF(pdfPath, fileName, locatorDataArray)
+            print('imageDataProcessing completed')
+
+            return True
+        except Exception as e:
+            print('error in imageDataProcessing', e)
+            return False
+
+    def locatorAdding(self):
+        from DataFetching.Locator import Locator
+        locator = Locator(self.path)
+
+        testLocator = ['warranty deed']
+        locatorId = 'head'
+        locator.addLocatorToDictionary(testLocator, locatorId)
+
+        testLocator = ['according to the recorded', 'Parcel Identification Number']
+        locatorId = 'parcel'
+
+        locator.addLocatorToDictionary(testLocator, locatorId)
+
+        testLocator = ['this deed']
+        locatorId  = 'test'
+        locator.addLocatorToDictionary(testLocator, locatorId)
+
+    def test(self):
+        try:
+            from DataFetching.Locator import Locator
+            locator = Locator(self.path)
+            locatorId = 'head'
+            testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
+            locator.addLocatorToDictionary(testLocator, locatorId)
+            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+            testLocator = ['GRANTOR:']
+
+
+            locator.addLocatorToDictionary(testLocator, locatorId)
+
+            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
+            locatorId = 'parcel'
+            locator.addLocatorToDictionary(testLocator, locatorId)
+
+            from imageProcessing.imageProcessing import ImageProcessing
+
+            if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif',
+                                        self.path['Data']['imageFile'], self.path['Data']['path']):
+                fp = open(self.path['Data']['path']+self.path['Data']['imageFile']+'.txt', encoding="utf8")
+                sourceData = fp.read()
+                fp.close()
+                locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
+                    'locatorDictionary']
+                locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+                # locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+
+                from PdfHandling.PdfHandling import PdfHanling
+
+                for locatorFinalId, locatorDataArray in locatorDataDictionary.items():
+                    print(locatorId)
+                    PdfHanling.pdfGenerator(PdfHanling,self.path['Data']['path'], self.path['Data']['imageFile'],'.tif')
+                    PdfHanling.highlihtPDF(PdfHanling, self.path['Data']['path'], self.path['Data']['imageFile'], locatorDataArray)
+                print('ocr complete')
+            else:
+                print('error')
+        except Exception as e:
+            print('error in test ', e)

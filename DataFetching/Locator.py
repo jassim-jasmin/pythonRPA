@@ -2,22 +2,29 @@ import json
 from fuzzywuzzy import process
 
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
+from DataFetching.StringHandling import StringHandling
+from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
 class Locator:
+    def __init__(self, path):
+        self.path = path
+
     def addNewStringToDictionary(self, string, fileName, locatorId):
         try:
+            stringHandling = StringHandling(self.path)
             DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
-            fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
+            fileData = stringHandling.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
+
             if fileData:
-                data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
+                data = stringHandling.getMathcFromSetInverse(string, fileData, stringHandling.stringMatchConfidence)
                 if data:
-                    if self.addStringWriteFile(string, fileName, locatorId):
+                    if stringHandling.addStringWriteFile(string, fileName, locatorId):
                         return True
                     else:
                         return False
                 else:
                     return False
-            elif self.addStringWriteFile(string, fileName, locatorId):
+            elif stringHandling.addStringWriteFile(string, fileName, locatorId):
                 return True
             else:
                 return False
@@ -45,16 +52,13 @@ class Locator:
 
     def getLocatorDataArray(self, locatorFilePathWithFileName):
         try:
-            # fp = open(, 'r')
             fp = open(locatorFilePathWithFileName+'.json', 'r')
-            # locatorArray = fp.read().split(',')
             locatorJson = json.loads(fp.read())
             locator = []
             locatorDictionary = dict()
 
-            # print(locatorJson)
             for locatorId, locatorArray in locatorJson.items():
-                print(locatorId, locatorArray)
+                # print(locatorId, locatorArray)
                 for locatorData in locatorArray:
                     indeces = locatorData.split('::')
                     for i in range(0,len(indeces)):
@@ -73,6 +77,30 @@ class Locator:
             except Exception as e:
                 return False
 
+    def processLocatorAndGetDataFromFileAll(self, locatorFilePathWithFileName, sourceDataPath):
+        try:
+            from ExceptionHandling.DirecotryHandling import DrectoryHandling
+            drectoryHandling = DrectoryHandling()
+
+            textFileArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
+
+            locatorDirectoryWithFileName = dict()
+
+            for eachTextFile in textFileArray:
+                textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
+                # print(sourceDataPath+eachTextFile, 'file')
+                locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                if locatorDataDictionary:
+                    fileNameSplit = eachTextFile.split('.')
+                    if len(fileNameSplit)>0:
+                        locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
+
+            print('completed')
+            return locatorDirectoryWithFileName
+        except Exception as e:
+            print('errror in processLocatorAndGetDataFromFileAll in locator', e)
+            return False
+
     def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
         try:
             if sourceData:
@@ -87,21 +115,26 @@ class Locator:
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
 
                     for locatorId, locatorDataArray in locatorDictionary.items():
+                        print(locatorDataArray)
                         for eachLocatorArray in locatorDataArray:
                             patternBuild = '('
                             for i in range(0,len(eachLocatorArray)):
-                                matchingFuzzyWord = self.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
-                                bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
-                                # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+                                stringHandling = StringHandling(self.path)
+                                matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
+                                if len(process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord))>0:
+                                    bestMatch,confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
+                                    # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
 
-                                if len(matchingFuzzyWord)>0:
-                                    if i == 0:
-                                        patternBuild = patternBuild+bestMatch
-                                    else:
-                                        patternBuild = patternBuild + '(.*)' + bestMatch
+                                    if len(matchingFuzzyWord)>0:
+                                        if i == 0:
+                                            patternBuild = patternBuild+bestMatch
+                                        else:
+                                            patternBuild = patternBuild + '(.*)' + bestMatch
 
                             patternBuild = patternBuild + ')'
-                            locatorData = self.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+                            stringHandling = StringHandling(self.path)
+                            print(patternBuild)
+                            locatorData = stringHandling.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
 
                             if locatorData:
                                 locatorArray.append(locatorData)

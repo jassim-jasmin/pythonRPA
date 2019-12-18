@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import json
 
+from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+
 try:
     from PIL import Image
 except ImportError:
@@ -9,6 +11,9 @@ except ImportError:
 import pytesseract
 
 class ImageProcessing():
+    def __init__(self, path):
+        self.path = path
+
     """
     image image data
     """
@@ -40,19 +45,42 @@ class ImageProcessing():
             print('Error in imageProcessing getValidOcr() ', e)
             return False
 
-    def ocrImage(self, imageName, imageExtension, ocrDocumentName, filePath):
+    def ocrAllImage(self, imageExtensionOrKey, filePath):
         try:
-            # fp = open('../ocrText/' + ocrFileName,'w')
-            print('ocr name: ', ocrDocumentName)
-            fp = open(filePath + ocrDocumentName+'.txt', 'w')
+            from ExceptionHandling.DirecotryHandling import DrectoryHandling
+            drectoryHandling = DrectoryHandling()
+
+            imageList = drectoryHandling.getDirectoryElementBykey(filePath, imageExtensionOrKey)
+
+            ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', ocrTextPath)
+            print('ocr image saving to ', ocrTextPath)
+
+            for eachImage in imageList:
+                splitImageName = eachImage.split('.')
+                imageName = splitImageName[0]
+                extension = splitImageName[1]
+                if not self.ocrImage(imageName, extension,imageName, filePath, ocrTextPath):
+                    print(eachImage, ' failed')
+
+            print('ocr completed')
+
+            return True
+        except Exception as e:
+            print('error in ocrAllImage', e)
+            return False
+
+    def ocrImage(self, imageName, imageExtension, ocrDocumentName, imageFilePath, ocrFilePath):
+        try:
+            fp = open(ocrFilePath + ocrDocumentName+'.txt', 'w')
         except Exception as e:
             import os
 
-            os.mkdir(filePath)
-            fp = open(filePath + ocrDocumentName, 'w')
+            os.mkdir(ocrFilePath)
+            fp = open(ocrFilePath + ocrDocumentName, 'w')
 
         try:
-            fp.write(pytesseract.image_to_string(filePath + imageName + '.' + imageExtension))
+            fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
             fp.close()
             return True
         except Exception as e:

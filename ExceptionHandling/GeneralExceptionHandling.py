@@ -1,4 +1,14 @@
 class GeneralExceptionHandling:
+    def getFileData(self, fileNameWithPath):
+        try:
+            fp = open(fileNameWithPath, 'r')
+            data = fp.read()
+            fp.close()
+            return data
+        except Exception as e:
+            print('error in getFileData in GeneralExceptionHandlig', e)
+            return False
+
     def getJsonData(self, keyValue, jsonFileData):
         try:
             if keyValue not in jsonFileData:

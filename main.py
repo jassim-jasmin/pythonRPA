@@ -12,7 +12,7 @@ class MainRPA:
 
             return FireFox(options)
         except Exception as e:
-            print(e)
+            print('error in mainRPA in main', e)
             return False
 
     def imageProcessing(self, options, imageName):
@@ -93,14 +93,19 @@ if __name__ == '__main__':
                 else:
                     exit()
             elif sys.argv[2] == 'dataFetching':
-                from DataFetching.DataFetching import DataFetching
+                try:
+                    from DataFetching.DataFetching import DataFetchingMain
 
-                pathValues = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
-                if pathValues:
-                    df = DataFetching(pathValues)
-                    df.desisionTreeTest()
-                else:
-                    exit()
+                    pathValues = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
+                    if pathValues:
+                        df = DataFetchingMain(pathValues)
+                        df.imageDataProcessing()
+                        # from DataFetching.StringHandling import StringHandling
+
+                    else:
+                        exit()
+                except Exception as e:
+                    print('error in dataFetching in main', e)
 
         elif len(sys.argv) == 2:
             from automation.automation import Automation
@@ -113,7 +118,7 @@ if __name__ == '__main__':
         else:
             print('Error: Proper argument need to run the program')
     except Exception as e:
-        print(e)
+        print('error in main', e)
 
 """
     python3 main.py linux dataFetching
