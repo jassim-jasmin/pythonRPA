@@ -48,25 +48,29 @@ class ImageProcessing():
             print('Error in imageProcessing getValidOcr() ', e)
             return False
 
-    def ocrAllImage(self, imageExtensionOrKey, filePath):
+    def ocrAllImage(self, imageExtensionOrKey, filePath, ocrTextPath):
         try:
             from ExceptionHandling.DirecotryHandling import DrectoryHandling
             drectoryHandling = DrectoryHandling()
 
             imageList = drectoryHandling.getDirectoryElementBykey(filePath, imageExtensionOrKey)
 
-            ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
-            ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', ocrTextPath)
+            # ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
+            # ocrTextPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', ocrTextPath)
 
-            for eachImage in imageList:
-                splitImageName = eachImage.split('.')
-                imageName = splitImageName[0]
-                extension = splitImageName[1]
-                if not self.ocrImage(imageName, extension,imageName, filePath, ocrTextPath):
-                    print(eachImage, ' failed')
-                    return False
+            if len(imageList)>0:
+                for eachImage in imageList:
+                    splitImageName = eachImage.split('.')
+                    imageName = splitImageName[0]
+                    extension = splitImageName[1]
+                    if not self.ocrImage(imageName, extension,imageName, filePath, ocrTextPath):
+                        print(eachImage, ' failed')
+                        return False
+            else:
+                print('no images found with extension "' + imageExtensionOrKey + '" in location '+ filePath)
+                return False
 
-            print('ocr completed')
+            print('ocr completed', filePath, imageList)
 
             return True
         except Exception as e:

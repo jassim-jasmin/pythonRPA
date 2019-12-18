@@ -1,5 +1,3 @@
-from sklearn import  tree
-# from DataFetching.StringHandling import StringHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
@@ -9,85 +7,46 @@ class DataFetchingMain:
     def __init__(self, path):
         self.path = path
 
-    def trainingSet1(self):
-        X = [[181, 80, 44], [177, 70, 43], [160, 60, 38],
-             [154, 54, 37], [166, 65, 40], [190, 90, 47], [175, 64, 39],
-             [177, 70, 40], [159, 55, 37], [171, 75, 42],
-             [181, 85, 43], [168, 75, 41], [168, 77, 41]]
-
-        Y = ['male', 'male', 'female', 'female', 'male', 'male', 'female', 'female', 'female', 'male', 'male', 'female',
-             'female']
-        return X,Y
-    def testData1(self):
-        return [[190, 70, 43], [154, 75, 38], [181, 65, 40]]
-
-    def trainingSet2(self):
-        X = [['jassim','jasmin'],['test1','test2']]
-        Y = ['me','idontkonw']
-
-        return X,Y
-
-    def testData2(self):
-        return [['jassim','jasmin']]
-
-    def locatorDemo(self):
+    def generateOCR(self, imagesPath, ocrTextPath):
         try:
-            print('locatorDemo')
-
-        except Exception as e:
-            print('error in locator demo', e)
-    def desisionTreeTest(self):
-
-        X,Y = self.trainingSet1()
-        test_data = self.testData1()
-
-        test_labels = ['male', 'female', 'male']
-
-
-        # dtc_clf = tree.DecisionTreeClassifier()
-        # dtc_clf = dtc_clf.fit(X, Y)
-        # dtc_prediction = dtc_clf.predict(test_data)
-        # print(dtc_prediction)
-
-        # stringHandling = StringHandling(self.path)
-
-        # stringHandling.test()
-        # self.test()
-
-    def generateOCR(self):
-        try:
-            self.locatorAdding()
+            # self.locatorAdding()
             from imageProcessing.imageProcessing import ImageProcessing
             imageProcessing = ImageProcessing(self.path)
 
             imageNameKey = 'tif'
-            filePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                               'imagProcessing,imagePath',
-                                                                                               self.path)
 
-            if imageProcessing.ocrAllImage(imageNameKey, filePath):
-                locator = Locator(self.path)
-
-                # locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
-                return True
-            else:
-                print('Ocr could not complete')
-                return False
+            return imageProcessing.ocrAllImage(imageNameKey, imagesPath, ocrTextPath)
         except Exception as e:
             print('error in ocrgeneration in DataFetching', e)
             return False
 
-    def processLocator(self):
+    def processLayerFromSourceFile(self, layerName, ocrTextDirectryPath):
         try:
             locator = Locator(self.path)
-
-            filePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'imagProcessing,ocrTextPath', self.path)
             locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path)
-            locatorFileName = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,locatorDictionary', self.path)
 
-            if filePath:
-                locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
-                return locatorFilePathWithFileName
+            if ocrTextDirectryPath:
+                layerData = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+layerName, ocrTextDirectryPath)
+                validation = LocatorValidation(self.path)
+
+                layer1Validation = validation.validateLayer(layerData, 'layer1')
+                # print('valid', layer1Validation)
+
+                validatedLayer = dict()
+                validatedLocator = dict()
+                for fileName, locatorData in layerData.items():
+                    if fileName in layer1Validation:
+                        validationLayerLocator = layer1Validation[fileName]
+                        for eachLocator in validationLayerLocator:
+                            if eachLocator in locatorData:
+                                validatedLocator[eachLocator] =  locatorData[eachLocator]
+                            # else:
+                            #     print('invlid locaotr id in data fetch', eachLocator)
+                        validatedLayer[fileName] = validatedLocator
+                    # else:
+                    #     validatedLayer = locatorData[fileName]
+
+                return validatedLayer
             else:
                 print('error filePath in processLocator in DataFetching')
                 return False
@@ -201,126 +160,59 @@ class DataFetchingMain:
             print('error in connectingLocator in DataFetching', e)
             return False
 
-    def finalLocatorAdding(self):
-
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                           'DataFetching,locatorFinalDictionary',
-                                                                                           self.path)
-        locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                       'DataFetching,filesPath',
-                                                                                       self.path)
-
-        fp = open(locatorDirectory+dataFetchingLocatorDictionary+'.json', 'w')
-        fp.close()
-        locator = Locator(self.path)
-        testLocator = ['271-02171-0101']
-        locatorId = 'parcel_number'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
-
-        testLocator = ['LOT EIGHT', 'LOT 1']
-        locatorId = 'lot'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
-        testLocator = ['BLOCK ELEVEN']
-        locatorId = 'block'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
-
-    def addLocatorValidationFirstStage(self):
-        try:
-            filesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                              'DataFetching,filesPath',
-                                                                              self.path)
-            validationLocator = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                              'DataFetching,validationLocator',
-                                                                              self.path)
-            finalValidation = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,finalValidation', self.path)
-            # partial fetch
-            locatorValidationDirectoryPath = filesPath + validationLocator + '.json'
-            locatorValidation = LocatorValidation(self.path)
-
-            validationArray = [('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'),('legal', '^ *\d', 'False'),('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')]
-            if not locatorValidation.addCompleteValidation(locatorValidationDirectoryPath, validationArray):
-                return False
-
-            validationArray = [('lot', 'lot \w', 'False')]
-            if not locatorValidation.addCompleteValidation(filesPath+finalValidation+'.json', validationArray):
-                return False
-
-            return False
-        except Exception as e:
-            print('error in addLocatorValidation in DataFetching', e)
-            return False
-
-    def locatorAdding(self):
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                  'DataFetching,locatorDictionary',
-                                                                  self.path)
-        locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                  'DataFetching,filesPath',
-                                                                  self.path)
-        fp = open(locatorDirectory+dataFetchingLocatorDictionary+'.json', 'w')
-        fp.flush()
-        fp.close()
-
-        locator = Locator(self.path)
-
-        testLocator = ['lot', 'block', 'plat']
-        locatorId = 'legal'
-        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
-            print('error 1')
-
-        testLocator = ['lot', 'block', 'plat', 'county']
-        locatorId = 'legal'
-        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
-            print('error 2')
-
-        testLocator = ['lot', 'plat', 'thereof']
-        locatorId = 'legal'
-        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
-            print('error 3')
-            print('error;3 ', locatorDirectory + dataFetchingLocatorDictionary + '.json')
-
-        testLocator = ['271-02171-0101', 'parcel']
-        locatorId = 'parcel'
-        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
-            print('error 4')
-
     def imageDataProcessing(self):
         try:
-            # if not self.generateOCR():
-            #     exit()
-            self.locatorAdding()
-            self.finalLocatorAdding()
-            locatorDataDirectory = self.processLocator()
-            if self.addLocatorValidationFirstStage():
-                print('validation added')
+            imagesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                      'imagProcessing,imagePath',
+                                                                      self.path)
+            ocrTextDirectoryPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                  'imagProcessing,ocrTextPath',
+                                                                                  self.path)
+            if not self.generateOCR(imagesPath, ocrTextDirectoryPath):
+                exit()
 
-            # print(locatorDataDirectory)
-            if locatorDataDirectory:
-                validation = self.validatiingLocator(locatorDataDirectory)
-                locator = Locator(self.path)
-                locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
+            if not self.addLoatorLayer('layer1', self.getLayer1()):
+                return False
 
-                finalCsv = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                           'DataFetching,processedDataPath',
-                                                                           self.path)
-                import json
-                fp = open('DataFetching/files/finalValidation.json', 'r')
-                data = json.loads(fp.read())
-                fp.close()
-                # finalValdation = self.finalValidatingLocator(data)
+            if not self.addLoatorLayer('layer2', self.getLayer2()):
+                return False
 
-                connectedLocator = self.connectingLocator(locatorDataWithValidation)
-                finalData = self.processLocatorFromDict(connectedLocator)
+            validation = LocatorValidation(self.path)
 
-                finalValidation = locator.getValidatedLocatorData()
+            validation.addValidationLayer('layer1', self.getValidation1())
+            validation.addValidationLayer('layer2', self.getValidation2())
 
-                if finalCsv:
-                    fp = open(finalCsv, 'w')
-                    fp.flush()
-                    fp.close()
-                    csvHead =['legal','parcel', 'parcel_number', 'lot', 'block']
-                    if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', finalData, csvHead):
-                        print('saving')
+            # locatorDataDirectory = self.processLayerFromSourceFile('layer1', ocrTextDirectoryPath)
+            layerData = self.processLayerFromSourceFile('layer1', ocrTextDirectoryPath)
+
+            print('validation out', layerData)
+
+            # if locatorDataDirectory:
+            #     validation = self.validatiingLocator(locatorDataDirectory)
+            #     locator = Locator(self.path)
+            #     locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
+            #
+            #     finalCsv = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+            #                                                                'DataFetching,processedDataPath',
+            #                                                                self.path)
+            #     import json
+            #     fp = open('DataFetching/files/finalValidation.json', 'r')
+            #     data = json.loads(fp.read())
+            #     fp.close()
+            #     # finalValdation = self.finalValidatingLocator(data)
+            #
+            #     connectedLocator = self.connectingLocator(locatorDataWithValidation)
+            #     finalData = self.processLocatorFromDict(connectedLocator)
+            #
+            #     finalValidation = locator.getValidatedLocatorData(finalData, )
+            #
+            #     if finalCsv:
+            #         fp = open(finalCsv, 'w')
+            #         fp.flush()
+            #         fp.close()
+            #         csvHead =['legal','parcel', 'parcel_number', 'lot', 'block']
+            #         if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', finalData, csvHead):
+            #             print('saving')
 
             print('completed')
 
@@ -330,3 +222,56 @@ class DataFetchingMain:
         except Exception as e:
             print('error in imageDataProcessing in DataFetching', e)
             return False
+
+    def getLayer1(self):
+        data = []
+        data.append(['legal', ['lot', 'block', 'plat']])
+        data.append(['legal', ['lot', 'block', 'plat', 'county']])
+        data.append(['legal', ['lot', 'plat', 'thereof']])
+        data.append(['parcel', ['271-02171-0101', 'parcel']])
+
+        return data
+
+    def getLayer2(self):
+        data = []
+
+        data.append(['parcel_number', ['271-02171-0101']])
+        data.append(['lot', ['LOT EIGHT', 'LOT 1']])
+        data.append(['block', ['BLOCK ELEVEN']])
+
+        return data
+
+    def getValidation1(self):
+        data = []
+        data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
+        data.append(('legal', '^ *\d', 'False'))
+        data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False'))
+
+        return data
+
+    def getValidation2(self):
+        data = []
+        data.append(('lot', 'lot \w', 'False'))
+
+        return data
+
+    def addLoatorLayer(self, layerName, data):
+        try:
+            locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                      'DataFetching,filesPath',
+                                                                      self.path)
+            fp = open(locatorDirectory+layerName+'.json', 'w')
+            fp.flush()
+            fp.close()
+
+            locator = Locator(self.path)
+
+            for locatorId, locatorData in data:
+                if not locator.addLocatorToDictionary(locatorData, locatorId, layerName, locatorDirectory):
+                    return False
+
+            return True
+        except Exception as e:
+            print('error in addLocatorLayer in DataFetching', e)
+            return False
+

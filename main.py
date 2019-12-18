@@ -37,7 +37,7 @@ class MainRPA:
             print('error from imageProcessing', e)
             return False
 
-    def run(self, os, option, path, address='http://www.google.com', imageName='google'):
+    def run(self, os, option, path, address='https://cityofmidlandmi.gov/275/Parcel-Identification-Numbers', imageName='apn'):
         try:
             print('Oppening RPA')
             self.runCount = 1
@@ -50,7 +50,7 @@ class MainRPA:
 
                 if firefoxObj:
                     if firefoxObj.openWebAddress(address, self.runCount):
-                        if firefoxObj.saveScreenshot('imageLocation', imageName + '.png'):
+                        if firefoxObj.saveScreenshot('imageLocation', imageName + '.tif'):
                             firefoxObj.browser.close()
                         return True
                     else:

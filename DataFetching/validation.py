@@ -42,6 +42,7 @@ class LocatorValidation:
                         # print('validation: ', locatorId,flag, validatorPatternArray)
                         for validatorPattern in validatorPatternArray:
                             patternValidation = self.patternCheck(validatorPattern, locatorData)
+                            # print('pattern check', patternValidation, validatorPattern, locatorData)
 
                             if flag == 'True':
                                 if not patternValidation:
@@ -49,6 +50,8 @@ class LocatorValidation:
                             elif flag == 'False':
                                 if patternValidation:
                                     return False
+                    else:
+                        return True
 
                     # return True
                 # self.locatorValidationArray[locatorId] = status
@@ -132,4 +135,59 @@ class LocatorValidation:
             return True
         except Exception as e:
             print('error in addLocatorValidation in DataFetching', e)
+            return False
+
+    def addValidationLayer(self, layerName, validationArray):
+        try:
+            filesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                       'DataFetching,filesPath',
+                                                                       self.path)
+            fileName = filesPath +layerName + '_validation.json'
+            fp = open(fileName, 'w')
+            fp.flush()
+            fp.close()
+
+            for eachLocaotrData in validationArray:
+                locatorId, pattern, flag = eachLocaotrData
+                if not self.addValidation(fileName, locatorId, pattern, flag):
+                    print('error in adding locator validation')
+                    return False
+
+            return True
+        except Exception as e:
+            print('error in addLocatorValidation in DataFetching', e)
+            return False
+
+    def validateLayer(self, layerData, layerName):
+        try:
+            dataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                   'DataFetching,filesPath',
+                                                                                   self.path)
+            validationLayer = dataFetchingFilesPath+layerName+'_validation.json'
+
+            if layerData:
+                # validationDictionary = dict()
+                validDictionary = dict()
+                for fileName, locatorDirectory in layerData.items():
+                    # print(fileName, locatorDirectory)
+                    validity = dict()
+                    valid = []
+                    for locatorId, locatorData in locatorDirectory.items():
+                        # print(locatorId, locatorData)
+                        # validity[locatorId] = self.getValidity(locatorId, locatorData,
+                        #                                                     validationLayer)
+                        if self.getValidity(locatorId, locatorData,
+                                                                            validationLayer):
+                            valid.append(locatorId)
+                        else:
+                            print('invalid locator', locatorId)
+
+                    # validationDictionary[fileName] = validity
+                    validDictionary[fileName] = valid
+                return validDictionary
+                # return validationDictionary
+            return False
+
+        except Exception as e:
+            print('error in validatinglocator in validation', e)
             return False
