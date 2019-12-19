@@ -1,6 +1,7 @@
 from sklearn import  tree
 # from DataFetching.StringHandling import StringHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+from DataFetching.validation import LocatorValidation
 
 class DataFetchingMain:
     print('Data fetching')
@@ -53,7 +54,7 @@ class DataFetchingMain:
         # stringHandling.test()
         # self.test()
 
-    def imageDataProcessing(self):
+    def generateOCR(self):
         try:
             self.locatorAdding()
             from imageProcessing.imageProcessing import ImageProcessing
@@ -67,11 +68,16 @@ class DataFetchingMain:
                 from DataFetching.Locator import Locator
                 locator = Locator(self.path)
 
-                locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
+                # locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
+                return True
             else:
                 return False
+        except Exception as e:
+            print('error in ocrgeneration in DataFetching', e)
+            return False
 
-            # FINAL PROCESS PDF GENERATION
+    def processLocator(self):
+        try:
             from DataFetching.Locator import Locator
             locator = Locator(self.path)
 
@@ -84,8 +90,17 @@ class DataFetchingMain:
             locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
             locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary',
                                                                    locatorFileName)
-            locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
+            if filePath:
+                locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
+                return locatorFilePathWithFileName
+            else:
+                return False
+        except Exception as e:
+            print('error in processLocator in DataFetching', e)
+            return False
 
+    def pdfHandling(self, locatorFilePathWithFileName):
+        try:
             from PdfHandling.PdfHandling import PdfHanling
             pdfHandling = PdfHanling()
 
@@ -93,20 +108,34 @@ class DataFetchingMain:
             pdfPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'pdfPath', pdfPath)
             imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
             imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath',
-                                                                   imagePath)
-
+                                                             imagePath)
 
             for fileName, locatorDataDictionary in locatorFilePathWithFileName.items():
                 print('filename: ', fileName)
                 for locatorFinalId, locatorDataArray in locatorDataDictionary.items():
                     pdfHandling.pdfGenerator(imagePath, fileName, '.tif', pdfPath)
                     pdfHandling.highlihtPDF(pdfPath, fileName, locatorDataArray)
-            print('imageDataProcessing completed')
 
             return True
         except Exception as e:
-            print('error in imageDataProcessing', e)
+            print('error in pdfHandling in DataFetching', e)
             return False
+
+    def imageDataProcessing(self):
+        try:
+            # self.generateOCR()
+            locatorFilePathWithFileName = self.processLocator()
+            self.addLocatorValidation()
+            validation = self.validatiingLocator(locatorFilePathWithFileName)
+            print(validation)
+            # self.pdfHandling(locatorFilePathWithFileName)
+
+            return True
+        except Exception as e:
+            print('error in imageDataProcessing in DataFetching', e)
+            return False
+
+
 
     def locatorAdding(self):
         from DataFetching.Locator import Locator
@@ -125,7 +154,7 @@ class DataFetchingMain:
         locatorId  = 'test'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
-    def test(self):
+    def testt(self):
         try:
             from DataFetching.Locator import Locator
             locator = Locator(self.path)
@@ -151,7 +180,9 @@ class DataFetchingMain:
                 fp.close()
                 locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
                     'locatorDictionary']
-                locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
+
+                if sourceData:
+                    locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
                 # locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
 
                 from PdfHandling.PdfHandling import PdfHanling
@@ -165,3 +196,33 @@ class DataFetchingMain:
                 print('error')
         except Exception as e:
             print('error in test ', e)
+
+    def addLocatorValidation(self):
+        try:
+            locatorValidation = LocatorValidation(self.path)
+            locatorValidation.addValidation('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
+            locatorValidation.addValidation('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
+            return True
+        except Exception as e:
+            print('error in addLocatorValidation in DataFetching', e)
+            return False
+
+    def validatiingLocator(self, locatorFilePathWithFileName):
+        try:
+            print('validation')
+            # print(locatorFilePathWithFileName)
+            locatorValidation = LocatorValidation(self.path)
+            validationProgress = True
+
+            validationDictionary = dict()
+            for fileName, locatorDirectory in locatorFilePathWithFileName.items():
+                print(fileName)
+                validity = dict()
+                for locatorId, locatorData in locatorDirectory.items():
+                    validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData)
+                validationDictionary[fileName] = validity
+            return validationDictionary
+
+        except Exception as e:
+            print('error in validatinglocator in DataFetching', e)
+            return False

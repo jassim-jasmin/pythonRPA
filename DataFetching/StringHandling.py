@@ -117,40 +117,37 @@ class StringHandling:
             print('error in addStringWriteFile', e)
             return False
 
-    def getFileData(self, file, locatorId):
-        try:
-            fp = open(file+'.json', 'r')
-            fileData = json.loads(fp.read())
-            # fileData = fp.read().split(',')
-            if locatorId in fileData:
-                return fileData[locatorId]
-            else:
-                print('no data')
-                return False
-        except Exception as e:
-            print('error in getFileData', e)
-            return False
+    # def getFileData(self, locatorData, locatorId):
+    #     try:
+    #         if locatorId in locatorData:
+    #             return locatorData[locatorId]
+    #         else:
+    #             print('no data')
+    #             return False
+    #     except Exception as e:
+    #         print('error in getFileData', e)
+    #         return False
 
-    def addNewStringToDictionary(self, string, fileName, locatorId):
-        try:
-            DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
-            fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
-            if fileData:
-                data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
-                if data:
-                    if self.addStringWriteFile(string, fileName, locatorId):
-                        return True
-                    else:
-                        return False
-                else:
-                    return False
-            elif self.addStringWriteFile(string, fileName, locatorId):
-                return True
-            else:
-                return False
-        except Exception as e:
-            print('error in addNewStringToDictionary in StringHandling', e)
-            return False
+    # def addNewStringToDictionary(self, string, fileName, locatorId):
+    #     try:
+    #         DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
+    #         fileData = self.getFileData(self.path['DataFetching']['filesPath'] + fileName, locatorId)
+    #         if fileData:
+    #             data = self.getMathcFromSetInverse(string, fileData, self.stringMatchConfidence)
+    #             if data:
+    #                 if self.addStringWriteFile(string, fileName, locatorId):
+    #                     return True
+    #                 else:
+    #                     return False
+    #             else:
+    #                 return False
+    #         elif self.addStringWriteFile(string, fileName, locatorId):
+    #             return True
+    #         else:
+    #             return False
+    #     except Exception as e:
+    #         print('error in addNewStringToDictionary in StringHandling', e)
+    #         return False
 
     def getSourceFileData(self, sourceFilePathWithDataFileName):
         try:

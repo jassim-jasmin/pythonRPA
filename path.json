@@ -16,7 +16,8 @@
       "filesPath": "DataFetching\\files\\",
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
-      "locatorDictionary": "locatorDictionary"
+      "locatorDictionary": "locatorDictionary",
+      "validationLocator": "validationLocator"
     },
     "Data": {
       "path": "Data\\",
@@ -47,7 +48,8 @@
       "filesPath": "DataFetching/files/",
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
-      "locatorDictionary": "locatorDictionary"
+      "locatorDictionary": "locatorDictionary",
+      "validationLocator": "validationLocator"
     },
     "Data": {
       "path": "Data/",
