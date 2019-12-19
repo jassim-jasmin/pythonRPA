@@ -124,10 +124,24 @@ class DataFetchingMain:
     def imageDataProcessing(self):
         try:
             # self.generateOCR()
+            self.locatorAdding()
             locatorFilePathWithFileName = self.processLocator()
-            self.addLocatorValidation()
+            if self.addLocatorValidation():
+                print('validation added')
             validation = self.validatiingLocator(locatorFilePathWithFileName)
-            print(validation)
+            print(locatorFilePathWithFileName)
+
+            for fileName, locatorDirecotory in locatorFilePathWithFileName.items():
+                if fileName in validation:
+                    validationDirectory = validation[fileName]
+                    for locatorId, validationStatus in validationDirectory.items():
+                        if validationStatus:
+                            if locatorId in locatorDirecotory:
+                                print(locatorId, ' # ', locatorDirecotory[locatorId])
+            print('completed')
+
+            # for imageName, validationDictionary in validation[imageName][parcel]:
+
             # self.pdfHandling(locatorFilePathWithFileName)
 
             return True
@@ -141,18 +155,18 @@ class DataFetchingMain:
         from DataFetching.Locator import Locator
         locator = Locator(self.path)
 
-        testLocator = ['warranty deed']
-        locatorId = 'head'
+        testLocator = ['lot', 'block', 'plat']
+        locatorId = 'legal'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
-        testLocator = ['according to the recorded', 'Parcel Identification Number']
-        locatorId = 'parcel'
-
+        testLocator = ['lot', 'block', 'plat', 'county']
+        locatorId = 'legal'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
-        testLocator = ['this deed']
-        locatorId  = 'test'
+        testLocator = ['lot', 'plat', 'thereof']
+        locatorId = 'legal'
         locator.addLocatorToDictionary(testLocator, locatorId)
+
 
     def testt(self):
         try:
@@ -201,7 +215,8 @@ class DataFetchingMain:
         try:
             locatorValidation = LocatorValidation(self.path)
             locatorValidation.addValidation('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
-            locatorValidation.addValidation('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
+            locatorValidation.addValidation('legal', '^ *\d', 'False')
+            locatorValidation.addValidation('parcel', '226', 'False')
             return True
         except Exception as e:
             print('error in addLocatorValidation in DataFetching', e)

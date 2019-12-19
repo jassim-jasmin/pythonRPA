@@ -155,7 +155,7 @@ class Locator:
                         locatorData = stringHandling.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:
-                            print('processLocatorData: ',locatorData)
+                            # print('processLocatorData: ',locatorData)
                             return locatorData
                         else:
                             return False

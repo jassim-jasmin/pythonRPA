@@ -13,8 +13,10 @@ class LocatorValidation:
 
             if searchPattern:
                 print('pattern match')
+                return True
             else:
                 print('pattern no match')
+                return False
         except Exception as e:
             print('error in pattern check in validation', e)
             return False
@@ -29,17 +31,21 @@ class LocatorValidation:
             else:
                 validatorDirectory = json.loads(validatorDirectory)
                 for flag, seperatedValidation in validatorDirectory.items():
-                    print('seperatedvalidation ', seperatedValidation, locatorId)
+                    # print('seperatedvalidation ', seperatedValidation, locatorId)
                     if locatorId in seperatedValidation:
-                        validatorPattern = seperatedValidation[locatorId]
-                        patternValidation = self.patternCheck(validatorPattern, locatorData)
+                        validatorPatternArray = seperatedValidation[locatorId]
+                        print('validation: ', locatorId,flag, validatorPatternArray)
+                        for validatorPattern in validatorPatternArray:
+                            patternValidation = self.patternCheck(validatorPattern, locatorData)
 
-                        if flag == 'True':
-                            return patternValidation
-                        elif flag == 'False':
-                            return not patternValidation
-                        else:
-                            return True
+                            if flag == 'True':
+                                if not patternValidation:
+                                    return False
+                            elif flag == 'False':
+                                if patternValidation:
+                                    return False
+
+                    # return True
                 # self.locatorValidationArray[locatorId] = status
 
                 return True
@@ -47,21 +53,30 @@ class LocatorValidation:
             print('error in assignValidationStatus in validation', e)
             return False
 
-    def addValidation(self, locatorId, validation, falg):
+    def addValidation(self, locatorId, validation, flag):
         try:
             locatorValidationDirectoryPath = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
                 'validationLocator'] + '.json'
             validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
+            validationArray = []
 
             if not validatorData:
                 validatorDirectory = dict()
                 seperatedValidation = dict()
             else:
                 validatorDirectory = json.loads(validatorData)
-                seperatedValidation = validatorDirectory[falg]
+                if flag in validatorDirectory:
+                    seperatedValidation = validatorDirectory[flag]
+                else:
+                    seperatedValidation = dict()
 
-            seperatedValidation[locatorId] = validation
-            validatorDirectory[falg] = seperatedValidation
+            validationArray.append(validation)
+            seen = set()
+
+            validationArray[:] = [item for item in validationArray
+                               if item not in seen and not seen.add(item)]
+            seperatedValidation[locatorId] = validationArray
+            validatorDirectory[flag] = seperatedValidation
 
             fp = open(locatorValidationDirectoryPath, 'w')
             fp.write(json.dumps(validatorDirectory))
