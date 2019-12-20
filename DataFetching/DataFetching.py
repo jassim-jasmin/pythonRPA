@@ -216,7 +216,7 @@ class DataFetchingMain:
             locatorValidation = LocatorValidation(self.path)
             locatorValidation.addValidation('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
             locatorValidation.addValidation('legal', '^ *\d', 'False')
-            locatorValidation.addValidation('parcel', '226', 'False')
+            # locatorValidation.addValidation('parcel', '246', 'False')
             return True
         except Exception as e:
             print('error in addLocatorValidation in DataFetching', e)

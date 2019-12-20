@@ -9,6 +9,8 @@ class Locator:
     def __init__(self, path):
         self.path = path
         self.mainLocator = dict()
+        self.locatorMissMatchFlag = True
+        self.locatorMissMatchDictionary = dict()
 
     def getLocatorProfile(self, profilePath):
         try:
@@ -103,24 +105,34 @@ class Locator:
             from ExceptionHandling.DirecotryHandling import DrectoryHandling
             drectoryHandling = DrectoryHandling()
 
-            textFileArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
+            fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
 
             locatorDirectoryWithFileName = dict()
 
-            for eachTextFile in textFileArray:
+            for eachTextFile in fileNameArray:
                 textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
                 # print(sourceDataPath+eachTextFile, 'file')
                 if textFileData:
                     locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
                     if locatorDataDictionary:
+                        if self.locatorMissMatchFlag:
+                            if len(self.locatorMissMatchArray)>0:
+                                 self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
+                            else:
+                                self.locatorMissMatchDictionary[eachTextFile] = ['noMatch']
                         fileNameSplit = eachTextFile.split('.')
                         if len(fileNameSplit)>0:
                             locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
+
+            print('finally ', self.locatorMissMatchDictionary)
 
             return locatorDirectoryWithFileName
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFileAll in locator', e)
             return False
+        finally:
+            if self.locatorMissMatchFlag:
+                self.saveMissMatch()
 
     def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed):
         try:
@@ -176,6 +188,7 @@ class Locator:
                     locatorDataDictionary = dict()
 
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
+                    self.locatorMissMatchArray = []
 
                     for locatorId, locatorDataArray in locatorDictionary.items():
                         # print(locatorDataArray)
@@ -183,6 +196,9 @@ class Locator:
 
                         if locatorArray:
                             locatorDataDictionary[locatorId] = locatorArray
+                        else:
+                            if self.locatorMissMatchFlag:
+                                self.locatorMissMatchArray.append(locatorId)
                     return locatorDataDictionary
 
                 except Exception as e:
@@ -197,9 +213,25 @@ class Locator:
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFile in locator', e)
             return False
+    def saveMissMatch(self):
+        try:
+            if self.locatorMissMatchDictionary:
+                saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
+                fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+                fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorMissMatch', fileName)
+                fileNameLocation = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
+                                                                        self.path)
+                fileNameLocation = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                        fileNameLocation)
 
-# fp = open('../path.json', 'r')
-# fileData = json.loads(fp.read())['linux']
-# fp.close()
-# obj = Locator(fileData)
-# obj.getLocatorProfile('blah')
+                if fileName and fileNameLocation:
+                    print('saving file ', fileNameLocation+fileName+'.json')
+                    fp = open(fileNameLocation+fileName+'.json', 'w')
+                    fp.write(saveMissMatchData)
+                    fp.close()
+                    print('', fileName)
+                else:
+                    print('error in source file or file name in locatorMissmatch')
+        except Exception as e:
+            print('error in saveMissMatch', e)
+            return False

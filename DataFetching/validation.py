@@ -12,10 +12,10 @@ class LocatorValidation:
             searchPattern = re.search(pattern, string)
 
             if searchPattern:
-                print('pattern match')
+                # print('pattern match')
                 return True
             else:
-                print('pattern no match')
+                # print('pattern no match')
                 return False
         except Exception as e:
             print('error in pattern check in validation', e)
@@ -34,7 +34,7 @@ class LocatorValidation:
                     # print('seperatedvalidation ', seperatedValidation, locatorId)
                     if locatorId in seperatedValidation:
                         validatorPatternArray = seperatedValidation[locatorId]
-                        print('validation: ', locatorId,flag, validatorPatternArray)
+                        # print('validation: ', locatorId,flag, validatorPatternArray)
                         for validatorPattern in validatorPatternArray:
                             patternValidation = self.patternCheck(validatorPattern, locatorData)
 
@@ -67,6 +67,7 @@ class LocatorValidation:
                 validatorDirectory = json.loads(validatorData)
                 if flag in validatorDirectory:
                     seperatedValidation = validatorDirectory[flag]
+                    validationArray = seperatedValidation[locatorId]
                 else:
                     seperatedValidation = dict()
 
