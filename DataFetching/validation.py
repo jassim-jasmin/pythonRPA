@@ -6,6 +6,12 @@ class LocatorValidation:
         self.path = path
         self.locatorValidationArray = dict()
 
+        self.dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        self.dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'validationLocator', self.dataFetchingValidationLocatorPath)
+
+        self.dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        self.dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', self.dataFetchingFilesPath)
+
     def patternCheck(self, pattern, string):
         try:
             import re
@@ -23,7 +29,7 @@ class LocatorValidation:
 
     def getValidity(self, locatorId, locatorData):
         try:
-            locatorValidationDirectoryPath = self.path['DataFetching']['filesPath']+self.path['DataFetching']['validationLocator']+'.json'
+            locatorValidationDirectoryPath = self.dataFetchingFilesPath+self.dataFetchingValidationLocatorPath+'.json'
             validatorDirectory = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
 
             if not validatorDirectory:
@@ -55,8 +61,7 @@ class LocatorValidation:
 
     def addValidation(self, locatorId, validation, flag):
         try:
-            locatorValidationDirectoryPath = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
-                'validationLocator'] + '.json'
+            locatorValidationDirectoryPath = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
             validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
             validationArray = []
 
@@ -84,62 +89,3 @@ class LocatorValidation:
             fp.close()
         except Exception as e:
             print('error in addvalidation in validation', e)
-
-    # def getValidationStatus(self, locatorId):
-    #     try:
-    #         if locatorId in self.locatorValidationArray:
-    #             status = self.locatorValidationArray[locatorId]
-    #             return status
-    #         else:
-    #             return True
-    #     except Exception as e:
-    #         print('error in getValidationStatus', e)
-    #         return False
-    #
-    # def absoluteValidation(self, locatorId, validationValue, pattern):
-    #     try:
-    #         if locatorId in self.locatorValidationArray:
-    #             validation = self.locatorValidationArray[locatorId]
-    #         else:
-    #             validation = dict()
-    #             validation[validationValue] = pattern
-    #         self.locatorValidationArray[locatorId] = validation
-    #
-    #         return True
-    #     except Exception as e:
-    #         print('error in assignValidationTrue', e)
-    #         return False
-    # def assignValidationTrue(self, locatorId, pattern):
-    #     try:
-    #         if self.absoluteValidation(locatorId, 'True', pattern):
-    #             return True
-    #         else:
-    #             return False
-    #     except Exception as e:
-    #         print('error in assignValidationTrue in validation', e)
-    #         return False
-    #
-    # def assignValidationFalse(self, locatorId, pattern):
-    #     try:
-    #         if self.absoluteValidation(locatorId, 'False', pattern):
-    #             return True
-    #         else:
-    #             return False
-    #     except Exception as e:
-    #         print('error in assignValidationTrue in validation', e)
-    #         return False
-    #
-    # def addValidation(self, locatorId, validationPattern, validationFlag):
-    #     try:
-    #         if validationFlag == 'True':
-    #             self.assignValidationTrue(locatorId, validationPattern)
-    #             return True
-    #         elif validationFlag == 'False':
-    #             self.assignValidationFalse(locatorId, validationPattern)
-    #             return True
-    #         else:
-    #             print('invalid validationFlag', validationFlag)
-    #             return False
-    #     except Exception as e:
-    #         print('error in addValidation in validation', e)
-    #         return False
