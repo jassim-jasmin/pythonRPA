@@ -12,17 +12,20 @@ class Locator:
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
 
-        locatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        locatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorPath)
+        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
+                                                                          self.path)
+        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                          self.DataFetchingFilesPath)
 
-        self.locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        self.locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary', self.locatorFileName)
-        self.locatorFileName = locatorPath+self.locatorFileName+'.json'
+        self.dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        self.dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary', self.dataFetchingLocatorDictionary)
 
-    def getLocatorProfile(self, profilePath):
+        self.locatorFileName = self.DataFetchingFilesPath+self.dataFetchingLocatorDictionary+'.json'
+
+
+
+    def getLocatorProfile(self):
         try:
-            locatorPath = profilePath
-            locatorPath = 'DataFetching/files/locatorDictionary.json'
             locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, self.locatorFileName)
             locatorData = json.loads(locatorData)
             # print(sourceDataPath+eachTextFile, 'file')
@@ -46,8 +49,8 @@ class Locator:
     def addNewStringToDictionary(self, string, fileName, locatorId):
         try:
             stringHandling = StringHandling(self.path)
-            DrectoryHandling.createDirectory(DrectoryHandling, self.path['DataFetching']['filesPath'])
-            locatorData = self.getLocatorProfile(profilePath='')
+            DrectoryHandling.createDirectory(DrectoryHandling, self.DataFetchingFilesPath)
+            locatorData = self.getLocatorProfile()
             fileData = self.getLocatorDataFromID(locatorData, locatorId)
 
             if fileData:
@@ -75,7 +78,7 @@ class Locator:
                 else:
                     locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
             # print(locationString)
-            self.addNewStringToDictionary(locationString, self.path['DataFetching']['locatorDictionary'], locatorId)
+            self.addNewStringToDictionary(locationString, self.dataFetchingLocatorDictionary)
         except Exception as e:
             print('excecption in addLocatorToDictionary', e)
             return False
