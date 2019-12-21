@@ -217,8 +217,8 @@ class StringHandling:
                     return sourceFileMatchString
                 else:
                     print('no match in source file')
-                    # print('patter: ', patternMatch)
-                    # print('patter other: ', sourceData)
+                    print('patter: ', patternMatch)
+                    print('patter other: ', sourceData)
                     return False
 
             else:

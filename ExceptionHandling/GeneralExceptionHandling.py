@@ -35,6 +35,9 @@ class GeneralExceptionHandling:
                 data = data.replace('?', '\?')
                 data = data.replace('"', '\\"')
                 data = data.replace('*', '\*')
+                data = data.replace('$', '\$')
+                data = data.replace('{', '\{')
+                data = data.replace('}', '\}')
 
                 return data
             if flag == 1:
@@ -49,6 +52,9 @@ class GeneralExceptionHandling:
                 data = data.replace('\?','?')
                 data = data.replace('\\"', '"')
                 data = data.replace('\*', '*')
+                data = data.replace('\$', '$')
+                data = data.replace('\{', '{')
+                data = data.replace('\}', '}')
                 data = data.replace('\\\\', '\\')
 
                 return data
