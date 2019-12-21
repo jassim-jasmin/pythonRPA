@@ -79,7 +79,7 @@ class Locator:
                 else:
                     locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
             # print(locationString)
-            self.addNewStringToDictionary(locationString, self.dataFetchingLocatorDictionary)
+            self.addNewStringToDictionary(locationString, self.dataFetchingLocatorDictionary, locatorId)
         except Exception as e:
             print('excecption in addLocatorToDictionary', e)
             return False
