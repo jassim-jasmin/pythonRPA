@@ -12,11 +12,18 @@ class Locator:
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
 
+        locatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        locatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorPath)
+
+        self.locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        self.locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary', self.locatorFileName)
+        self.locatorFileName = locatorPath+self.locatorFileName+'.json'
+
     def getLocatorProfile(self, profilePath):
         try:
             locatorPath = profilePath
             locatorPath = 'DataFetching/files/locatorDictionary.json'
-            locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorPath)
+            locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, self.locatorFileName)
             locatorData = json.loads(locatorData)
             # print(sourceDataPath+eachTextFile, 'file')
             return locatorData
@@ -139,16 +146,30 @@ class Locator:
             patternBuild = '('
             for i in range(0, len(eachLocatorArray)):
                 stringHandling = StringHandling(self.path)
-                matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocatorArray[i].upper(), sourceDataProcessed)
-                if len(process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)) > 0:
-                    bestMatch, confidence = process.extractBests(eachLocatorArray[i].upper(), matchingFuzzyWord)[0]
-                    # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+                import re
+                eachLocator = eachLocatorArray[i].upper()
+                searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
+                # print('each locator: ', eachLocator, searchOnlyNumAndCharObj)
+                if searchOnlyNumAndCharObj:
+                    bestMatch = re.sub('\d', '\d', eachLocator)
+                    # print('pattern found', bestMatch)
 
-                    if len(matchingFuzzyWord) > 0:
-                        if i == 0:
-                            patternBuild = patternBuild + bestMatch
-                        else:
-                            patternBuild = patternBuild + '(.*)' + bestMatch
+                    if i == 0:
+                        patternBuild = patternBuild + bestMatch
+                    else:
+                        patternBuild = patternBuild + '(.*)' + bestMatch
+                else:
+                    matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocator, sourceDataProcessed)
+                    if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
+                        bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord)[0]
+                        # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+
+                        if len(matchingFuzzyWord) > 0:
+                            bestMatch = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling,bestMatch,0)
+                            if i == 0:
+                                patternBuild = patternBuild + bestMatch
+                            else:
+                                patternBuild = patternBuild + '(.*)' + bestMatch
 
             patternBuild = patternBuild + ')'
             return patternBuild
@@ -163,7 +184,7 @@ class Locator:
                     patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
                     if patternBuild:
                         stringHandling = StringHandling(self.path)
-                        print('pattern build: ', patternBuild)
+                        # print('pattern build: ', patternBuild)
                         locatorData = stringHandling.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:

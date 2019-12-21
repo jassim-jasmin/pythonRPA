@@ -167,6 +167,10 @@ class DataFetchingMain:
         locatorId = 'legal'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
+        testLocator = ['271-02171-0101']
+        locatorId = 'parcel'
+        locator.addLocatorToDictionary(testLocator, locatorId)
+
 
     def testt(self):
         try:

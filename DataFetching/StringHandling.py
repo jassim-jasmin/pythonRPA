@@ -226,6 +226,7 @@ class StringHandling:
                 return False
         except Exception as e:
             print('error in searchDataInFuzzySearch\n', e)
+            print(patternBuild)
             print('patter: ', patternMatch)
             print('patter other: ', sourceData)
 
