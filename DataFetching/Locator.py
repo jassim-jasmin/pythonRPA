@@ -22,7 +22,8 @@ class Locator:
 
         self.locatorFileName = self.DataFetchingFilesPath+self.dataFetchingLocatorDictionary+'.json'
 
-
+        fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+        self.dataFetchingLocatorMissMatch =  GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorMissMatch', fileName)
 
     def getLocatorProfile(self):
         try:
@@ -241,16 +242,11 @@ class Locator:
         try:
             if self.locatorMissMatchDictionary:
                 saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
-                fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-                fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorMissMatch', fileName)
-                fileNameLocation = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                        self.path)
-                fileNameLocation = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                        fileNameLocation)
+                fileName = self.dataFetchingLocatorMissMatch
 
-                if fileName and fileNameLocation:
-                    print('saving file ', fileNameLocation+fileName+'.json')
-                    fp = open(fileNameLocation+fileName+'.json', 'w')
+                if fileName and self.DataFetchingFilesPath:
+                    print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
+                    fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
                     fp.write(saveMissMatchData)
                     fp.close()
                     print('', fileName)
