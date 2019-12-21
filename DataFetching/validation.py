@@ -27,9 +27,8 @@ class LocatorValidation:
             print('error in pattern check in validation', e)
             return False
 
-    def getValidity(self, locatorId, locatorData):
+    def getValidity(self, locatorId, locatorData, locatorValidationDirectoryPath):
         try:
-            locatorValidationDirectoryPath = self.dataFetchingFilesPath+self.dataFetchingValidationLocatorPath+'.json'
             validatorDirectory = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
 
             if not validatorDirectory:

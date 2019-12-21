@@ -36,9 +36,9 @@
     },
     "imagProcessing": {
       "path": "imageProcessing/",
-      "imagePath": "/root/Documents/bhagya/deed/test",
-      "ocrTextPath": "/root/Documents/mj/ocr/ocrTextData/",
-      "pdfPath": "/root/Documents/mj/ocr/pdfTextData/test/"
+      "imagePath": "/root/Documents/bhagya/deed/",
+      "ocrTextPath": "/root/Documents/mj/ocr/ocrTextData/new/",
+      "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/"
     },
      "imageLocation": "images/",
     "delCommand": "rm ",

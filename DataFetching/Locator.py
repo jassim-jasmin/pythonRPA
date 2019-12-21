@@ -293,14 +293,26 @@ class Locator:
 
     def getValidatedLocatorData(self, locatorDataDirectory, validation):
         try:
+            locatorDirectry = dict()
             for fileName, locatorData in locatorDataDirectory.items():
+                locatorArray = dict()
                 if fileName in validation:
                     validationDirectory = validation[fileName]
                     for locatorId, validationStatus in validationDirectory.items():
                         if validationStatus:
                             if locatorId in locatorData:
-                                print('file name: ', fileName, 'locator id: ', locatorId, '\nData: ', locatorData[locatorId])
-            return True
+                                # print('file name: ', fileName, 'locator id: ', locatorId, '\nData: ', locatorData[locatorId])
+                                locatorArray[locatorId] = locatorData[locatorId]
+                                locatorDirectry[fileName] = locatorArray.copy()
+            return locatorDirectry
         except Exception as e:
             print('error in printLocatorDataWithLocatorId in locator', e)
+            return False
+
+    def selectData(self, locatorDataWithValidation):
+        try:
+            print('select')
+            return True
+        except Exception as e:
+            print('error in select data in Locator', e)
             return False

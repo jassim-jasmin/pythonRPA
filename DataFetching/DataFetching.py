@@ -130,8 +130,9 @@ class DataFetchingMain:
             validation = self.validatiingLocator(locatorDataDirectory)
             locator = Locator(self.path)
 
-            # locator.getValidatedLocatorData(locatorDataDirectory, validation)
+            locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
+            print(locatorDataWithValidation)
             print('completed')
 
             # self.pdfHandling(locatorFilePathWithFileName)
@@ -185,6 +186,16 @@ class DataFetchingMain:
 
     def validatiingLocator(self, locatorFilePathWithFileName):
         try:
+            dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                         dataFetchingFilesPath)
+            dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
+                                                                         self.path)
+            dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
+                                                                                     'validationLocator',
+                                                                                     dataFetchingValidationLocatorPath)
+
+            locatorValidationDirectoryPath = dataFetchingFilesPath + dataFetchingValidationLocatorPath + '.json'
             print('validation')
             # print(locatorFilePathWithFileName)
             locatorValidation = LocatorValidation(self.path)
@@ -195,7 +206,7 @@ class DataFetchingMain:
                 # print(fileName)
                 validity = dict()
                 for locatorId, locatorData in locatorDirectory.items():
-                    validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData)
+                    validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData, locatorValidationDirectoryPath)
                 validationDictionary[fileName] = validity
             return validationDictionary
 
