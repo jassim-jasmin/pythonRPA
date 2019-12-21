@@ -11,6 +11,7 @@ class Locator:
         self.mainLocator = dict()
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
+        self.locatorId = []
 
         self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
                                                                           self.path)
@@ -111,40 +112,6 @@ class Locator:
             except Exception as e:
                 return False
 
-    def processLocatorAndGetDataFromFileAll(self, locatorFilePathWithFileName, sourceDataPath):
-        try:
-            from ExceptionHandling.DirecotryHandling import DrectoryHandling
-            drectoryHandling = DrectoryHandling()
-
-            fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
-
-            locatorDirectoryWithFileName = dict()
-
-            for eachTextFile in fileNameArray:
-                textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
-                # print(sourceDataPath+eachTextFile, 'file')
-                if textFileData:
-                    locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
-                    if locatorDataDictionary:
-                        if self.locatorMissMatchFlag:
-                            if len(self.locatorMissMatchArray)>0:
-                                 self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
-                            else:
-                                self.locatorMissMatchDictionary[eachTextFile] = ['noMatch']
-                        fileNameSplit = eachTextFile.split('.')
-                        if len(fileNameSplit)>0:
-                            locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
-
-            print('finally ', self.locatorMissMatchDictionary)
-
-            return locatorDirectoryWithFileName
-        except Exception as e:
-            print('errror in processLocatorAndGetDataFromFileAll in locator', e)
-            return False
-        finally:
-            if self.locatorMissMatchFlag:
-                self.saveMissMatch()
-
     def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed):
         try:
             patternBuild = '('
@@ -214,16 +181,20 @@ class Locator:
 
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
                     self.locatorMissMatchArray = []
+                    self.locatorId = []
 
                     for locatorId, locatorDataArray in locatorDictionary.items():
-                        # print(locatorDataArray)
+                        self.locatorId.append(locatorId)
+                        # print('locatorId',locatorDataArray)
                         locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
 
                         if locatorArray:
                             locatorDataDictionary[locatorId] = locatorArray
+                            # print('locator success')
                         else:
                             if self.locatorMissMatchFlag:
                                 self.locatorMissMatchArray.append(locatorId)
+                            # print('locator failed')
                     return locatorDataDictionary
 
                 except Exception as e:
@@ -238,20 +209,98 @@ class Locator:
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFile in locator', e)
             return False
+
+    def processLocatorAndGetDataFromFileAll(self, locatorFilePathWithFileName, sourceDataPath):
+        try:
+            from ExceptionHandling.DirecotryHandling import DrectoryHandling
+            drectoryHandling = DrectoryHandling()
+
+            fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
+
+            locatorDirectoryWithFileName = dict()
+
+            for eachTextFile in fileNameArray:
+                textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
+                # print(sourceDataPath+eachTextFile, 'file')
+                if textFileData:
+                    locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                    if locatorDataDictionary:
+                        if self.locatorMissMatchFlag:
+                            # print('locator misss match ;;;', self.locatorMissMatchArray)
+                            if len(self.locatorMissMatchArray)>0:
+                                 self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
+                            else:
+                                self.locatorMissMatchDictionary[eachTextFile] = ['no match']
+                        fileNameSplit = eachTextFile.split('.')
+                        if len(fileNameSplit)>0:
+                            locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
+
+            # print('finally ', self.locatorMissMatchDictionary)
+
+            return locatorDirectoryWithFileName
+        except Exception as e:
+            print('errror in processLocatorAndGetDataFromFileAll in locator', e)
+            return False
+        finally:
+            if self.locatorMissMatchFlag:
+                self.saveMissMatch()
+
     def saveMissMatch(self):
         try:
             if self.locatorMissMatchDictionary:
                 saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
                 fileName = self.dataFetchingLocatorMissMatch
+                # print('missmatch data: complete ::', saveMissMatchData)
 
                 if fileName and self.DataFetchingFilesPath:
                     print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
                     fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
                     fp.write(saveMissMatchData)
                     fp.close()
-                    print('', fileName)
+                    # print('file name:: ', fileName)
+                    self.saveAsCsv()
                 else:
                     print('error in source file or file name in locatorMissmatch')
+                    # print('data: ', saveMissMatchData)
         except Exception as e:
             print('error in saveMissMatch', e)
+            # print('data: ', saveMissMatchData)
+            return False
+
+    def saveAsCsv(self):
+        try:
+            import csv
+
+            with open(self.DataFetchingFilesPath+'missmatch.csv', 'w') as csvfile:
+                csvfile.write('Locator miss match\n')
+                fieldNames = ['file name', 'no match']
+                fieldNames.extend(self.locatorId[:])
+                writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
+                csvEacData = []
+                writer.writeheader()
+                print('csv save')
+                for fileName, missmatchFieldData in self.locatorMissMatchDictionary.items():
+                    # print('csv data: ', fileName, missmatchFieldData)
+                    csvEacRowLocator = dict()
+                    csvEacRowLocator['file name'] = fileName
+                    for data in missmatchFieldData:
+                        csvEacRowLocator[data] = data
+
+                    writer.writerow(csvEacRowLocator)
+                    # print('csv ', csvEacRowLocator)
+        except Exception as e:
+            print("I/O error", e)
+
+    def getValidatedLocatorData(self, locatorDataDirectory, validation):
+        try:
+            for fileName, locatorData in locatorDataDirectory.items():
+                if fileName in validation:
+                    validationDirectory = validation[fileName]
+                    for locatorId, validationStatus in validationDirectory.items():
+                        if validationStatus:
+                            if locatorId in locatorData:
+                                print('file name: ', fileName, 'locator id: ', locatorId, '\nData: ', locatorData[locatorId])
+            return True
+        except Exception as e:
+            print('error in printLocatorDataWithLocatorId in locator', e)
             return False

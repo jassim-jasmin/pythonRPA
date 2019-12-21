@@ -2,6 +2,7 @@ from sklearn import  tree
 # from DataFetching.StringHandling import StringHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
+from DataFetching.Locator import Locator
 
 class DataFetchingMain:
     print('Data fetching')
@@ -78,7 +79,6 @@ class DataFetchingMain:
 
     def processLocator(self):
         try:
-            from DataFetching.Locator import Locator
             locator = Locator(self.path)
 
             filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
@@ -125,22 +125,16 @@ class DataFetchingMain:
         try:
             # self.generateOCR()
             self.locatorAdding()
-            locatorFilePathWithFileName = self.processLocator()
+            locatorDataDirectory = self.processLocator()
             if self.addLocatorValidation():
                 print('validation added')
-            validation = self.validatiingLocator(locatorFilePathWithFileName)
-            print(locatorFilePathWithFileName)
 
-            for fileName, locatorDirecotory in locatorFilePathWithFileName.items():
-                if fileName in validation:
-                    validationDirectory = validation[fileName]
-                    for locatorId, validationStatus in validationDirectory.items():
-                        if validationStatus:
-                            if locatorId in locatorDirecotory:
-                                print(locatorId, ' # ', locatorDirecotory[locatorId])
+            validation = self.validatiingLocator(locatorDataDirectory)
+            locator = Locator(self.path)
+
+            # locator.getValidatedLocatorData(locatorDataDirectory, validation)
+
             print('completed')
-
-            # for imageName, validationDictionary in validation[imageName][parcel]:
 
             # self.pdfHandling(locatorFilePathWithFileName)
 
@@ -167,9 +161,10 @@ class DataFetchingMain:
         locatorId = 'legal'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
-        testLocator = ['271-02171-0101']
+        testLocator = ['271-02171-0101', 'parcel']
         locatorId = 'parcel'
         locator.addLocatorToDictionary(testLocator, locatorId)
+
 
 
     def testt(self):
@@ -220,7 +215,7 @@ class DataFetchingMain:
             locatorValidation = LocatorValidation(self.path)
             locatorValidation.addValidation('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
             locatorValidation.addValidation('legal', '^ *\d', 'False')
-            # locatorValidation.addValidation('parcel', '246', 'False')
+            locatorValidation.addValidation('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')
             return True
         except Exception as e:
             print('error in addLocatorValidation in DataFetching', e)
@@ -235,7 +230,7 @@ class DataFetchingMain:
 
             validationDictionary = dict()
             for fileName, locatorDirectory in locatorFilePathWithFileName.items():
-                print(fileName)
+                # print(fileName)
                 validity = dict()
                 for locatorId, locatorData in locatorDirectory.items():
                     validity[locatorId] = locatorValidation.getValidity(locatorId, locatorData)

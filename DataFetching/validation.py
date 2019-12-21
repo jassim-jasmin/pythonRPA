@@ -70,9 +70,11 @@ class LocatorValidation:
                 seperatedValidation = dict()
             else:
                 validatorDirectory = json.loads(validatorData)
+
                 if flag in validatorDirectory:
                     seperatedValidation = validatorDirectory[flag]
-                    validationArray = seperatedValidation[locatorId]
+                    if locatorId in seperatedValidation:
+                        validationArray = seperatedValidation[locatorId]
                 else:
                     seperatedValidation = dict()
 
@@ -89,3 +91,4 @@ class LocatorValidation:
             fp.close()
         except Exception as e:
             print('error in addvalidation in validation', e)
+            print(locatorId, validation, flag)
