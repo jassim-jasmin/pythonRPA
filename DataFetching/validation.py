@@ -59,36 +59,42 @@ class LocatorValidation:
             print('error in assignValidationStatus in validation', e)
             return False
 
-    def addValidation(self, locatorId, validation, flag):
+    def addValidation(self, locatorValidationDirectoryPath, locatorId, validation, flag):
         try:
-            locatorValidationDirectoryPath = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
-            validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
-            validationArray = []
+            # locatorValidationDirectoryPath = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
+            if locatorValidationDirectoryPath:
+                validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
+                validationArray = []
 
-            if not validatorData:
-                validatorDirectory = dict()
-                seperatedValidation = dict()
-            else:
-                validatorDirectory = json.loads(validatorData)
-
-                if flag in validatorDirectory:
-                    seperatedValidation = validatorDirectory[flag]
-                    if locatorId in seperatedValidation:
-                        validationArray = seperatedValidation[locatorId]
-                else:
+                if not validatorData:
+                    validatorDirectory = dict()
                     seperatedValidation = dict()
+                else:
+                    validatorDirectory = json.loads(validatorData)
 
-            validationArray.append(validation)
-            seen = set()
+                    if flag in validatorDirectory:
+                        seperatedValidation = validatorDirectory[flag]
+                        if locatorId in seperatedValidation:
+                            validationArray = seperatedValidation[locatorId]
+                    else:
+                        seperatedValidation = dict()
 
-            validationArray[:] = [item for item in validationArray
-                               if item not in seen and not seen.add(item)]
-            seperatedValidation[locatorId] = validationArray
-            validatorDirectory[flag] = seperatedValidation
+                validationArray.append(validation)
+                seen = set()
 
-            fp = open(locatorValidationDirectoryPath, 'w')
-            fp.write(json.dumps(validatorDirectory))
-            fp.close()
+                validationArray[:] = [item for item in validationArray
+                                   if item not in seen and not seen.add(item)]
+                seperatedValidation[locatorId] = validationArray
+                validatorDirectory[flag] = seperatedValidation
+
+                fp = open(locatorValidationDirectoryPath, 'w')
+                fp.write(json.dumps(validatorDirectory))
+                fp.close()
+                return True
+            else:
+                print('no locatorValidationDirectoryPath')
+                return False
         except Exception as e:
             print('error in addvalidation in validation', e)
             print(locatorId, validation, flag)
+            return False

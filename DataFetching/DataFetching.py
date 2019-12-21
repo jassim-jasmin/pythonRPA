@@ -33,7 +33,6 @@ class DataFetchingMain:
     def locatorDemo(self):
         try:
             print('locatorDemo')
-            from DataFetching.Locator import Locator
 
         except Exception as e:
             print('error in locator demo', e)
@@ -66,7 +65,6 @@ class DataFetchingMain:
             filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath', filePath)
 
             if imageProcessing.ocrAllImage(imageNameKey, filePath):
-                from DataFetching.Locator import Locator
                 locator = Locator(self.path)
 
                 # locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName='',sourceData='')
@@ -146,7 +144,6 @@ class DataFetchingMain:
 
 
     def locatorAdding(self):
-        from DataFetching.Locator import Locator
         locator = Locator(self.path)
 
         testLocator = ['lot', 'block', 'plat']
@@ -165,57 +162,22 @@ class DataFetchingMain:
         locatorId = 'parcel'
         locator.addLocatorToDictionary(testLocator, locatorId)
 
-
-
-    def testt(self):
-        try:
-            from DataFetching.Locator import Locator
-            locator = Locator(self.path)
-            locatorId = 'head'
-            testLocator = ['QUIT','CLAIM', 'DEED', 'Document Number']
-            locator.addLocatorToDictionary(testLocator, locatorId)
-            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
-            testLocator = ['GRANTOR:']
-
-
-            locator.addLocatorToDictionary(testLocator, locatorId)
-
-            testLocator = ['010-00532-0000', 'Parcel', 'Identification Number']
-            locatorId = 'parcel'
-            locator.addLocatorToDictionary(testLocator, locatorId)
-
-            from imageProcessing.imageProcessing import ImageProcessing
-
-            if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif',
-                                        self.path['Data']['imageFile'], self.path['Data']['path']):
-                fp = open(self.path['Data']['path']+self.path['Data']['imageFile']+'.txt', encoding="utf8")
-                sourceData = fp.read()
-                fp.close()
-                locatorFilePathWithFileName = self.path['DataFetching']['filesPath'] + self.path['DataFetching'][
-                    'locatorDictionary']
-
-                if sourceData:
-                    locatorDataDictionary = locator.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
-                # locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, sourceData)
-
-                from PdfHandling.PdfHandling import PdfHanling
-
-                for locatorFinalId, locatorDataArray in locatorDataDictionary.items():
-                    print(locatorId)
-                    PdfHanling.pdfGenerator(PdfHanling,self.path['Data']['path'], self.path['Data']['imageFile'],'.tif')
-                    PdfHanling.highlihtPDF(PdfHanling, self.path['Data']['path'], self.path['Data']['imageFile'], locatorDataArray)
-                print('ocr complete')
-            else:
-                print('error')
-        except Exception as e:
-            print('error in test ', e)
-
     def addLocatorValidation(self):
         try:
+            filesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            filesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
+                                                                   filesPath)
+
+            validationLocator = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
+            validationLocator = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'validationLocator',
+                                                                   validationLocator)
+            # partial fetch
+            locatorValidationDirectoryPath = filesPath + validationLocator + '.json'
             locatorValidation = LocatorValidation(self.path)
-            locatorValidation.addValidation('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
-            locatorValidation.addValidation('legal', '^ *\d', 'False')
-            locatorValidation.addValidation('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')
+            locatorValidation.addValidation(locatorValidationDirectoryPath, 'parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True')
+            locatorValidation.addValidation(locatorValidationDirectoryPath, 'legal', '^ *\d', 'False')
+            locatorValidation.addValidation(locatorValidationDirectoryPath,  'parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')
+
             return True
         except Exception as e:
             print('error in addLocatorValidation in DataFetching', e)
