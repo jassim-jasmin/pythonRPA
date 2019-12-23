@@ -113,7 +113,7 @@ class Locator:
                 searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
                 # print('each locator: ', eachLocator, searchOnlyNumAndCharObj)
                 if searchOnlyNumAndCharObj:
-                    bestMatch = re.sub('\d', '\d', eachLocator)
+                    bestMatch = re.sub('\d', '\d+', eachLocator)
                     # print('pattern found', bestMatch)
 
                     if i == 0:
@@ -321,34 +321,54 @@ class Locator:
             print('error in printLocatorDataWithLocatorId in locator', e)
             return False
 
-    def processLocatorAndGetDataFromDictionary(self, locatorFilePathWithFileName, dataDictionary):
+    def processLocatorAndGetDataFromDictionary(self, locatorFilePathWithFileName, mainDataDictionary):
         try:
-            if dataDictionary:
+            if mainDataDictionary:
                 try:
+                    connectedLocator = mainDataDictionary['connectorKeys']
+                    dataDictionary = mainDataDictionary['locatorData']  # primary dictionary
                     import re
                     locatorDataDictionary = dict()
 
-                    locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
+                    # print('locatorFilePathWithFileName:', locatorFilePathWithFileName)
+                    locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName) # new dictionary
                     if locatorDictionary and dataDictionary:
                         self.locatorMissMatchArray = []
                         self.locatorId = []
                         locatorDictionaryMain = dict()
 
-                        for fileName, locatorData in dataDictionary.items():
-                            for loactorIdInData, eachLocatorInData in locatorData.items():
-                                for locatorId, locatorDataArray in locatorDictionary.items():
-                                    if locatorId == loactorIdInData:
+
+                        for fileName, locatorData in dataDictionary.items():# main
+                            # print(dataDictionary)
+                            # print('new data')
+                            # print(locatorData)
+                            locatorFinalData = False
+                            for loactorIdInData, eachLocatorInData in locatorData.items():# new
+                                if loactorIdInData in connectedLocator:
+                                    if connectedLocator[loactorIdInData] == loactorIdInData:
                                         sourceDataProcessed = eachLocatorInData.upper()
                                         sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                                        self.locatorId.append(locatorId)
-                                        locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
+                                        self.locatorId.append(eachLocatorInData)
+                                        locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed,
+                                                                               eachLocatorInData)
+                                    else:
+                                        for locatorId, locatorDataArray in locatorDictionary.items():
+                                            print('locatorId', locatorId, 'loactorIdInData', loactorIdInData)
+                                            print(connectedLocator[loactorIdInData], locatorId)
+                                            if connectedLocator[loactorIdInData] == locatorId:# the data is in final locator
+                                                sourceDataProcessed = eachLocatorInData.upper()
+                                                sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
+                                                self.locatorId.append(locatorId)
+                                                locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
 
-                                        if locatorArray:
-                                            locatorDataDictionary[locatorId] = locatorArray
-                                            locatorDictionaryMain[fileName] = locatorDataDictionary# need correction
-                                        else:
-                                            if self.locatorMissMatchFlag:
-                                                self.locatorMissMatchArray.append(locatorId)
+                                            if locatorFinalData:
+                                                locatorDataDictionary[locatorId] = locatorFinalData
+                                                locatorFinalData = False
+                                                locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
+                                            else:
+                                                if self.locatorMissMatchFlag:
+                                                    self.locatorMissMatchArray.append(locatorId)
+
                         return locatorDictionaryMain
 
                 except Exception as e:
@@ -358,7 +378,7 @@ class Locator:
                     return False
                 return True
             else:
-                print('error in source dictionary Locator sourceData', dataDictionary)
+                print('error in source dictionary Locator sourceData', mainDataDictionary)
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)

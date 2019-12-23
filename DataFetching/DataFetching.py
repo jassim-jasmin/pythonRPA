@@ -131,19 +131,20 @@ class DataFetchingMain:
             if self.addLocatorValidation():
                 print('validation added')
 
+            # print(locatorDataDirectory)
             if locatorDataDirectory:
                 validation = self.validatiingLocator(locatorDataDirectory)
                 locator = Locator(self.path)
                 locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
-                # print(locatorDataWithValidation)
                 finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
                 finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'processedDataPath', finalCsv)
 
-                finalData = self.processLocatorFromDict(locatorDataWithValidation)
+                connectedLocator = self.connectingLocator(locatorDataWithValidation)
+                finalData = self.processLocatorFromDict(connectedLocator)
 
                 if finalCsv:
-                    csvHead =['legal','parcel']
+                    csvHead =['legal','parcel', 'parcel_number', 'lot']
                     if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', finalData, csvHead):
                         print('saving')
 
@@ -251,7 +252,11 @@ class DataFetchingMain:
 
         locator = Locator(self.path)
         testLocator = ['271-02171-0101']
-        locatorId = 'parcel'
+        locatorId = 'parcel_number'
+        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+
+        testLocator = ['LOTS 1, 2, 3, 4', 'LOTS 1']
+        locatorId = 'lot'
         locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
 
     def processLocatorFromDict(self, locatorData):
@@ -272,4 +277,18 @@ class DataFetchingMain:
                 return False
         except Exception as e:
             print('error in processLocatorFromDict in DataFetching', e)
+            return False
+
+    def connectingLocator(self, dictionary):
+        try:
+            processedDict = dict()
+            connectorKeys = dict()
+            #     final locator key = first locator key
+            connectorKeys['parcel'] = 'parcel_number'
+            connectorKeys['legal'] = 'lot'
+            processedDict['connectorKeys'] = connectorKeys
+            processedDict['locatorData'] = dictionary
+            return processedDict
+        except Exception as e:
+            print('error in connectingLocator in DataFetching', e)
             return False
