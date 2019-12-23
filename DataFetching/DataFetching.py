@@ -80,18 +80,10 @@ class DataFetchingMain:
         try:
             locator = Locator(self.path)
 
-            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
-            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'ocrTextPath', filePath)
+            filePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'imagProcessing,ocrTextPath', self.path)
+            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path)
+            locatorFileName = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,locatorDictionary', self.path)
 
-            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorFilePath)
-
-            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary',
-                                                                   locatorFileName)
-
-            testLocator = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'imagProcessing,ocrTextPath', self.path)
-            print('recurssive', testLocator)
             if filePath:
                 locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
                 return locatorFilePathWithFileName
@@ -106,12 +98,12 @@ class DataFetchingMain:
         try:
             from PdfHandling.PdfHandling import PdfHanling
             pdfHandling = PdfHanling()
-
-            pdfPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
-            pdfPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'pdfPath', pdfPath)
-            imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
-            imagePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath',
-                                                             imagePath)
+            pdfPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                             'imagProcessing,pdfPath',
+                                                                             self.path)
+            imagePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                             'imagProcessing,imagePath',
+                                                                             self.path)
 
             for fileName, locatorDataDictionary in locatorFilePathWithFileName.items():
                 print('filename: ', fileName)
@@ -140,8 +132,9 @@ class DataFetchingMain:
                 locator = Locator(self.path)
                 locatorDataWithValidation = locator.getValidatedLocatorData(locatorDataDirectory, validation)
 
-                finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-                finalCsv = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'processedDataPath', finalCsv)
+                finalCsv = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                           'DataFetching,processedDataPath',
+                                                                           self.path)
 
                 connectedLocator = self.connectingLocator(locatorDataWithValidation)
                 finalData = self.processLocatorFromDict(connectedLocator)
@@ -163,16 +156,12 @@ class DataFetchingMain:
 
 
     def locatorAdding(self):
-
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                                  'DataFetching', self.path)
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                                  'locatorDictionary',
-                                                                                  dataFetchingLocatorDictionary)
-        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                          self.path)
-        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                          locatorDirectory)
+        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                  'DataFetching,locatorDictionary',
+                                                                  self.path)
+        locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                  'DataFetching,filesPath',
+                                                                  self.path)
 
         locator = Locator(self.path)
 
@@ -194,13 +183,12 @@ class DataFetchingMain:
 
     def addLocatorValidation(self):
         try:
-            filesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            filesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                   filesPath)
-
-            validationLocator = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            validationLocator = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'validationLocator',
-                                                                   validationLocator)
+            filesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                              'DataFetching,filesPath',
+                                                                              self.path)
+            validationLocator = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                              'DataFetching,validationLocator',
+                                                                              self.path)
             # partial fetch
             locatorValidationDirectoryPath = filesPath + validationLocator + '.json'
             locatorValidation = LocatorValidation(self.path)
@@ -220,14 +208,12 @@ class DataFetchingMain:
     def validatiingLocator(self, locatorFilePathWithFileNameDictionary):
         try:
             if locatorFilePathWithFileNameDictionary:
-                dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-                dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                             dataFetchingFilesPath)
-                dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                             self.path)
-                dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                                         'validationLocator',
-                                                                                         dataFetchingValidationLocatorPath)
+                dataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                   'DataFetching,filesPath',
+                                                                                   self.path)
+                dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                   'DataFetching,validationLocator',
+                                                                                   self.path)
 
                 locatorValidationDirectoryPath = dataFetchingFilesPath + dataFetchingValidationLocatorPath + '.json'
                 locatorJsonFileNameWithPath = locatorValidationDirectoryPath
@@ -243,15 +229,13 @@ class DataFetchingMain:
 
     def finalLocatorAdding(self):
 
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                             'DataFetching', self.path)
-        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling,
-                                                                             'locatorFinalDictionary',
-                                                                             dataFetchingLocatorDictionary)
-        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                self.path)
-        locatorDirectory = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                locatorDirectory)
+        dataFetchingLocatorDictionary = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                           'DataFetching,locatorFinalDictionary',
+                                                                                           self.path)
+        locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                       'DataFetching,filesPath',
+                                                                                       self.path)
+
 
         locator = Locator(self.path)
         testLocator = ['271-02171-0101']
@@ -268,12 +252,12 @@ class DataFetchingMain:
     def processLocatorFromDict(self, locatorData):
         try:
             locator = Locator(self.path)
-            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            locatorFilePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', locatorFilePath)
-
-            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-            locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorFinalDictionary',
-                                                                   locatorFileName)
+            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                              'DataFetching,filesPath',
+                                                                              self.path)
+            locatorFileName = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                              'DataFetching,locatorFinalDictionary',
+                                                                              self.path)
             if locatorData:
                 locatorDataDictionary = locator.processLocatorAndGetDataFromDictionary(locatorFilePath+locatorFileName,
                                                                                   locatorData)

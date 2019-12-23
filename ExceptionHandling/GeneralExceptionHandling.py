@@ -72,7 +72,6 @@ class GeneralExceptionHandling:
             keyValueArray = keyValueWithComma.split(',')
 
             for keyValue in keyValueArray:
-                print(keyValue)
                 if jsonFileData:
                     if keyValue in jsonFileData:
                         jsonFileData = jsonFileData[keyValue]
