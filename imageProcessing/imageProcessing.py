@@ -83,23 +83,24 @@ class ImageProcessing():
                                                                self.path)
             tesseract = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'tesseract', tesseract)
             if tesseract:
-                ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
-                if ocrData:
-                    fp.write(ocrData)
-                    fp.close()
-                else:
-                    print('ocr handling failed')
-                    fp.close()
-                    return False
-            else:
-                ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension)
-                if ocrData:
-                    fp.write(ocrData)
-                    fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
+                if tesseract == 'None':
+                    ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension)
+                    if ocrData:
+                        fp.write(ocrData)
+                        fp.write(pytesseract.image_to_string(imageFilePath + imageName + '.' + imageExtension))
 
-                    fp.close()
-                    return True
+                        fp.close()
+                        return True
                 else:
+                    ocrData = self.getOcr(imageFilePath + imageName + '.' + imageExtension, tesseract)
+                    if ocrData:
+                        fp.write(ocrData)
+                        fp.close()
+                    else:
+                        print('ocr handling failed')
+                        fp.close()
+                        return False
+            else:
                     return False
 
             return True

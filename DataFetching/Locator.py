@@ -185,7 +185,7 @@ class Locator:
                     return locatorDataDictionary
 
                 except Exception as e:
-                    print('exception ',e)
+                    print('error in processLocatorAndGetDataFromFile in Locator ',e)
                     # print('patter: ', patternMatch)
                     # print('patter other: ', sourceData, 'exception data')
                     return False
@@ -343,16 +343,16 @@ class Locator:
                                         self.locatorId.append(locatorId)
                                         locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
 
-                                    if locatorArray:
-                                        locatorDataDictionary[locatorId] = locatorArray
-                                        locatorDictionaryMain[fileName] = locatorDataDictionary# need correction
-                                    else:
-                                        if self.locatorMissMatchFlag:
-                                            self.locatorMissMatchArray.append(locatorId)
+                                        if locatorArray:
+                                            locatorDataDictionary[locatorId] = locatorArray
+                                            locatorDictionaryMain[fileName] = locatorDataDictionary# need correction
+                                        else:
+                                            if self.locatorMissMatchFlag:
+                                                self.locatorMissMatchArray.append(locatorId)
                         return locatorDictionaryMain
 
                 except Exception as e:
-                    print('exception ',e)
+                    print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
                     # print('patter: ', patternMatch)
                     # print('patter other: ', sourceData, 'exception data')
                     return False

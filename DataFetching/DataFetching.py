@@ -123,8 +123,8 @@ class DataFetchingMain:
 
     def imageDataProcessing(self):
         try:
-            if not self.generateOCR():
-                exit()
+            # if not self.generateOCR():
+            #     exit()
             self.locatorAdding()
             self.finalLocatorAdding()
             locatorDataDirectory = self.processLocator()

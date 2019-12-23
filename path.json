@@ -48,7 +48,8 @@
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
       "ocrTextPath": "/root/Documents/mj/ocr/ocrTextData/new/",
-      "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/"
+      "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
+      "tesseract": "None"
     },
    "imageLocation": "images/",
     "delCommand": "rm ",
