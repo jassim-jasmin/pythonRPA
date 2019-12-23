@@ -339,35 +339,35 @@ class Locator:
 
 
                         for fileName, locatorData in dataDictionary.items():# main
-                            # print(dataDictionary)
-                            # print('new data')
-                            # print(locatorData)
                             locatorFinalData = False
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
-                                if loactorIdInData in connectedLocator:
-                                    if connectedLocator[loactorIdInData] == loactorIdInData:
-                                        sourceDataProcessed = eachLocatorInData.upper()
-                                        sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                                        self.locatorId.append(eachLocatorInData)
-                                        locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed,
-                                                                               eachLocatorInData)
-                                    else:
-                                        for locatorId, locatorDataArray in locatorDictionary.items():
-                                            print('locatorId', locatorId, 'loactorIdInData', loactorIdInData)
-                                            print(connectedLocator[loactorIdInData], locatorId)
-                                            if connectedLocator[loactorIdInData] == locatorId:# the data is in final locator
+                                for locatorId, locatorDataArray in locatorDictionary.items():
+                                    # print('locatorId', locatorId, 'loactorIdInData', loactorIdInData)
+                                    # print(connectedLocator[locatorId], locatorId)
+                                    # if connectedLocator[loactorIdInData] == locatorId:# the data is in final locator
+                                    if locatorId in connectedLocator:
+                                        if connectedLocator[locatorId] == loactorIdInData:
+                                            sourceDataProcessed = eachLocatorInData.upper()
+                                            sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
+                                            self.locatorId.append(eachLocatorInData)
+                                            locatorFinalData = self.processLocatorData(locatorDataArray,
+                                                                                       sourceDataProcessed,
+                                                                                       eachLocatorInData)
+                                        else:
+                                            if connectedLocator[
+                                                    locatorId] == locatorId:  # the data is in final locator
                                                 sourceDataProcessed = eachLocatorInData.upper()
                                                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                                 self.locatorId.append(locatorId)
                                                 locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
 
-                                            if locatorFinalData:
-                                                locatorDataDictionary[locatorId] = locatorFinalData
-                                                locatorFinalData = False
-                                                locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
-                                            else:
-                                                if self.locatorMissMatchFlag:
-                                                    self.locatorMissMatchArray.append(locatorId)
+                                        if locatorFinalData:
+                                            locatorDataDictionary[locatorId] = locatorFinalData
+                                            locatorFinalData = False
+                                            locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
+                                        else:
+                                            if self.locatorMissMatchFlag:
+                                                self.locatorMissMatchArray.append(locatorId)
 
                         return locatorDictionaryMain
 

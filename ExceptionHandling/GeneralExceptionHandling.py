@@ -66,3 +66,25 @@ class GeneralExceptionHandling:
         except Exception as e:
             print('error in regularExpressionHandling in GeneralExceptoinHandling', e)
             return False
+
+    def getJsonDataRecurssive(self, keyValueWithComma, jsonFileData):
+        try:
+            keyValueArray = keyValueWithComma.split(',')
+
+            for keyValue in keyValueArray:
+                print(keyValue)
+                if jsonFileData:
+                    if keyValue in jsonFileData:
+                        jsonFileData = jsonFileData[keyValue]
+                    else:
+                        print('error in json \ninputkey:' + keyValue + '\njson:')
+                        print(jsonFileData)
+                        return False
+                else:
+                    return False
+
+            return jsonFileData
+
+        except Exception as e:
+            print('error in getJsonDataRecurssive in GeneralExceptionHandling', e)
+            return False

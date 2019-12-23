@@ -89,6 +89,9 @@ class DataFetchingMain:
             locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
             locatorFileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorDictionary',
                                                                    locatorFileName)
+
+            testLocator = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'imagProcessing,ocrTextPath', self.path)
+            print('recurssive', testLocator)
             if filePath:
                 locatorFilePathWithFileName = locator.processLocatorAndGetDataFromFileAll(locatorFilePath+locatorFileName, filePath)
                 return locatorFilePathWithFileName
@@ -144,7 +147,7 @@ class DataFetchingMain:
                 finalData = self.processLocatorFromDict(connectedLocator)
 
                 if finalCsv:
-                    csvHead =['legal','parcel', 'parcel_number', 'lot']
+                    csvHead =['legal','parcel', 'parcel_number', 'lot', 'block']
                     if locator.saveAsCsv(finalCsv, 'Final Data fetched\n', finalData, csvHead):
                         print('saving')
 
@@ -258,6 +261,9 @@ class DataFetchingMain:
         testLocator = ['LOTS 1, 2, 3, 4', 'LOTS 1']
         locatorId = 'lot'
         locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+        testLocator = ['Block B,']
+        locatorId = 'block'
+        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
 
     def processLocatorFromDict(self, locatorData):
         try:
@@ -283,9 +289,12 @@ class DataFetchingMain:
         try:
             processedDict = dict()
             connectorKeys = dict()
-            #     final locator key = first locator key
-            connectorKeys['parcel'] = 'parcel_number'
-            connectorKeys['legal'] = 'lot'
+
+            #first locator key      = final locator key
+            connectorKeys['parcel_number'] = 'parcel'
+            connectorKeys['lot'] = 'legal'
+            connectorKeys['block'] = 'legal'
+
             processedDict['connectorKeys'] = connectorKeys
             processedDict['locatorData'] = dictionary
             return processedDict
