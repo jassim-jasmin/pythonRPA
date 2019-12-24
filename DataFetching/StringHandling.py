@@ -164,7 +164,7 @@ class StringHandling:
             return False
 
 
-    def searchDataInFuzzySearch(self, patternBuild, sourceDataProcessed, sourceData):
+    def reSelect(self, patternBuild, sourceDataProcessed, sourceData):
         try:
             import re
 

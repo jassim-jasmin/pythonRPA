@@ -27,7 +27,8 @@
       "validationLocator": "validationLocator",
       "locatorMissMatch": "locatorMissMatch",
       "processedDataPath": "Data\\final.csv",
-      "locatorFinalDictionary": "locatorFinalDictionary"
+      "locatorFinalDictionary": "locatorFinalDictionary",
+      "finalValidation": "finalValidation"
     },
     "Data": {
       "path": "Data\\",
@@ -62,8 +63,9 @@
       "locatorDictionary": "locatorDictionary",
       "validationLocator": "validationLocator",
       "locatorMissMatch": "locatorMissMatch",
-      "processedDataPath": "Data/final.csv",
-      "locatorFinalDictionary": "locatorFinalDictionary"
+      "processedDataPath": "DataFetching/files/final.csv",
+      "locatorFinalDictionary": "locatorFinalDictionary",
+      "finalValidation": "finalValidation"
     },
     "Data": {
       "path": "Data/",

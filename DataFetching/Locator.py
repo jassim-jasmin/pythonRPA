@@ -46,22 +46,21 @@ class Locator:
                 locatorJsonFileNamewithPath = ''
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
-                print('main', locatorJsonFileNamewithPath)
 
                 locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileNamewithPath)
                 if locatorData:
                     locatorData = json.loads(locatorData)
-                    fileData = self.getLocatorDataFromID(locatorData, locatorId)
 
-                    if fileData:
-                        data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence)
+                    if locatorId in locatorData:
+                        fileData = locatorData[locatorId]
+                        data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence+10)
                         if data:
                             if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                                 return True
                             else:
                                 return False
                         else:
-                            print('data error ', locationString, fileData)
+                            print('locator adding failed, similar pattern available', locationString, fileData)
                             return False
                     elif stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                         return True
@@ -127,10 +126,11 @@ class Locator:
                     matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocator, sourceDataProcessed)
                     if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
                         bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord)[0]
-                        # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord)
+
 
                         if len(matchingFuzzyWord) > 0:
                             bestMatch = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling,bestMatch,0)
+                            # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord, 'best match:::', bestMatch)
                             if i == 0:
                                 patternBuild = patternBuild + bestMatch
                             else:
@@ -150,7 +150,7 @@ class Locator:
                     if patternBuild:
                         stringHandling = StringHandling(self.path)
                         # print('pattern build: ', patternBuild)
-                        locatorData = stringHandling.searchDataInFuzzySearch(patternBuild, sourceDataProcessed, sourceData)
+                        locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:
                             # print('processLocatorData: ',locatorData)
@@ -346,7 +346,7 @@ class Locator:
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
                                 for locatorId, locatorDataArray in locatorDictionary.items():
                                     # print('locatorId', locatorId, 'loactorIdInData', loactorIdInData)
-                                    # print(connectedLocator[locatorId], locatorId)
+                                    # print('connectedLocator', connectedLocator, locatorId)
                                     # if connectedLocator[loactorIdInData] == locatorId:# the data is in final locator
                                     if locatorId in connectedLocator:
                                         if connectedLocator[locatorId] == loactorIdInData:
@@ -356,6 +356,8 @@ class Locator:
                                             locatorFinalData = self.processLocatorData(locatorDataArray,
                                                                                        sourceDataProcessed,
                                                                                        eachLocatorInData)
+                                            # if locatorFinalData:
+                                            #     print('locatorFinalData', locatorFinalData)
                                         else:
                                             if connectedLocator[
                                                     locatorId] == locatorId:  # the data is in final locator
@@ -363,6 +365,7 @@ class Locator:
                                                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                                 self.locatorId.append(locatorId)
                                                 locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
+                                                print('locatorFinalData', locatorFinalData)
 
                                         if locatorFinalData:
                                             locatorDataDictionary[locatorId] = locatorFinalData

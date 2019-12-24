@@ -60,7 +60,7 @@ class LocatorValidation:
 
     def addValidation(self, locatorValidationDirectoryPath, locatorId, validation, flag):
         try:
-            # locatorValidationDirectoryPath = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
+            # locatorValidationData = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
             if locatorValidationDirectoryPath:
                 validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
                 validationArray = []
@@ -91,7 +91,7 @@ class LocatorValidation:
                 fp.close()
                 return True
             else:
-                print('no locatorValidationDirectoryPath')
+                print('no locatorValidationData')
                 return False
         except Exception as e:
             print('error in addvalidation in validation', e)
@@ -114,4 +114,22 @@ class LocatorValidation:
 
         except Exception as e:
             print('error in validatinglocator in validation', e)
+            return False
+
+    def addCompleteValidation(self, locatorValidationData, validationArray):
+        try:
+            fp = open(locatorValidationData, 'w')
+            fp.flush()
+            fp.close()
+            locatorValidation = LocatorValidation(self.path)
+
+            for eachLocaotrData in validationArray:
+                locatorId, pattern, flag = eachLocaotrData
+                if not self.addValidation(locatorValidationData, locatorId, pattern, flag):
+                    print('error in adding locator validation')
+                    return False
+
+            return True
+        except Exception as e:
+            print('error in addLocatorValidation in DataFetching', e)
             return False
