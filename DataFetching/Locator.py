@@ -13,13 +13,12 @@ class Locator:
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
         self.locatorId = []
-
-        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching',
-                                                                          self.path)
-        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath',
-                                                                          self.DataFetchingFilesPath)
-        fileName = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        self.dataFetchingLocatorMissMatch =  GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'locatorMissMatch', fileName)
+        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                       'DataFetching,filesPath',
+                                                                                       self.path)
+        self.dataFetchingLocatorMissMatch = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                       'DataFetching,locatorMissMatch',
+                                                                                       self.path)
 
     def getLocatorDataFromID(self, locatorData, locatorId):
         try:
@@ -44,8 +43,10 @@ class Locator:
 
                 stringHandling = StringHandling(self.path)
                 DrectoryHandling.createDirectory(DrectoryHandling, locatorDirectory)
+                locatorJsonFileNamewithPath = ''
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
+                print('main', locatorJsonFileNamewithPath)
 
                 locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileNamewithPath)
                 if locatorData:
@@ -55,15 +56,17 @@ class Locator:
                     if fileData:
                         data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence)
                         if data:
-                            if stringHandling.addStringWriteFile(locationString, locatorJsonFileNamewithPath, locatorId, locatorDirectory):
+                            if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                                 return True
                             else:
                                 return False
                         else:
+                            print('data error ', locationString, fileData)
                             return False
                     elif stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                         return True
                     else:
+                        print('write error', locatorJsonFileName)
                         return False
                 else:
                     if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):

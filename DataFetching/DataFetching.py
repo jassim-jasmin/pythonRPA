@@ -61,8 +61,9 @@ class DataFetchingMain:
             imageProcessing = ImageProcessing(self.path)
 
             imageNameKey = 'tif'
-            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagProcessing', self.path)
-            filePath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'imagePath', filePath)
+            filePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                                               'imagProcessing,imagePath',
+                                                                                               self.path)
 
             if imageProcessing.ocrAllImage(imageNameKey, filePath):
                 locator = Locator(self.path)
@@ -162,24 +163,35 @@ class DataFetchingMain:
         locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
                                                                   'DataFetching,filesPath',
                                                                   self.path)
+        fp = open(locatorDirectory+dataFetchingLocatorDictionary+'.json', 'w')
+        fp.flush()
+        fp.close()
 
         locator = Locator(self.path)
 
-        testLocator = ['lot', 'block', 'plat']
-        locatorId = 'legal'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+        # testLocator = ['lot', 'block', 'plat']
+        # locatorId = 'legal'
+        # if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
+        #     print('error 1')
 
         testLocator = ['lot', 'block', 'plat', 'county']
         locatorId = 'legal'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
+            print('error 2')
+        else:
+            print('success locator 2')
 
         testLocator = ['lot', 'plat', 'thereof']
         locatorId = 'legal'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
+            print('error 3')
+            print('error;3 ', locatorDirectory + dataFetchingLocatorDictionary + '.json')
+        print('test;3 ', locatorDirectory + dataFetchingLocatorDictionary + '.json')
 
         testLocator = ['271-02171-0101', 'parcel']
         locatorId = 'parcel'
-        locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
+        if not locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory):
+            print('error 4')
 
     def addLocatorValidation(self):
         try:
@@ -191,6 +203,8 @@ class DataFetchingMain:
                                                                               self.path)
             # partial fetch
             locatorValidationDirectoryPath = filesPath + validationLocator + '.json'
+            # fp = open(locatorValidationDirectoryPath, 'w')
+            # fp.close()
             locatorValidation = LocatorValidation(self.path)
             locatorData = [('parcel','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'),('legal', '^ *\d', 'False'),('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False')]
 
@@ -236,13 +250,15 @@ class DataFetchingMain:
                                                                                        'DataFetching,filesPath',
                                                                                        self.path)
 
-
+        print('dataFetchingLocatorDictionary', locatorDirectory+ dataFetchingLocatorDictionary+'.json')
+        fp = open(locatorDirectory+dataFetchingLocatorDictionary+'.json', 'w')
+        fp.close()
         locator = Locator(self.path)
         testLocator = ['271-02171-0101']
         locatorId = 'parcel_number'
         locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
 
-        testLocator = ['LOTS 1, 2, 3, 4', 'LOTS 1']
+        testLocator = ['LOTS 1, 2, 3, 4', 'LOT 1']
         locatorId = 'lot'
         locator.addLocatorToDictionary(testLocator, locatorId, dataFetchingLocatorDictionary, locatorDirectory)
         testLocator = ['Block B,']

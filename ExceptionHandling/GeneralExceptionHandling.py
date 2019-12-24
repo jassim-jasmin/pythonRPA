@@ -1,10 +1,16 @@
+import os
+
 class GeneralExceptionHandling:
     def getFileData(self, fileNameWithPath):
         try:
             fp = open(fileNameWithPath, 'r')
             data = fp.read()
+            fp.flush()
             fp.close()
-            return data
+            if os.stat(fileNameWithPath).st_size == 0:
+                return False
+            else:
+                return data
         except Exception as e:
             print('error in getFileData in GeneralExceptionHandlig', e)
             return False
