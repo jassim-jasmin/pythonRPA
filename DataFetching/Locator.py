@@ -5,6 +5,7 @@ from fuzzywuzzy import process
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
 from DataFetching.StringHandling import StringHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+from DataFetching.validation import LocatorValidation
 
 class Locator:
     def __init__(self, path):
@@ -19,17 +20,6 @@ class Locator:
         self.dataFetchingLocatorMissMatch = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
                                                                                        'DataFetching,locatorMissMatch',
                                                                                        self.path)
-
-    def getLocatorDataFromID(self, locatorData, locatorId):
-        try:
-            if locatorId in locatorData:
-                return locatorData[locatorId]
-            else:
-                print('getLocatorDataFromID has not matching ', locatorData, locatorId)
-                return False
-        except Exception as e:
-            print('error in getFileData', e)
-            return False
 
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory):
         try:
@@ -80,7 +70,7 @@ class Locator:
 
     def getLocatorDataArray(self, locatorFilePathWithFileName):
         try:
-            fp = open(locatorFilePathWithFileName+'.json', 'r')
+            fp = open(locatorFilePathWithFileName, 'r')
             locatorJson = json.loads(fp.read())
             locator = []
             locatorDictionary = dict()
@@ -153,7 +143,7 @@ class Locator:
                         locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:
-                            # print('processLocatorData: ',locatorData)
+                            # print('processLocatorData: ',locatorData, patternBuild)
                             return locatorData
                         else:
                             return False
@@ -200,8 +190,11 @@ class Locator:
             print('errror in processLocatorAndGetDataFromFile in locator', e)
             return False
 
-    def processLocatorAndGetDataFromFileAll(self, locatorFilePathWithFileName, sourceDataPath):
+    def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath):
         try:
+            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                             'DataFetching,filesPath', self.path)
+            locatorFilePathWithFileName = locatorFilePath+layerName+'.json'
             from ExceptionHandling.DirecotryHandling import DrectoryHandling
             drectoryHandling = DrectoryHandling()
 
@@ -226,7 +219,9 @@ class Locator:
                                 if len(fileNameSplit)>0:
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
 
-                    return locatorDirectoryWithFileName
+                    validation = LocatorValidation(self.path)
+                    # print('locator', locatorDirectoryWithFileName)
+                    return validation.validateLayer(locatorDirectoryWithFileName, layerName)
                 else:
                     print('error no data in ', sourceDataPath, ' Processing locator failed')
                     return False
@@ -256,7 +251,7 @@ class Locator:
                     csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
                     headData = 'Locator miss match\n'
                     locatorMissMatchDictionary = self.locatorMissMatchDictionary
-                    self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
+                    # self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
 
                     return True
                 else:
@@ -268,44 +263,59 @@ class Locator:
             # print('data: ', saveMissMatchData)
             return False
 
-    def saveAsCsv(self, csvNameWithPath, headData,locatorMissMatchDictionary, csvHead=False):
+    def saveAsCsv(self, csvNameWithPath, tag,layerDictionary):
         try:
             import csv
 
-            with open(csvNameWithPath, 'w') as csvfile:
-                csvfile.write(headData)
-                fieldNames = ['file name', 'no match']
-                if csvHead:
-                    fieldNames.extend(csvHead)
-                else:
-                    fieldNames.extend(self.locatorId[:])
-                csvfile.newlines
-                writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
-                writer.writeheader()
-                print('csv save file:', csvNameWithPath)
-                for fileName, missmatchFieldData in locatorMissMatchDictionary.items():
-                    csvEacRowLocator = dict()
-                    csvEacRowLocator['file name'] = fileName
+            if layerDictionary:
+                with open(csvNameWithPath, 'w') as csvfile:
+                    # print('opening csv', layerDictionary)
+                    csvfile.write(tag)
+                    fieldNames = ['file name', 'no match']
+                    if 'locator' in layerDictionary:
+                        fieldNames.extend(layerDictionary['locator'])
+                    else:
+                        fieldNames.extend(self.locatorId[:])
 
-                    for data in missmatchFieldData:
-                        array = []
-                        dictionary = dict()
+                    if 'locatorData' in layerDictionary:
+                        layerData = layerDictionary['locatorData']
+                        # print('layer data: ', layerData)
+                        csvfile.newlines
+                        writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
+                        writer.writeheader()
+                        print('csv save file:', csvNameWithPath)
+                        for fileName, locatorData in layerData.items():
+                            # print('csv data', fileName, locatorData)
+                            csvEacRowLocator = dict()
+                            csvEacRowLocator['file name'] = fileName
 
-                        if type(missmatchFieldData) is  type(array):
-                            csvEacRowLocator[data] = data
-                        elif type(missmatchFieldData) is type(dictionary):
-                            if data in missmatchFieldData:
-                                csvEacRowLocator[data] = missmatchFieldData[data]
-                            else:
-                                print('Error json error key' + data + ' not in ')
-                                print(missmatchFieldData)
-                                return False
-                        else:
-                            return False
+                            for data in locatorData:
+                                array = []
+                                dictionary = dict()
 
-                    writer.writerow(csvEacRowLocator)
+                                if type(locatorData) is  type(array):
+                                    csvEacRowLocator[data] = data
+                                elif type(locatorData) is type(dictionary):
+                                    if data in locatorData:
+                                        csvEacRowLocator[data] = locatorData[data]
+                                    else:
+                                        print('Error json error key' + data + ' not in ')
+                                        print(locatorData)
+                                        return False
+                                else:
+                                    print('not a dictionary', locatorData)
+                                    return False
+
+                            writer.writerow(csvEacRowLocator)
+                        return True
+                    else:
+                        print('error creating csv invalid layer data')
+                        return False
+            else:
+                print('error in csv dictionary in saveAsCsv in Locator')
+                return False
         except Exception as e:
-            print("I/O error", e)
+            print("error in saveAsCsv in Locator", e)
 
     def getValidatedLocatorData(self, locatorDataDirectory, validation):
         try:
@@ -324,58 +334,72 @@ class Locator:
             print('error in printLocatorDataWithLocatorId in locator', e)
             return False
 
-    def processLocatorAndGetDataFromDictionary(self, locatorFilePathWithFileName, mainDataDictionary):
+    def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys):
         try:
-            if mainDataDictionary:
+            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+                                                                             'DataFetching,filesPath',
+                                                                             self.path)
+            layerPath = locatorFilePath+processLayerName+'.json'
+            locatorArray = []
+            # print('layer path: ', layerPath)
+            layerDataMain = dict()
+            # print(layerDictionary)
+
+            if 'locatorData' in layerDictionary:
+                layerData = layerDictionary['locatorData']
+            else:
+                layerData = False
+
+            if layerData:
                 try:
-                    connectedLocator = mainDataDictionary['connectorKeys']
-                    dataDictionary = mainDataDictionary['locatorData']  # primary dictionary
+                    dataDictionary = layerData  # primary dictionary
+                    if 'locator' in layerDictionary:
+                        locatorArray = layerDictionary['locator']
+
                     import re
                     locatorDataDictionary = dict()
 
-                    # print('locatorFilePathWithFileName:', locatorFilePathWithFileName)
-                    locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName) # new dictionary
+                    locatorDictionary = self.getLocatorDataArray(layerPath) # new dictionary
                     if locatorDictionary and dataDictionary:
                         self.locatorMissMatchArray = []
                         self.locatorId = []
                         locatorDictionaryMain = dict()
 
-
                         for fileName, locatorData in dataDictionary.items():# main
                             locatorFinalData = False
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
                                 for locatorId, locatorDataArray in locatorDictionary.items():
-                                    # print('locatorId', locatorId, 'loactorIdInData', loactorIdInData)
-                                    # print('connectedLocator', connectedLocator, locatorId)
-                                    # if connectedLocator[loactorIdInData] == locatorId:# the data is in final locator
-                                    if locatorId in connectedLocator:
-                                        if connectedLocator[locatorId] == loactorIdInData:
+                                    if locatorId in connectorKeys:
+                                        # print('locatorrrrr:::', locatorId,connectorKeys[locatorId], loactorIdInData)
+                                        if connectorKeys[locatorId] == loactorIdInData:
                                             sourceDataProcessed = eachLocatorInData.upper()
                                             sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                             self.locatorId.append(eachLocatorInData)
+                                            locatorArray.append(locatorId)
                                             locatorFinalData = self.processLocatorData(locatorDataArray,
                                                                                        sourceDataProcessed,
                                                                                        eachLocatorInData)
-                                            # if locatorFinalData:
-                                            #     print('locatorFinalData', locatorFinalData)
+                                            # print('data;;', locatorFinalData)
                                         else:
-                                            if connectedLocator[
+                                            if connectorKeys[
                                                     locatorId] == locatorId:  # the data is in final locator
                                                 sourceDataProcessed = eachLocatorInData.upper()
                                                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                                 self.locatorId.append(locatorId)
                                                 locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
-                                                print('locatorFinalData', locatorFinalData)
+                                                # print('locatorFinalData', locatorFinalData)
+                                                locatorArray.append(locatorId)
 
                                         if locatorFinalData:
                                             locatorDataDictionary[locatorId] = locatorFinalData
                                             locatorFinalData = False
                                             locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
-                                        else:
-                                            if self.locatorMissMatchFlag:
-                                                self.locatorMissMatchArray.append(locatorId)
+                                            locatorArray.append(locatorId)
 
-                        return locatorDictionaryMain
+                        validation = LocatorValidation(self.path)
+                        data =  validation.validateLayer(locatorDictionaryMain, processLayerName)
+
+                        return data
 
                 except Exception as e:
                     print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
@@ -384,7 +408,7 @@ class Locator:
                     return False
                 return True
             else:
-                print('error in source dictionary Locator sourceData', mainDataDictionary)
+                print('error in source dictionary Locator sourceData', layerDataMain)
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)

@@ -93,3 +93,15 @@ class GeneralExceptionHandling:
         except Exception as e:
             print('error in getJsonDataRecurssive in GeneralExceptionHandling', e)
             return False
+
+    def removeArrayDuplicate(self, array):
+        try:
+            seen = set()
+
+            array[:] = [item for item in array
+                                  if item not in seen and not seen.add(item)]
+            return array
+        except Exception as e:
+            print('error in removeArrayDuplicate', e)
+            return False
+
