@@ -2,10 +2,10 @@ from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
 
-class DataFetchingMain:
-    print('Data fetching')
+class DataFetchingMain(Locator):
     def __init__(self, path):
         self.path = path
+        Locator.__init__(self, path)
 
     def generateOCR(self, imagesPath, ocrTextPath):
         try:
@@ -51,10 +51,10 @@ class DataFetchingMain:
             fp.flush()
             fp.close()
 
-            locator = Locator(self.path)
+            # locator = Locator(self.path)
 
             for locatorId, locatorData in data:
-                if not locator.addLocatorToDictionary(locatorData, locatorId, layerName, locatorDirectory):
+                if not self.addLocatorToDictionary(locatorData, locatorId, layerName, locatorDirectory):
                     return False
 
             return True
@@ -80,21 +80,25 @@ class DataFetchingMain:
                 return False
 
             validation = LocatorValidation(self.path)
-            locator = Locator(self.path)
+            # locator = Locator(self.path)
 
             validation.addValidationLayer('layer1', self.getValidation1())
             validation.addValidationLayer('layer2', self.getValidation2())
 
             # locatorDataDirectory = self.processLayerFromSourceFile('layer1', ocrTextDirectoryPath)
-            layerData = locator.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
+            layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
 
             # print('layer1 out', layerData)
-            self.saveDataAsCSV('layer1Out', layerData, 'layer1Out')
+            if not self.saveDataAsCSV('layer1Out', layerData, 'layer1Out'):
+                print('error saving csv layer1')
+                return False
 
-            locatorDataDictionary = locator.processLayerFromLayer('layer2', layerData, self.connectingLocator())
+            locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, self.connectingLocator())
 
             # print('layer2 out', locatorDataDictionary)
-            self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out')
+            if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
+                print('error saving csv layer2')
+                return False
 
             print('completed')
 
@@ -166,14 +170,16 @@ class DataFetchingMain:
     def saveDataAsCSV(self, fileName, dataDictionary, tag):
         try:
             csvName = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path)
-            locator = Locator(self.path)
+            # locator = Locator(self.path)
             csvName = csvName+fileName+'.csv'
             fp = open(csvName, 'w')
             fp.flush()
             fp.close()
 
-            if locator.saveAsCsv(csvName, tag+'\n', dataDictionary):
-                print('saving')
+            if self.saveAsCsv(csvName, tag+'\n', dataDictionary):
+                return True
+            else:
+                return False
         except Exception as e:
             print('error in saveDataAsCSV in DataFetching', e)
             return False

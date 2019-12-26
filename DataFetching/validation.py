@@ -1,16 +1,14 @@
 import json
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
-class LocatorValidation:
+class LocatorValidation(GeneralExceptionHandling):
     def __init__(self, path):
+        GeneralExceptionHandling.__init__(self)
         self.path = path
         self.locatorValidationArray = dict()
 
-        self.dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        self.dataFetchingValidationLocatorPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'validationLocator', self.dataFetchingValidationLocatorPath)
-
-        self.dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'DataFetching', self.path)
-        self.dataFetchingFilesPath = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, 'filesPath', self.dataFetchingFilesPath)
+        self.dataFetchingValidationLocatorPath = self.getJsonDataRecurssive('DataFetching,validationLocator', self.path)
+        self.dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
 
     def patternCheck(self, pattern, string):
         try:
@@ -29,7 +27,7 @@ class LocatorValidation:
 
     def getValidity(self, locatorId, locatorData, locatorValidationDirectoryPath):
         try:
-            validatorDirectory = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
+            validatorDirectory = self.getFileData(locatorValidationDirectoryPath)
 
             if validatorDirectory:
                 validatorDirectory = json.loads(validatorDirectory)
@@ -56,9 +54,8 @@ class LocatorValidation:
 
     def addValidation(self, locatorValidationDirectoryPath, locatorId, validation, flag):
         try:
-            # locatorValidationData = self.dataFetchingFilesPath + self.dataFetchingValidationLocatorPath + '.json'
             if locatorValidationDirectoryPath:
-                validatorData =  GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorValidationDirectoryPath)
+                validatorData = self.getFileData(locatorValidationDirectoryPath)
                 validationArray = []
 
                 if not validatorData:
@@ -96,9 +93,7 @@ class LocatorValidation:
 
     def addValidationLayer(self, layerName, validationArray):
         try:
-            filesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                       'DataFetching,filesPath',
-                                                                       self.path)
+            filesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             fileName = filesPath +layerName + '_validation.json'
             fp = open(fileName, 'w')
             fp.flush()
@@ -123,9 +118,7 @@ class LocatorValidation:
 
     def validateLayer(self, layerDictionaryOrData, layerName):
         try:
-            dataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                   'DataFetching,filesPath',
-                                                                                   self.path)
+            dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             validationLayer = dataFetchingFilesPath + layerName + '_validation.json'
             layerDictionaryMain  = dict()
 
@@ -171,7 +164,7 @@ class LocatorValidation:
                     #     validatedLayer[fileName] = locatorData.copy()
                 # print('dataa:::::', validatedLayer)
 
-                layerDictionaryMain['locator'] = GeneralExceptionHandling.removeArrayDuplicate(GeneralExceptionHandling, locatorArray)
+                layerDictionaryMain['locator'] = self.removeArrayDuplicate(locatorArray)
                 layerDictionaryMain['locatorData'] = validatedLayer
                 return layerDictionaryMain
             return False
@@ -182,9 +175,7 @@ class LocatorValidation:
 
     def processLayerFromLayer(self, layerDirectory, processLayerName):
         try:
-            dataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                   'DataFetching,filesPath',
-                                                                                   self.path)
+            dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             processLayerPath = dataFetchingFilesPath+processLayerName+'_validation.json'
 
             if 'locatorData' in layerDirectory:

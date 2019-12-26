@@ -7,19 +7,17 @@ from DataFetching.StringHandling import StringHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
 
-class Locator:
+class Locator(GeneralExceptionHandling, DrectoryHandling):
     def __init__(self, path):
         self.path = path
+        GeneralExceptionHandling.__init__(self)
+        DrectoryHandling.__init__(self)
         self.mainLocator = dict()
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
         self.locatorId = []
-        self.DataFetchingFilesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                       'DataFetching,filesPath',
-                                                                                       self.path)
-        self.dataFetchingLocatorMissMatch = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                       'DataFetching,locatorMissMatch',
-                                                                                       self.path)
+        self.DataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+        self.dataFetchingLocatorMissMatch = self.getJsonDataRecurssive('DataFetching,locatorMissMatch', self.path)
 
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory):
         try:
@@ -32,12 +30,12 @@ class Locator:
                         locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
 
                 stringHandling = StringHandling(self.path)
-                DrectoryHandling.createDirectory(DrectoryHandling, locatorDirectory)
+                self.createDirectory(locatorDirectory)
                 locatorJsonFileNamewithPath = ''
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
 
-                locatorData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, locatorJsonFileNamewithPath)
+                locatorData = self.getFileData(locatorJsonFileNamewithPath)
                 if locatorData:
                     locatorData = json.loads(locatorData)
 
@@ -119,7 +117,7 @@ class Locator:
 
 
                         if len(matchingFuzzyWord) > 0:
-                            bestMatch = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling,bestMatch,0)
+                            bestMatch = self.regularExpressionHandling(bestMatch, 0)
                             # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord, 'best match:::', bestMatch)
                             if i == 0:
                                 patternBuild = patternBuild + bestMatch
@@ -192,21 +190,18 @@ class Locator:
 
     def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath):
         try:
-            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                             'DataFetching,filesPath', self.path)
+            locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             locatorFilePathWithFileName = locatorFilePath+layerName+'.json'
-            from ExceptionHandling.DirecotryHandling import DrectoryHandling
-            drectoryHandling = DrectoryHandling()
 
             if sourceDataPath:
-                fileNameArray = drectoryHandling.getDirectoryElementBykey(sourceDataPath, 'txt')
+                fileNameArray = self.getDirectoryElementBykey(sourceDataPath, 'txt')
 
                 if fileNameArray:
 
                     locatorDirectoryWithFileName = dict()
 
                     for eachTextFile in fileNameArray:
-                        textFileData = GeneralExceptionHandling.getFileData(GeneralExceptionHandling, sourceDataPath+eachTextFile)
+                        textFileData = self.getFileData(sourceDataPath+eachTextFile)
                         if textFileData:
                             locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
                             if locatorDataDictionary:
@@ -232,36 +227,36 @@ class Locator:
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFileAll in locator', e)
             return False
-        finally:
-            if self.locatorMissMatchFlag:
-                self.saveMissMatch()
+        # finally:
+        #     if self.locatorMissMatchFlag:
+        #         self.saveMissMatch()
 
-    def saveMissMatch(self):
-        try:
-            if self.locatorMissMatchDictionary:
-                saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
-                fileName = self.dataFetchingLocatorMissMatch
-
-                if fileName and self.DataFetchingFilesPath:
-                    print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
-                    fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
-                    fp.write(saveMissMatchData)
-                    fp.close()
-
-                    csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
-                    headData = 'Locator miss match\n'
-                    locatorMissMatchDictionary = self.locatorMissMatchDictionary
-                    # self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
-
-                    return True
-                else:
-                    print('error in source file or file name in locatorMissmatch')
-                    return False
-                    # print('data: ', saveMissMatchData)
-        except Exception as e:
-            print('error in saveMissMatch', e)
-            # print('data: ', saveMissMatchData)
-            return False
+    # def saveMissMatch(self):
+    #     try:
+    #         if self.locatorMissMatchDictionary:
+    #             saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
+    #             fileName = self.dataFetchingLocatorMissMatch
+    #
+    #             if fileName and self.DataFetchingFilesPath:
+    #                 print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
+    #                 fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
+    #                 fp.write(saveMissMatchData)
+    #                 fp.close()
+    #
+    #                 csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
+    #                 headData = 'Locator miss match\n'
+    #                 locatorMissMatchDictionary = self.locatorMissMatchDictionary
+    #                 # self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
+    #
+    #                 return True
+    #             else:
+    #                 print('error in source file or file name in locatorMissmatch')
+    #                 return False
+    #                 # print('data: ', saveMissMatchData)
+    #     except Exception as e:
+    #         print('error in saveMissMatch', e)
+    #         # print('data: ', saveMissMatchData)
+    #         return False
 
     def saveAsCsv(self, csvNameWithPath, tag,layerDictionary):
         try:
@@ -336,9 +331,7 @@ class Locator:
 
     def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys):
         try:
-            locatorFilePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                             'DataFetching,filesPath',
-                                                                             self.path)
+            locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             layerPath = locatorFilePath+processLayerName+'.json'
             locatorArray = []
             # print('layer path: ', layerPath)

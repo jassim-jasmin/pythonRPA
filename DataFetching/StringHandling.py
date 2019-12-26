@@ -3,11 +3,8 @@ from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
-from ExceptionHandling.DirecotryHandling import DrectoryHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
-# from DataFetching.Locator import Locator
 from imageProcessing.imageProcessing import ImageProcessing
-#from PdfHandling.PdfHandling import PdfHanling
 
 class StringHandling:
     print('string handling')
@@ -103,7 +100,7 @@ class StringHandling:
                                 if item not in seen and not seen.add(item)]
             jsonData[locatorId] = arrayElement
 
-            fp  = open(self.path['DataFetching']['filesPath'] + fileName+'.json', 'w')
+            fp  = open(GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path) + fileName+'.json', 'w')
 
             if fp.writable():
                 # fp.write(',' + writeData)
