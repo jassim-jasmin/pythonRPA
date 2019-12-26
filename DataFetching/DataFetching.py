@@ -2,14 +2,14 @@ from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
 
-class DataFetchingMain(Locator):
+class DataFetchingMain(Locator, GeneralExceptionHandling):
     def __init__(self, path):
         self.path = path
         Locator.__init__(self, path)
+        GeneralExceptionHandling.__init__(self)
 
     def generateOCR(self, imagesPath, ocrTextPath):
         try:
-            # self.locatorAdding()
             from imageProcessing.imageProcessing import ImageProcessing
             imageProcessing = ImageProcessing(self.path)
 
@@ -24,12 +24,8 @@ class DataFetchingMain(Locator):
         try:
             from PdfHandling.PdfHandling import PdfHanling
             pdfHandling = PdfHanling()
-            pdfPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                             'imagProcessing,pdfPath',
-                                                                             self.path)
-            imagePath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                             'imagProcessing,imagePath',
-                                                                             self.path)
+            pdfPath = self.getJsonDataRecurssive('imagProcessing,pdfPath', self.path)
+            imagePath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
 
             for fileName, locatorDataDictionary in locatorFilePathWithFileName.items():
                 print('filename: ', fileName)
@@ -44,9 +40,7 @@ class DataFetchingMain(Locator):
 
     def addLoatorLayer(self, layerName, data):
         try:
-            locatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                      'DataFetching,filesPath',
-                                                                      self.path)
+            locatorDirectory = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             fp = open(locatorDirectory+layerName+'.json', 'w')
             fp.flush()
             fp.close()
@@ -64,12 +58,9 @@ class DataFetchingMain(Locator):
 
     def imageDataProcessing(self):
         try:
-            imagesPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                      'imagProcessing,imagePath',
-                                                                      self.path)
-            ocrTextDirectoryPath = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                                  'imagProcessing,ocrTextPath',
-                                                                                  self.path)
+            imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
+            ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
+
             # if not self.generateOCR(imagesPath, ocrTextDirectoryPath):
             #     exit()
 
@@ -169,8 +160,7 @@ class DataFetchingMain(Locator):
 
     def saveDataAsCSV(self, fileName, dataDictionary, tag):
         try:
-            csvName = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path)
-            # locator = Locator(self.path)
+            csvName = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             csvName = csvName+fileName+'.csv'
             fp = open(csvName, 'w')
             fp.flush()
