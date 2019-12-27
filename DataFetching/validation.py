@@ -1,4 +1,3 @@
-import json
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 
 class LocatorValidation(GeneralExceptionHandling):
@@ -16,10 +15,8 @@ class LocatorValidation(GeneralExceptionHandling):
             searchPattern = re.search(pattern, string, re.IGNORECASE)
 
             if searchPattern:
-                # print('pattern match')
                 return True
             else:
-                # print('pattern no match')
                 return False
         except Exception as e:
             print('error in pattern check in validation', e)
@@ -27,16 +24,14 @@ class LocatorValidation(GeneralExceptionHandling):
 
     def getValidity(self, locatorId, locatorData, locatorValidationDirectoryPath):
         try:
-            validatorDirectory = self.getFileData(locatorValidationDirectoryPath)
+            validatorDirectory = self.readFileAndReturnJson(locatorValidationDirectoryPath)
 
             if validatorDirectory:
-                validatorDirectory = json.loads(validatorDirectory)
                 for flag, seperatedValidation in validatorDirectory.items():
                     if locatorId in seperatedValidation:
                         validatorPatternArray = seperatedValidation[locatorId]
                         for validatorPattern in validatorPatternArray:
                             patternValidation = self.patternCheck(validatorPattern, locatorData)
-                            # print('final validity', validatorPattern, '::', locatorData,'::', patternValidation)
 
                             if flag == 'True':
                                 if not patternValidation:
@@ -55,15 +50,13 @@ class LocatorValidation(GeneralExceptionHandling):
     def addValidation(self, locatorValidationDirectoryPath, locatorId, validation, flag):
         try:
             if locatorValidationDirectoryPath:
-                validatorData = self.getFileData(locatorValidationDirectoryPath)
+                validatorDirectory = self.readFileAndReturnJson(locatorValidationDirectoryPath)
                 validationArray = []
 
-                if not validatorData:
+                if not validatorDirectory:
                     validatorDirectory = dict()
                     seperatedValidation = dict()
                 else:
-                    validatorDirectory = json.loads(validatorData)
-
                     if flag in validatorDirectory:
                         seperatedValidation = validatorDirectory[flag]
                         if locatorId in seperatedValidation:
@@ -72,17 +65,10 @@ class LocatorValidation(GeneralExceptionHandling):
                         seperatedValidation = dict()
 
                 validationArray.append(validation)
-                seen = set()
-
-                validationArray[:] = [item for item in validationArray
-                                   if item not in seen and not seen.add(item)]
-                seperatedValidation[locatorId] = validationArray
+                seperatedValidation[locatorId] = self.removeArrayDuplicate(validationArray)
                 validatorDirectory[flag] = seperatedValidation
 
-                fp = open(locatorValidationDirectoryPath, 'w')
-                fp.write(json.dumps(validatorDirectory))
-                fp.close()
-                return True
+                return self.writeJsonDataToFile(validatorDirectory, locatorValidationDirectoryPath)
             else:
                 print('no locatorValidationData')
                 return False
@@ -98,10 +84,8 @@ class LocatorValidation(GeneralExceptionHandling):
             fp = open(fileName, 'w')
             fp.flush()
             fp.close()
-            # print(validationArray, 'validation')
 
             for eachLocaotrData in validationArray:
-                # print('length:', len(eachLocaotrData))
                 if len(eachLocaotrData) == 3:
                     locatorId, pattern, flag = eachLocaotrData
                     if not self.addValidation(fileName, locatorId, pattern, flag):
@@ -137,14 +121,9 @@ class LocatorValidation(GeneralExceptionHandling):
                     valid = []
                     for locatorId, locatorData in locatorDirectory.items():
                         if self.getValidity(locatorId, locatorData, validationLayer):
-                            # print('validity::', locatorId, locatorData, validationLayer)
                             valid.append(locatorId)
                             locatorArray.append(locatorId)
-                        # else:
-                            # print('rejected', fileName, locatorId, locatorData, validationLayer)
-                            # print('vald::::', valid)
                     validDictionary[fileName] = valid
-                    # print('dicitionary::', validDictionary)
 
                 #final out
                 validatedLayer = dict()
@@ -156,43 +135,12 @@ class LocatorValidation(GeneralExceptionHandling):
                             if locatorIdMain in validDictionary[fileName]:
                                 layerDictionary[locatorIdMain] = locatorDataMain
                                 locatorArray.append(locatorIdMain)
-                        # print('locatorData', locatorData)
-                        # print('locatorArray', layerDictionary)
+
                         validatedLayer[fileName] = layerDictionary.copy()
-                        # print('values::', locatorData, validDictionary[fileName])
-                    # else:
-                    #     validatedLayer[fileName] = locatorData.copy()
-                # print('dataa:::::', validatedLayer)
 
                 layerDictionaryMain['locator'] = self.removeArrayDuplicate(locatorArray)
                 layerDictionaryMain['locatorData'] = validatedLayer
                 return layerDictionaryMain
-            return False
-
-        except Exception as e:
-            print('error in validatinglocator in validation', e)
-            return False
-
-    def processLayerFromLayer(self, layerDirectory, processLayerName):
-        try:
-            dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
-            processLayerPath = dataFetchingFilesPath+processLayerName+'_validation.json'
-
-            if 'locatorData' in layerDirectory:
-                layerData = layerDirectory['locatorData']
-            else:
-                layerData = False
-
-            if layerData:
-                validationDictionary = dict()
-                for fileName, locatorDirectory in layerData.items():
-                    # print(fileName)
-                    validity = dict()
-                    for locatorId, locatorData in locatorDirectory.items():
-                        validity[locatorId] = self.getValidity(locatorId, locatorData,
-                                                               processLayerPath)
-                    validationDictionary[fileName] = validity
-                return validationDictionary
             return False
 
         except Exception as e:

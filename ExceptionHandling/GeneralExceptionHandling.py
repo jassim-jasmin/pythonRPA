@@ -1,4 +1,5 @@
 import os
+import json
 
 class GeneralExceptionHandling:
     def getFileData(self, fileNameWithPath):
@@ -119,3 +120,41 @@ class GeneralExceptionHandling:
             print('error in removeArrayDuplicate', e)
             return False
 
+    def returnsDictionaryFromString(self, data):
+        try:
+            if data:
+                return json.loads(data)
+            else:
+                return False
+        except Exception as e:
+            print('error in returnsDictionaryFromString in GeneralExceptionHandling', e)
+            return False
+
+    def readFileAndReturnJson(self, fileNameWithPath):
+        try:
+            if fileNameWithPath:
+
+                return self.returnsDictionaryFromString(self.getFileData(fileNameWithPath))
+            else:
+                print('error json file name with path is error')
+                return False
+        except Exception as e:
+            print('error in readFileAndReturnJson in GeneralExceptionHandling', e)
+            return False
+
+    def writeJsonDataToFile(self, data, nameWithPath):
+        try:
+            fp = open(nameWithPath, 'w')
+            fp.write(json.dumps(data))
+            fp.flush()
+            fp.close()
+
+            return True
+        except Exception as e:
+            print('error in writeJsonDataToFile in GeneralExceptionHandling', e)
+            return False
+        finally:
+            try:
+                fp.close()
+            except Exception as e:
+                pass

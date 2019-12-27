@@ -87,9 +87,7 @@ class StringHandling(GeneralExceptionHandling):
         """Read data in a json file and add write data to the existing file and remove duplicate"""
         try:
             try:
-                readFile = open(filePath + fileName+'.json', 'r')
-                jsonData = json.loads(readFile.read())
-                readFile.close()
+                jsonData = self.readFileAndReturnJson(filePath + fileName+'.json')
 
                 if locatorId in jsonData:
                     jsonData[locatorId].append(writeData)

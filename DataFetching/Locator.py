@@ -1,4 +1,3 @@
-import json
 from fuzzywuzzy import process
 
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
@@ -32,10 +31,8 @@ class Locator(LocatorValidation, DrectoryHandling):
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
 
-                locatorData = self.getFileData(locatorJsonFileNamewithPath)
+                locatorData = self.readFileAndReturnJson(locatorJsonFileNamewithPath)
                 if locatorData:
-                    locatorData = json.loads(locatorData)
-
                     if locatorId in locatorData:
                         fileData = locatorData[locatorId]
                         data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence+10)
@@ -65,30 +62,27 @@ class Locator(LocatorValidation, DrectoryHandling):
 
     def getLocatorDataArray(self, locatorFilePathWithFileName) -> dict:
         try:
-            fp = open(locatorFilePathWithFileName, 'r')
-            locatorJson = json.loads(fp.read())
             locator = []
             locatorDictionary = dict()
 
-            for locatorId, locatorArray in locatorJson.items():
-                # print(locatorId, locatorArray)
-                for locatorData in locatorArray:
-                    indeces = locatorData.split('::')
-                    for i in range(0,len(indeces)):
-                        indeces[i] = indeces[i].replace('-:-', ':')
-                    locator.append(indeces)
-                locatorDictionary[locatorId] = locator
-                locator = []
+            locatorJson = self.readFileAndReturnJson(locatorFilePathWithFileName)
 
-            return locatorDictionary
+            if locatorJson:
+                for locatorId, locatorArray in locatorJson.items():
+                    for locatorData in locatorArray:
+                        indeces = locatorData.split('::')
+                        for i in range(0,len(indeces)):
+                            indeces[i] = indeces[i].replace('-:-', ':')
+                        locator.append(indeces)
+                    locatorDictionary[locatorId] = locator
+                    locator = []
+
+                return locatorDictionary
+            else:
+                return False
         except Exception as e:
             print('error in getLocatorDataArray in Locator', e)
             return False
-        finally:
-            try:
-                fp.close()
-            except Exception as e:
-                return False
 
     def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed) -> str:
         try:
@@ -98,7 +92,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                 import re
                 eachLocator = eachLocatorArray[i].upper()
                 searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
-                # print('each locator: ', eachLocator, searchOnlyNumAndCharObj)
                 if searchOnlyNumAndCharObj:
                     bestMatch = re.sub('\d', '\d+', eachLocator)
                     # print('pattern found', bestMatch)
@@ -115,7 +108,6 @@ class Locator(LocatorValidation, DrectoryHandling):
 
                         if len(matchingFuzzyWord) > 0:
                             bestMatch = self.regularExpressionHandling(bestMatch, 0)
-                            # print(eachLocatorArray[i].upper(), 'fu::::', matchingFuzzyWord, 'best match:::', bestMatch)
                             if i == 0:
                                 patternBuild = patternBuild + bestMatch
                             else:
@@ -134,11 +126,9 @@ class Locator(LocatorValidation, DrectoryHandling):
                     patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
                     if patternBuild:
                         stringHandling = StringHandling(self.path)
-                        # print('pattern build: ', patternBuild)
                         locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:
-                            # print('processLocatorData: ',locatorData, patternBuild)
                             return locatorData
                         else:
                             return False
@@ -174,8 +164,6 @@ class Locator(LocatorValidation, DrectoryHandling):
 
                 except Exception as e:
                     print('error in processLocatorAndGetDataFromFile in Locator ',e)
-                    # print('patter: ', patternMatch)
-                    # print('patter other: ', sourceData, 'exception data')
                     return False
                 return True
             else:
@@ -212,7 +200,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
 
                     validation = LocatorValidation(self.path)
-                    # print('locator', locatorDirectoryWithFileName)
                     return validation.validateLayer(locatorDirectoryWithFileName, layerName)
                 else:
                     print('error no data in ', sourceDataPath, ' Processing locator failed')
@@ -247,7 +234,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                         writer.writeheader()
                         print('csv save file:', csvNameWithPath)
                         for fileName, locatorData in layerData.items():
-                            # print('csv data', fileName, locatorData)
                             csvEacRowLocator = dict()
                             csvEacRowLocator['file name'] = fileName
 
@@ -356,8 +342,6 @@ class Locator(LocatorValidation, DrectoryHandling):
 
                 except Exception as e:
                     print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
-                    # print('patter: ', patternMatch)
-                    # print('patter other: ', sourceData, 'exception data')
                     return False
                 return True
             else:
