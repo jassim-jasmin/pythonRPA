@@ -4,14 +4,15 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
-from imageProcessing.imageProcessing import ImageProcessing
 
-class StringHandling:
+class StringHandling(GeneralExceptionHandling):
     def __init__(self, path):
+        GeneralExceptionHandling.__init__(self)
         self.path = path
         self.stringMatchConfidence = 90
 
-    def getMatchOfEach(self,string, stringSet, confidence):
+    def getMatchOfEach(self,string, stringSet, confidence) -> list:
+        """It is a fuzzywuzzy process extract output only returns with confidence"""
         try:
             matchSet = process.extract(string, stringSet)
 
@@ -25,7 +26,8 @@ class StringHandling:
             print('error in getMatchEach in StringHandling', e)
             return False
 
-    def getMathcFromSet(self,string, stringSet, confidence):
+    def getMathcFromSet(self,string, stringSet, confidence) -> str:
+        """It is a fuzzywuzzy process extractOne output only returns with confidence"""
         try:
             match = process.extractOne(string, stringSet)
 
@@ -37,6 +39,7 @@ class StringHandling:
             print('error in getMatchFromSet in StringHandling')
 
     def getConfidence(self, string, stringSet):
+        """Print each values of extractOne,extract,extractBests,extractWithoutOrder of fuzzywuzz process for visualizing the output"""
         try:
             print('extractone confidence: ', process.extractOne(string, stringSet))
             print('extract confidence: ', process.extract(string, stringSet))
@@ -45,7 +48,8 @@ class StringHandling:
         except Exception as e:
             print('Error in getConfidence in StringHandling', e)
 
-    def getMathcFromSetInverse(self,string, stringSet, confidence):
+    def getMathcFromSetInverse(self,string, stringSet, confidence) -> str:
+        """Fuzzywuzz process extractOne output with less confidence level"""
         try:
             match = process.extractOne(string, stringSet)
 
@@ -57,6 +61,7 @@ class StringHandling:
             print('error in getMatchFromSet in StringHandling')
 
     def fuzzComparison(self, mainText, compareText):
+        """Fuzzywuzz string comparison for each fuzzy options"""
         print('mainText : %s, compareText : %s' %(mainText,compareText))
         print('ration : %f' %(fuzz.ratio(mainText,compareText)))
         print('partial_ratio : %f' %(fuzz.partial_ratio(mainText,compareText)))
@@ -65,6 +70,7 @@ class StringHandling:
         print('WRatio : %f\n' %(fuzz.WRatio('geeks for geeks', 'Geeks For Geeks')))
 
     def printAllFuzzyComparison(self):
+        """Testing each word with compare text Fuzzy monitoring"""
         dataSet = ['test', 'geekodrive', 'geeksgeeks', 'Geeks For Geeks ', "geeks for geeks!", "geeks geeks",
                    "for geeks geeks", "geeks for for geeks", 'geeks for geeks!!!']
 
@@ -77,7 +83,8 @@ class StringHandling:
     def test3(self):
         self.addStringWriteFile('test2', 'testFile', 'id1')
 
-    def addStringWriteFile(self, writeData, fileName, locatorId, filePath):
+    def addStringWriteFile(self, writeData, fileName, locatorId, filePath) -> bool:
+        """Read data in a json file and add write data to the existing file and remove duplicate"""
         try:
             try:
                 readFile = open(filePath + fileName+'.json', 'r')
@@ -93,16 +100,11 @@ class StringHandling:
                 jsonData[locatorId] = [writeData]
 
             arrayElement = jsonData[locatorId]
-            seen = set()
+            jsonData[locatorId] = self.removeArrayDuplicate(arrayElement)
 
-            arrayElement[:] = [item for item in arrayElement
-                                if item not in seen and not seen.add(item)]
-            jsonData[locatorId] = arrayElement
-
-            fp  = open(GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DataFetching,filesPath', self.path) + fileName+'.json', 'w')
+            fp  = open(self.getJsonDataRecurssive('DataFetching,filesPath', self.path) + fileName+'.json', 'w')
 
             if fp.writable():
-                # fp.write(',' + writeData)
                 jsonObj = json.dumps(jsonData)
                 fp.write(jsonObj)
                 fp.close()
@@ -113,10 +115,9 @@ class StringHandling:
             print('error in addStringWriteFile', e)
             return False
 
-    def getSourceFileData(self, sourceFilePathWithDataFileName):
+    def getSourceFileData(self, sourceFilePathWithDataFileName) -> str:
         try:
             fp = open(sourceFilePathWithDataFileName, encoding="utf8")
-            # fp = open(self.path['Data']['path'] + self.path['Data']['dataFileName'])
             sourceData = fp.read()
 
             return sourceData
@@ -142,11 +143,11 @@ class StringHandling:
                 index = ls.find(match)
                 yield (match, index)
 
-    def getFuzzySearchData(self, qs, ls, threshold=30):
+    def getFuzzySearchData(self, qs, ls, threshold=30) -> list:
         try:
-            '''fuzzy matches 'qs' in 'ls' and returns list of
+            """fuzzy matches 'qs' in 'ls' and returns list of
             tuples of (word,index)
-            '''
+            """
 
             fuzzyWordArray = []
             for word, _ in process.extractBests(qs, (ls,), score_cutoff=threshold):
@@ -160,42 +161,35 @@ class StringHandling:
             return False
 
 
-    def reSelect(self, patternBuild, sourceDataProcessed, sourceData):
+    def reSelect(self, patternBuild, sourceDataProcessed, sourceData) -> str:
+        """:returns regualr expression out put of :var patternBuild
+        :argument patternBuild is a regular expression
+        :argument sourceDataProcessed is regular expression applying data
+        :argument sourceData is original data
+        :returns matched string if not :returns False"""
         try:
             import re
 
             patternBuild = re.sub(r'\d', '\d', patternBuild)
-            # print(patternBuild)
             searhcObj = re.search(patternBuild, sourceDataProcessed)
 
             # print('pattern:', patternBuild)
             if searhcObj:
                 patternMatch = searhcObj.group()
-                patternMatch = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling, patternMatch, 0)
+                patternMatch = self.regularExpressionHandling(patternMatch, 0)
                 sourceData = sourceData.replace('\n', ' ')
                 sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
 
                 if sourceFileMatch:
                     sourceFileMatchString = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling, patternMatch, 1)
-                    # print('Pattern from source file:', sourceFileMatchString)
                     return sourceFileMatchString
                 else:
-                    print('no match in source file')
-                    print('patter: ', patternMatch)
-                    print('patter other: ', sourceData)
                     return False
 
             else:
-                # print('no match', patternBuild)
                 return False
         except Exception as e:
             print('error in searchDataInFuzzySearch\n', e)
             print(patternBuild)
             print('patter: ', patternMatch)
             print('patter other: ', sourceData)
-
-    def test2(self):
-        if ImageProcessing.ocrImage(ImageProcessing, self.path['Data']['imageFile'], 'tif', self.path['Data']['imageFile'], self.path['Data']['path']):
-            print('ocr complete')
-        else:
-            print('error')

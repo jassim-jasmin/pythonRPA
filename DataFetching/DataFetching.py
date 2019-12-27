@@ -7,7 +7,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         Locator.__init__(self, path)
         GeneralExceptionHandling.__init__(self)
 
-    def generateOCR(self, imagesPath, ocrTextPath):
+    def generateOCR(self, imagesPath, ocrTextPath) -> bool:
         try:
             from imageProcessing.imageProcessing import ImageProcessing
             imageProcessing = ImageProcessing(self.path)
@@ -19,7 +19,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in ocrgeneration in DataFetching', e)
             return False
 
-    def pdfHandling(self, locatorFilePathWithFileName):
+    def pdfHandling(self, locatorFilePathWithFileName) -> bool:
         try:
             from PdfHandling.PdfHandling import PdfHanling
             pdfHandling = PdfHanling()
@@ -37,7 +37,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in pdfHandling in DataFetching', e)
             return False
 
-    def addLoatorLayer(self, layerName, data):
+    def addLoatorLayer(self, layerName, data) -> bool:
         try:
             locatorDirectory = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             fp = open(locatorDirectory+layerName+'.json', 'w')
@@ -53,7 +53,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in addLocatorLayer in DataFetching', e)
             return False
 
-    def imageDataProcessing(self):
+    def imageDataProcessing(self) -> bool:
         try:
             imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
@@ -93,7 +93,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in imageDataProcessing in DataFetching', e)
             return False
 
-    def connectingLocator(self):
+    def connectingLocator(self) -> dict:
         try:
             connectorKeys = dict()
 
@@ -108,7 +108,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in connectingLocator in DataFetching', e)
             return False
 
-    def getLayer1(self):
+    def getLayer1(self) -> list:
         data = []
         data.append(['legal', ['lot', 'block', 'plat']])
         # data.append(['legal', ['lot', 'block', 'plat', 'county']])
@@ -117,7 +117,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         return data
 
-    def getValidation1(self):
+    def getValidation1(self) -> list:
         data = []
         data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
         data.append(('legal', '^ *\d', 'False'))
@@ -125,7 +125,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         return data
 
-    def getLayer2(self):
+    def getLayer2(self) -> list:
         data = []
 
         data.append(['parcel_number', ['271-02171-0101']])
@@ -135,7 +135,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         return data
 
-    def getValidation2(self):
+    def getValidation2(self) -> list:
         data = []
         data.append(('lot', 'LOT [A-Z]$', 'False'))
         data.append(('lot_1', '^[0-9]', 'False'))
@@ -149,7 +149,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         return data
 
-    def saveDataAsCSV(self, fileName, dataDictionary, tag):
+    def saveDataAsCSV(self, fileName, dataDictionary, tag) -> bool:
         try:
             csvName = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             csvName = csvName+fileName+'.csv'

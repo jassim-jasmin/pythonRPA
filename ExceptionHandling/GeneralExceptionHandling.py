@@ -2,6 +2,9 @@ import os
 
 class GeneralExceptionHandling:
     def getFileData(self, fileNameWithPath):
+        """
+        :argument fileNameWithPath is coplete file name extension with path
+        :returns file data :returns false if file is empty"""
         try:
             fp = open(fileNameWithPath, 'r')
             data = fp.read()
@@ -16,6 +19,7 @@ class GeneralExceptionHandling:
             return False
 
     def getJsonData(self, keyValue, jsonFileData):
+        """Check key available in a dictionary :returns dictionary value if available else :returns False"""
         try:
             if jsonFileData:
                 if keyValue in jsonFileData:
@@ -29,6 +33,12 @@ class GeneralExceptionHandling:
             return False
 
     def regularExpressionHandling(self, data, flag):
+        """
+        Convert special characters for processing regualar expression
+        :var flag is for selecting conversion
+        :arg flag = 0 for conversion
+        :arg self = 1 for undo the conversion
+        """
         try:
             if flag == 0:
                 data = data.replace('\\', '\\\\')
@@ -74,6 +84,9 @@ class GeneralExceptionHandling:
             return False
 
     def getJsonDataRecurssive(self, keyValueWithComma, jsonFileData):
+        """:argument keyValueWithComma is json key with coma seperated
+        key value itrate over json data and final out put returns
+        :returns value if all key values are available in json else False"""
         try:
             keyValueArray = keyValueWithComma.split(',')
 
@@ -95,6 +108,7 @@ class GeneralExceptionHandling:
             return False
 
     def removeArrayDuplicate(self, array):
+        """General way of removing duplicate entry from array :returns distinct array elements"""
         try:
             seen = set()
 

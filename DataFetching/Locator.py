@@ -17,7 +17,7 @@ class Locator(LocatorValidation, DrectoryHandling):
         self.DataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
         self.dataFetchingLocatorMissMatch = self.getJsonDataRecurssive('DataFetching,locatorMissMatch', self.path)
 
-    def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory):
+    def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory) -> bool:
         try:
 
             if locatorDirectory and locationStringArray:
@@ -63,7 +63,7 @@ class Locator(LocatorValidation, DrectoryHandling):
             print('error in addNewStringToDictionary in Locator', e)
             return False
 
-    def getLocatorDataArray(self, locatorFilePathWithFileName):
+    def getLocatorDataArray(self, locatorFilePathWithFileName) -> dict:
         try:
             fp = open(locatorFilePathWithFileName, 'r')
             locatorJson = json.loads(fp.read())
@@ -90,7 +90,7 @@ class Locator(LocatorValidation, DrectoryHandling):
             except Exception as e:
                 return False
 
-    def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed):
+    def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed) -> str:
         try:
             patternBuild = '('
             for i in range(0, len(eachLocatorArray)):
@@ -147,7 +147,7 @@ class Locator(LocatorValidation, DrectoryHandling):
             print('error in processLocatorData in Locator', e)
             return False
 
-    def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
+    def processLocatorAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData) -> dict:
         try:
             if sourceData:
                 try:
@@ -185,7 +185,7 @@ class Locator(LocatorValidation, DrectoryHandling):
             print('errror in processLocatorAndGetDataFromFile in locator', e)
             return False
 
-    def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath):
+    def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath) -> dict:
         try:
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             locatorFilePathWithFileName = locatorFilePath+layerName+'.json'
@@ -225,7 +225,7 @@ class Locator(LocatorValidation, DrectoryHandling):
             print('errror in processLocatorAndGetDataFromFileAll in locator', e)
             return False
 
-    def saveAsCsv(self, csvNameWithPath, tag,layerDictionary):
+    def saveAsCsv(self, csvNameWithPath, tag,layerDictionary) -> bool:
         try:
             import csv
 
@@ -279,7 +279,7 @@ class Locator(LocatorValidation, DrectoryHandling):
         except Exception as e:
             print("error in saveAsCsv in Locator", e)
 
-    def getValidatedLocatorData(self, locatorDataDirectory, validation):
+    def getValidatedLocatorData(self, locatorDataDirectory, validation) -> dict:
         try:
             locatorDirectry = dict()
             for fileName, locatorData in locatorDataDirectory.items():
@@ -296,14 +296,12 @@ class Locator(LocatorValidation, DrectoryHandling):
             print('error in printLocatorDataWithLocatorId in locator', e)
             return False
 
-    def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys):
+    def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys) -> dict:
         try:
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             layerPath = locatorFilePath+processLayerName+'.json'
             locatorArray = []
-            # print('layer path: ', layerPath)
             layerDataMain = dict()
-            # print(layerDictionary)
 
             if 'locatorData' in layerDictionary:
                 layerData = layerDictionary['locatorData']
@@ -330,7 +328,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
                                 for locatorId, locatorDataArray in locatorDictionary.items():
                                     if locatorId in connectorKeys:
-                                        # print('locatorrrrr:::', locatorId,connectorKeys[locatorId], loactorIdInData)
                                         if connectorKeys[locatorId] == loactorIdInData:
                                             sourceDataProcessed = eachLocatorInData.upper()
                                             sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
@@ -339,7 +336,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                                             locatorFinalData = self.processLocatorData(locatorDataArray,
                                                                                        sourceDataProcessed,
                                                                                        eachLocatorInData)
-                                            # print('data;;', locatorFinalData)
                                         else:
                                             if connectorKeys[
                                                     locatorId] == locatorId:  # the data is in final locator
@@ -347,7 +343,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                                                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                                 self.locatorId.append(locatorId)
                                                 locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
-                                                # print('locatorFinalData', locatorFinalData)
                                                 locatorArray.append(locatorId)
 
                                         if locatorFinalData:
@@ -357,9 +352,7 @@ class Locator(LocatorValidation, DrectoryHandling):
                                             locatorArray.append(locatorId)
 
                         validation = LocatorValidation(self.path)
-                        data =  validation.validateLayer(locatorDictionaryMain, processLayerName)
-
-                        return data
+                        return validation.validateLayer(locatorDictionaryMain, processLayerName)
 
                 except Exception as e:
                     print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
