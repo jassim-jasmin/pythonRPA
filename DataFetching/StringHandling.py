@@ -7,7 +7,6 @@ from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from imageProcessing.imageProcessing import ImageProcessing
 
 class StringHandling:
-    print('string handling')
     def __init__(self, path):
         self.path = path
         self.stringMatchConfidence = 90

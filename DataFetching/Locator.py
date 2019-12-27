@@ -1,16 +1,14 @@
 import json
-
 from fuzzywuzzy import process
 
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
 from DataFetching.StringHandling import StringHandling
-from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.validation import LocatorValidation
 
-class Locator(GeneralExceptionHandling, DrectoryHandling):
+class Locator(LocatorValidation, DrectoryHandling):
     def __init__(self, path):
         self.path = path
-        GeneralExceptionHandling.__init__(self)
+        LocatorValidation.__init__(self, path)
         DrectoryHandling.__init__(self)
         self.mainLocator = dict()
         self.locatorMissMatchFlag = True
@@ -31,7 +29,6 @@ class Locator(GeneralExceptionHandling, DrectoryHandling):
 
                 stringHandling = StringHandling(self.path)
                 self.createDirectory(locatorDirectory)
-                locatorJsonFileNamewithPath = ''
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
 
@@ -227,36 +224,6 @@ class Locator(GeneralExceptionHandling, DrectoryHandling):
         except Exception as e:
             print('errror in processLocatorAndGetDataFromFileAll in locator', e)
             return False
-        # finally:
-        #     if self.locatorMissMatchFlag:
-        #         self.saveMissMatch()
-
-    # def saveMissMatch(self):
-    #     try:
-    #         if self.locatorMissMatchDictionary:
-    #             saveMissMatchData = json.dumps(self.locatorMissMatchDictionary)
-    #             fileName = self.dataFetchingLocatorMissMatch
-    #
-    #             if fileName and self.DataFetchingFilesPath:
-    #                 print('saving file ', self.DataFetchingFilesPath+fileName+'.json')
-    #                 fp = open(self.DataFetchingFilesPath+fileName+'.json', 'w')
-    #                 fp.write(saveMissMatchData)
-    #                 fp.close()
-    #
-    #                 csvNameWithPath = self.DataFetchingFilesPath + 'missmatch.csv'
-    #                 headData = 'Locator miss match\n'
-    #                 locatorMissMatchDictionary = self.locatorMissMatchDictionary
-    #                 # self.saveAsCsv(csvNameWithPath, headData, locatorMissMatchDictionary)
-    #
-    #                 return True
-    #             else:
-    #                 print('error in source file or file name in locatorMissmatch')
-    #                 return False
-    #                 # print('data: ', saveMissMatchData)
-    #     except Exception as e:
-    #         print('error in saveMissMatch', e)
-    #         # print('data: ', saveMissMatchData)
-    #         return False
 
     def saveAsCsv(self, csvNameWithPath, tag,layerDictionary):
         try:

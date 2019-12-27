@@ -1,5 +1,4 @@
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
-from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
 
 class DataFetchingMain(Locator, GeneralExceptionHandling):
@@ -45,8 +44,6 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             fp.flush()
             fp.close()
 
-            # locator = Locator(self.path)
-
             for locatorId, locatorData in data:
                 if not self.addLocatorToDictionary(locatorData, locatorId, layerName, locatorDirectory):
                     return False
@@ -70,13 +67,9 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             if not self.addLoatorLayer('layer2', self.getLayer2()):
                 return False
 
-            validation = LocatorValidation(self.path)
-            # locator = Locator(self.path)
+            self.addValidationLayer('layer1', self.getValidation1())
+            self.addValidationLayer('layer2', self.getValidation2())
 
-            validation.addValidationLayer('layer1', self.getValidation1())
-            validation.addValidationLayer('layer2', self.getValidation2())
-
-            # locatorDataDirectory = self.processLayerFromSourceFile('layer1', ocrTextDirectoryPath)
             layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
 
             # print('layer1 out', layerData)
@@ -124,8 +117,6 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         return data
 
-
-
     def getValidation1(self):
         data = []
         data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
@@ -139,7 +130,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
         data.append(['parcel_number', ['271-02171-0101']])
         data.append(['lot', ['LOT 1']])
-        data.append(['lot_1', ['lot three', 'LOT FOUR', 'LOT SIXTEEN']])
+        data.append(['lot_1', ['lot three', 'LOT FOUR', 'LOT SIXTEEN', 'lots four']])
         # data.append(['block', ['BLOCK ELEVEN']])
 
         return data
