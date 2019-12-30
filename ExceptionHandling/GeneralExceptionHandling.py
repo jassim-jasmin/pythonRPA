@@ -4,8 +4,10 @@ import json
 class GeneralExceptionHandling:
     def getFileData(self, fileNameWithPath):
         """
-        :argument fileNameWithPath is coplete file name extension with path
-        :returns file data :returns false if file is empty"""
+
+        :param fileNameWithPath: coplete file name extension with path
+        :return: file data :returns false if file is empty
+        """
         try:
             fp = open(fileNameWithPath, 'r')
             data = fp.read()
@@ -20,7 +22,12 @@ class GeneralExceptionHandling:
             return False
 
     def getJsonData(self, keyValue, jsonFileData):
-        """Check key available in a dictionary :returns dictionary value if available else :returns False"""
+        """
+        Check key available in a dictionary
+        :param keyValue: json key
+        :param jsonFileData: json data
+        :return: dictionary value if available else :returns False
+        """
         try:
             if jsonFileData:
                 if keyValue in jsonFileData:
@@ -36,9 +43,9 @@ class GeneralExceptionHandling:
     def regularExpressionHandling(self, data, flag):
         """
         Convert special characters for processing regualar expression
-        :var flag is for selecting conversion
-        :arg flag = 0 for conversion
-        :arg self = 1 for undo the conversion
+        :param data:
+        :param flag: selecting conversion, 0 for conversion, 1 for undo the conversion
+        :return: data based on flag, False if error occured
         """
         try:
             if flag == 0:
@@ -85,9 +92,12 @@ class GeneralExceptionHandling:
             return False
 
     def getJsonDataRecurssive(self, keyValueWithComma, jsonFileData):
-        """:argument keyValueWithComma is json key with coma seperated
+        """
         key value itrate over json data and final out put returns
-        :returns value if all key values are available in json else False"""
+        :param keyValueWithComma: json key with coma seperated
+        :param jsonFileData: key value pair json
+        :return: value if all key values are available in json else False
+        """
         try:
             keyValueArray = keyValueWithComma.split(',')
 
@@ -109,7 +119,11 @@ class GeneralExceptionHandling:
             return False
 
     def removeArrayDuplicate(self, array):
-        """General way of removing duplicate entry from array :returns distinct array elements"""
+        """
+        General way of removing duplicate entry from array
+        :param array: array with elements
+        :return: distinct array elements
+        """
         try:
             seen = set()
 
@@ -131,6 +145,11 @@ class GeneralExceptionHandling:
             return False
 
     def readFileAndReturnJson(self, fileNameWithPath):
+        """
+        Read text from file and returns as json
+        :param fileNameWithPath: file which is going to convert
+        :return: json data, if error then :returns: False
+        """
         try:
             if fileNameWithPath:
 
@@ -142,7 +161,13 @@ class GeneralExceptionHandling:
             print('error in readFileAndReturnJson in GeneralExceptionHandling', e)
             return False
 
-    def writeJsonDataToFile(self, data, nameWithPath):
+    def writeJsonDataToFile(self, data, nameWithPath) -> bool:
+        """
+        convert json to text file
+        :param data: json data
+        :param nameWithPath: out file
+        :return: True if success else False
+        """
         try:
             fp = open(nameWithPath, 'w')
             fp.write(json.dumps(data))
