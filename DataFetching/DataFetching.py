@@ -62,6 +62,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         """
         try:
             locatorDirectory = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+            print(locatorDirectory+layerName+'.json')
             fp = open(locatorDirectory+layerName+'.json', 'w')
             fp.flush()
             fp.close()
@@ -109,9 +110,14 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, self.connectingLocator())
 
             # print('layer2 out', locatorDataDictionary)
-            if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
-                print('error saving csv layer2')
+            if locatorDataDictionary:
+                if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
+                    print('error saving csv layer2')
+                    return False
+            else:
+                print('processing layer1 with layer2 failed')
                 return False
+
 
             print('completed')
 
@@ -132,9 +138,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
             #first locator key      = final locator key
             connectorKeys['parcel_number'] = 'parcel'
-            connectorKeys['lot'] = 'legal'
-            connectorKeys['block'] = 'legal'
-            connectorKeys['lot_1'] = 'legal'
+            # connectorKeys['parcel_number_1'] = 'parcel'
+            # connectorKeys['lot'] = 'legal'
+            # connectorKeys['block'] = 'legal'
+            # connectorKeys['lot_1'] = 'legal'
 
             return connectorKeys
         except Exception as e:
@@ -147,10 +154,13 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         :return: locator array
         """
         data = []
-        data.append(['legal', ['lot', 'block', 'plat']])
+        # data.append(['legal', ['lot', 'block', 'plat']])
         # data.append(['legal', ['lot', 'block', 'plat', 'county']])
         # data.append(['legal', ['lot', 'plat', 'thereof']])
-        data.append(['parcel', ['271-02171-0101', 'parcel']])
+        # data.append(['parcel', ['271-02171-0101', 'parcel']])
+        # data.append(['parcel', ['APN', ' #; R', '0235662']])
+        # data.append(['parcel_1', ['APN ', '17-02421']])
+        data.append(['parcel', ['A.P.N. R', '1605212']])
 
         return data
 
@@ -160,9 +170,11 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         :return: validation array
         """
         data = []
-        data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
-        data.append(('legal', '^ *\d', 'False'))
-        data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False'))
+        # data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
+        # data.append(('legal', '^ *\d', 'False'))
+        # data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False'))
+        # data.append(('parcel', '\d\d\d\d\d\d\d\d', 'True'))
+        data.append(('parcel', '^A', 'True'))
 
         return data
 
@@ -173,10 +185,14 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         """
         data = []
 
-        data.append(['parcel_number', ['271-02171-0101']])
-        data.append(['lot', ['LOT 1']])
-        data.append(['lot_1', ['lot three', 'LOT FOUR', 'LOT SIXTEEN', 'lots four']])
+        # data.append(['parcel_number', ['271-02171-0101']])
+        # data.append(['lot', ['LOT 1']])
+        # data.append(['lot_1', ['lot three', 'LOT FOUR', 'LOT SIXTEEN', 'lots four']])
         # data.append(['block', ['BLOCK ELEVEN']])
+        data.append(['parcel_number', ['R0242052']])
+        data.append(['parcel_number', ['RO242052']])
+        data.append(['parcel_number', ['02-34000']])
+        # data.append(['parcel_number', ['10-33009']])
 
         return data
 
@@ -186,15 +202,16 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         :return: validation array
         """
         data = []
-        data.append(('lot', 'LOT [A-Z]$', 'False'))
-        data.append(('lot_1', '^[0-9]', 'False'))
-        data.append(('lot_1', 'LOT THREE \(3\)', 'False'))
-        data.append(('lot_1', 'STATE BAR', 'False'))
+        # data.append(('lot', 'LOT [A-Z]$', 'False'))
+        # data.append(('lot_1', '^[0-9]', 'False'))
+        # data.append(('lot_1', 'LOT THREE \(3\)', 'False'))
+        # data.append(('lot_1', 'STATE BAR', 'False'))
         # data.append(('lot', 'lot *[\\"]+', 'False'))
         # data.append(('lot', 'lot \w{2,}', 'False'))
         # data.append(('lot', '^[0-9]', 'False'))
         # data.append(('lot', 'one', 'true'))
         # data.append(('parcel_number','\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
+        # data.append(('parcel_number', '\d\d\d\d\d\d', 'True'))
 
         return data
 

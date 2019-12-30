@@ -19,6 +19,7 @@
     "delCommand": "cmd /c del ",
     "unzip": "cmd /c tar -C ",
     "unzipOption": " -xvzf ",
+    "directorySeperator": "\\",
     "DataFetching": {
       "filesPath": "DataFetching\\files\\",
       "startStringFiles": "startString.txt",
@@ -48,7 +49,8 @@
     "imagProcessing": {
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
-      "ocrTextPath": "/root/Documents/mj/ocr/ocrTextData/new/",
+      "ocrTextPath": "/root/Documents/Test/ocr/",
+      "ocrTextPath_old": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
       "tesseract": "None"
     },
@@ -56,8 +58,10 @@
     "delCommand": "rm ",
     "unzip": "tar -C ",
     "unzipOption": " -xvzf ",
+    "directorySeperator": "/",
     "DataFetching": {
-      "filesPath": "DataFetching/files/",
+      "filesPath": "/root/Documents/Test/",
+      "filesPath_old": "DataFetching/files/",
       "startStringFiles": "startString.txt",
       "endStringFiles": "endString.txt",
       "locatorDictionary": "locatorDictionary",

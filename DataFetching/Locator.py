@@ -77,7 +77,10 @@ class Locator(LocatorValidation, DrectoryHandling):
                     locatorDictionary[locatorId] = locator
                     locator = []
 
-                return locatorDictionary
+                if bool(locatorDictionary):
+                    return locatorDictionary
+                else:
+                    return False
             else:
                 return False
         except Exception as e:
@@ -91,7 +94,11 @@ class Locator(LocatorValidation, DrectoryHandling):
                 stringHandling = StringHandling(self.path)
                 import re
                 eachLocator = eachLocatorArray[i].upper()
-                searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
+                """
+                :Todo:considering if a string contains number, prevent it for fuzzy search
+                """
+                # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
+                searchOnlyNumAndCharObj = re.search(r'[0-9]', eachLocator)
                 if searchOnlyNumAndCharObj:
                     bestMatch = re.sub('\d', '\d+', eachLocator)
                     # print('pattern found', bestMatch)
@@ -120,18 +127,29 @@ class Locator(LocatorValidation, DrectoryHandling):
             return False
 
     def processLocatorData(self, locatorDataArray, sourceDataProcessed, sourceData):
+        """
+        pattern match math source file
+        :param locatorDataArray: loactor array
+        :param sourceDataProcessed: processed source data, that is capitalize, remove new line...
+        :param sourceData: original source file
+        :return: match data if error then :return: False
+        """
         try:
             if locatorDataArray:
                 for eachLocatorArray in locatorDataArray:
                     patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
+
                     if patternBuild:
                         stringHandling = StringHandling(self.path)
                         locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
+                        self.locatorData = locatorData
+                        self.patternBuild = patternBuild
+                        self.sourceDataProcessed = sourceDataProcessed
 
                         if locatorData:
+                            # print('found;;;;', locatorData)
                             return locatorData
-                        else:
-                            return False
+            return False
 
         except Exception as e:
             print('error in processLocatorData in Locator', e)
@@ -151,16 +169,20 @@ class Locator(LocatorValidation, DrectoryHandling):
                     self.locatorMissMatchArray = []
                     self.locatorId = []
 
-                    for locatorId, locatorDataArray in locatorDictionary.items():
-                        self.locatorId.append(locatorId)
-                        locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
+                    if locatorDictionary:
+                        for locatorId, locatorDataArray in locatorDictionary.items():
+                            self.locatorId.append(locatorId)
+                            locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
 
-                        if locatorArray:
-                            locatorDataDictionary[locatorId] = locatorArray
-                        else:
-                            if self.locatorMissMatchFlag:
-                                self.locatorMissMatchArray.append(locatorId)
-                    return locatorDataDictionary
+                            if locatorArray:
+                                locatorDataDictionary[locatorId] = locatorArray
+                            else:
+                                if self.locatorMissMatchFlag:
+                                    self.locatorMissMatchArray.append(locatorId)
+                        return locatorDataDictionary
+                    else:
+                        print('error Layer ', locatorFilePathWithFileName, ' has no data', locatorDictionary)
+                        exit()
 
                 except Exception as e:
                     print('error in processLocatorAndGetDataFromFile in Locator ',e)
@@ -198,6 +220,8 @@ class Locator(LocatorValidation, DrectoryHandling):
                                 fileNameSplit = eachTextFile.split('.')
                                 if len(fileNameSplit)>0:
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
+                        else:
+                            exit()
 
                     validation = LocatorValidation(self.path)
                     return validation.validateLayer(locatorDirectoryWithFileName, layerName)
@@ -260,7 +284,7 @@ class Locator(LocatorValidation, DrectoryHandling):
                         print('error creating csv invalid layer data')
                         return False
             else:
-                print('error in csv dictionary in saveAsCsv in Locator')
+                print('error in csv dictionary in saveAsCsv in Locator', layerDictionary)
                 return False
         except Exception as e:
             print("error in saveAsCsv in Locator", e)
@@ -310,7 +334,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                         locatorDictionaryMain = dict()
 
                         for fileName, locatorData in dataDictionary.items():# main
-                            locatorFinalData = False
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
                                 for locatorId, locatorDataArray in locatorDictionary.items():
                                     if locatorId in connectorKeys:
@@ -319,26 +342,41 @@ class Locator(LocatorValidation, DrectoryHandling):
                                             sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                             self.locatorId.append(eachLocatorInData)
                                             locatorArray.append(locatorId)
-                                            locatorFinalData = self.processLocatorData(locatorDataArray,
-                                                                                       sourceDataProcessed,
-                                                                                       eachLocatorInData)
+                                            # print(sourceDataProcessed)
                                         else:
                                             if connectorKeys[
                                                     locatorId] == locatorId:  # the data is in final locator
                                                 sourceDataProcessed = eachLocatorInData.upper()
                                                 sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                                                 self.locatorId.append(locatorId)
-                                                locatorFinalData = self.processLocatorData(locatorDataArray, sourceDataProcessed, eachLocatorInData)
                                                 locatorArray.append(locatorId)
 
-                                        if locatorFinalData:
-                                            locatorDataDictionary[locatorId] = locatorFinalData
-                                            locatorFinalData = False
-                                            locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
-                                            locatorArray.append(locatorId)
+                                        if sourceDataProcessed and eachLocatorInData:
+                                            locatorFinalData = self.processLocatorData(locatorDataArray,
+                                                                                       sourceDataProcessed,
+                                                                                       eachLocatorInData)
+                                            if locatorFinalData:
+                                                locatorDataDictionary[locatorId] = locatorFinalData
+                                                locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
+                                                locatorArray.append(locatorId)
+                                    else:
+                                        print('invalid locator connector ', locatorId , ' not in ', connectorKeys)
+                                        return False
 
-                        validation = LocatorValidation(self.path)
-                        return validation.validateLayer(locatorDictionaryMain, processLayerName)
+                        if bool(locatorDictionaryMain):
+                            validatedLayer = self.validateLayer(locatorDictionaryMain, processLayerName)
+                            """
+                            validation performs
+                            """
+                            if validatedLayer:
+                                return validatedLayer
+                            else:
+                                return locatorDictionaryMain
+                        else:
+                            print('empty layer:', processLayerName)
+                            return False
+                    else:
+                        return False
 
                 except Exception as e:
                     print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
@@ -349,4 +387,11 @@ class Locator(LocatorValidation, DrectoryHandling):
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)
+            return False
+
+    def fetchSpecificDataOverLayer(self):
+        try:
+            pass
+        except Exception as e:
+            print('error in fetchSpecificDataOverLayer in Locator', e)
             return False

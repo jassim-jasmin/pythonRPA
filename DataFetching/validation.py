@@ -78,6 +78,12 @@ class LocatorValidation(GeneralExceptionHandling):
             return False
 
     def addValidationLayer(self, layerName, validationArray):
+        """
+        Adding validation dictionary
+        :param layerName: name
+        :param validationArray: each element of array having locator, pattern, flag
+        :return:
+        """
         try:
             filesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             fileName = filesPath +layerName + '_validation.json'
@@ -92,8 +98,9 @@ class LocatorValidation(GeneralExceptionHandling):
                         print('error in adding locator validation')
                         return False
                 else:
-                    print('error in validation should contain locator, pattern, flag', eachLocaotrData)
-                    return False
+                    print('error in addValidationLayer, validation is not in the format locator, pattern, flag', eachLocaotrData)
+                    exit()
+                    # return False
 
             return True
         except Exception as e:
