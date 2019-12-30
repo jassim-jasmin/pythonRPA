@@ -3,11 +3,21 @@ from DataFetching.Locator import Locator
 
 class DataFetchingMain(Locator, GeneralExceptionHandling):
     def __init__(self, path):
+        """
+        Class designed for fetching data
+        :param path: General argument json file
+        """
         self.path = path
         Locator.__init__(self, path)
         GeneralExceptionHandling.__init__(self)
 
     def generateOCR(self, imagesPath, ocrTextPath) -> bool:
+        """
+        For performing ocr
+        :param imagesPath: Path of the image to convert
+        :param ocrTextPath: Path for saving text
+        :return: True if success else :return: False
+        """
         try:
             from imageProcessing.imageProcessing import ImageProcessing
             imageProcessing = ImageProcessing(self.path)
@@ -20,6 +30,12 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             return False
 
     def pdfHandling(self, locatorFilePathWithFileName) -> bool:
+        """
+        For performing highlighting serachable pdf
+        :param locatorFilePathWithFileName: json contains file name and locator
+        :return: True if success else :return: False
+        ":Todo: json file might contain locator connector and locator array confirm and sort it out
+        """
         try:
             from PdfHandling.PdfHandling import PdfHanling
             pdfHandling = PdfHanling()
@@ -38,6 +54,12 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             return False
 
     def addLoatorLayer(self, layerName, data) -> bool:
+        """
+        Dictionary generation with locator
+        :param layerName: name of layer
+        :param data: json data for a layer
+        :return: True if sucess else :return: False
+        """
         try:
             locatorDirectory = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             fp = open(locatorDirectory+layerName+'.json', 'w')
@@ -54,6 +76,13 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             return False
 
     def imageDataProcessing(self) -> bool:
+        """
+        Collect images and  perform ocr for each images
+        Locator initialization and performing
+        Data fetching
+        Processed out
+        :return: True if success else :return: False
+        """
         try:
             imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
@@ -94,6 +123,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             return False
 
     def connectingLocator(self) -> dict:
+        """
+        Connector for each locator in different layers
+        :return: connector dictionary
+        """
         try:
             connectorKeys = dict()
 
@@ -109,6 +142,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             return False
 
     def getLayer1(self) -> list:
+        """
+        Custom locator asigning
+        :return: locator array
+        """
         data = []
         data.append(['legal', ['lot', 'block', 'plat']])
         # data.append(['legal', ['lot', 'block', 'plat', 'county']])
@@ -118,6 +155,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         return data
 
     def getValidation1(self) -> list:
+        """
+        Custom validation asigning
+        :return: validation array
+        """
         data = []
         data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
         data.append(('legal', '^ *\d', 'False'))
@@ -126,6 +167,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         return data
 
     def getLayer2(self) -> list:
+        """
+        Custom locator asigning
+        :return: locator array
+        """
         data = []
 
         data.append(['parcel_number', ['271-02171-0101']])
@@ -136,6 +181,10 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         return data
 
     def getValidation2(self) -> list:
+        """
+        Custom validation asigning
+        :return: validation array
+        """
         data = []
         data.append(('lot', 'LOT [A-Z]$', 'False'))
         data.append(('lot_1', '^[0-9]', 'False'))
@@ -150,6 +199,13 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         return data
 
     def saveDataAsCSV(self, fileName, dataDictionary, tag) -> bool:
+        """
+        Convert data for General Exception saveAsCsv format
+        :param fileName: Name
+        :param dataDictionary: csv content
+        :param tag: Heading for csv if any
+        :return: True if success else :return: False
+        """
         try:
             csvName = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             csvName = csvName+fileName+'.csv'
