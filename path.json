@@ -49,7 +49,7 @@
     "imagProcessing": {
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
-      "ocrTextPath": "/root/Documents/Test/ocr/",
+      "ocrTextPath": "/root/Documents/Test/ocr/diago/",
       "ocrTextPath_old": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
       "tesseract": "None"

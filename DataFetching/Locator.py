@@ -14,7 +14,6 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
         self.mainLocator = dict()
         self.locatorMissMatchFlag = True
         self.locatorMissMatchDictionary = dict()
-        self.locatorId = []
         self.DataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
         self.dataFetchingLocatorMissMatch = self.getJsonDataRecurssive('DataFetching,locatorMissMatch', self.path)
 
@@ -104,7 +103,8 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                 # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
                 searchOnlyNumAndCharObj = re.search(r'[0-9]', eachLocator)
                 if searchOnlyNumAndCharObj:
-                    bestMatch = re.sub('\d', '\d+', eachLocator)
+                    """ Converting number to coresponding regular expression """
+                    bestMatch = re.sub('\d', '\d', eachLocator)
                     # print('pattern found', bestMatch)
 
                     if i == 0:
@@ -173,11 +173,9 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
 
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
                     self.locatorMissMatchArray = []
-                    self.locatorId = []
 
                     if locatorDictionary:
                         for locatorId, locatorDataArray in locatorDictionary.items():
-                            self.locatorId.append(locatorId)
                             locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
 
                             if locatorArray:
@@ -253,8 +251,6 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                     fieldNames = ['file name', 'no match']
                     if 'locator' in layerDictionary:
                         fieldNames.extend(layerDictionary['locator'])
-                    else:
-                        fieldNames.extend(self.locatorId[:])
 
                     if 'locatorData' in layerDictionary:
                         layerData = layerDictionary['locatorData']
@@ -313,6 +309,15 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
             return False
 
     def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys) -> dict:
+        """
+        Locator selection on another layer
+        :param processLayerName: new layer name
+        :param layerDictionary: Already processed layer dictionary
+        :param connectorKeys: connector for new layer and existing dictionary layer
+        :return: new layer data
+        :Todo: if existing dictionary has no data then new layer further process is no need
+        :Todo: Locator id is always appending to the dictionary can avoid that
+        """
         try:
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             layerPath = locatorFilePath+processLayerName+'.json'
@@ -326,54 +331,52 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
 
             if layerData:
                 try:
+                    """ Collecting existing layer DATA dictionary """
                     dataDictionary = layerData  # primary dictionary
                     if 'locator' in layerDictionary:
                         locatorArray = layerDictionary['locator']
-
-                    import re
                     locatorDataDictionary = dict()
 
-                    locatorDictionary = self.getLocatorDataArray(layerPath) # new dictionary
+                    """ Collecting new layer dictionary """
+                    locatorDictionary = self.getLocatorDataArray(layerPath)
                     if locatorDictionary and dataDictionary:
                         self.locatorMissMatchArray = []
-                        self.locatorId = []
                         locatorDictionaryMain = dict()
 
                         for fileName, locatorData in dataDictionary.items():# main
                             for loactorIdInData, eachLocatorInData in locatorData.items():# new
-                                for locatorId, locatorDataArray in locatorDictionary.items():
-                                    if locatorId in connectorKeys:
-                                        if connectorKeys[locatorId] == loactorIdInData:
-                                            sourceDataProcessed = eachLocatorInData.upper()
-                                            sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                                            self.locatorId.append(eachLocatorInData)
-                                            locatorArray.append(locatorId)
-                                            # print(sourceDataProcessed)
-                                        else:
-                                            if connectorKeys[
-                                                    locatorId] == locatorId:  # the data is in final locator
-                                                sourceDataProcessed = eachLocatorInData.upper()
-                                                sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
-                                                self.locatorId.append(locatorId)
-                                                locatorArray.append(locatorId)
+                                if eachLocatorInData:
+                                    """ Converting to upper case and removing new line for regular expression processing """
+                                    sourceDataProcessed = eachLocatorInData.upper()
+                                    sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
 
-                                        if sourceDataProcessed and eachLocatorInData:
-                                            locatorFinalData = self.processLocatorData(locatorDataArray,
-                                                                                       sourceDataProcessed,
-                                                                                       eachLocatorInData)
-                                            if locatorFinalData:
-                                                locatorDataDictionary[locatorId] = locatorFinalData
-                                                locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
+                                    for locatorId, locatorDataArray in locatorDictionary.items():
+                                        locatorDataDictionary = dict()
+                                        """ new layer locator id is available in connector keys """
+                                        if locatorId in connectorKeys:
+                                            """
+                                                new layer id equals existing layer data dictionary id
+                                                only then need to process locator
+                                            """
+                                            if connectorKeys[locatorId] == loactorIdInData:
                                                 locatorArray.append(locatorId)
-                                    else:
-                                        print('invalid locator connector ', locatorId , ' not in ', connectorKeys)
-                                        return False
+                                                locatorFinalData = self.processLocatorData(locatorDataArray,
+                                                                                           sourceDataProcessed,
+                                                                                           eachLocatorInData)
+                                                if locatorFinalData:
+                                                    print(fileName, locatorId, locatorFinalData)
+                                                    locatorDataDictionary[locatorId] = locatorFinalData
+                                                    print(locatorDataDictionary)
+                                                    print(fileName)
+                                                    locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
+                                                    locatorArray.append(locatorId)
+                                        else:
+                                            print('invalid locator connector ', locatorId , ' not in ', connectorKeys)
+                                            return False
 
                         if bool(locatorDictionaryMain):
                             validatedLayer = self.validateLayer(locatorDictionaryMain, processLayerName)
-                            """
-                            validation performs
-                            """
+                            """ validation performs """
                             if validatedLayer:
                                 return validatedLayer
                             else:

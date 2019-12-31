@@ -110,7 +110,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
             locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, self.connectingLocator())
 
-            print('layer2 out', locatorDataDictionary)
+            # print('layer2 out', locatorDataDictionary)
             if locatorDataDictionary:
                 if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
                     print('error saving csv layer2')
@@ -139,6 +139,8 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
             #first locator key      = final locator key
             connectorKeys['parcel_number'] = 'parcel'
+            connectorKeys['parcel_number_new'] = 'parcel_1'
+            connectorKeys['formated_parcel_number'] = 'parcel_1'
             # connectorKeys['parcel_number_1'] = 'parcel'
             # connectorKeys['lot'] = 'legal'
             # connectorKeys['block'] = 'legal'
@@ -163,6 +165,9 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         data.append(['parcel', ['APN #;', 'R0235662']])
         data.append(['parcel', ['A.P.N.', 'R1605212']])
         data.append(['parcel', ['APN ', '17-02421']])
+        data.append(['parcel_1', ['Parcel 1D Number:','R0235659 / 4009138524369']])
+        data.append(['parcel_1', ['APN #:', '4-010-129-090-012']])
+        data.append(['parcel_1', ['PARCEL NUMBER:','4016159029035']])
 
         return data
 
@@ -195,6 +200,8 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         data.append(['parcel_number', ['R0242052']])
         data.append(['parcel_number', ['RO242052']])
         data.append(['parcel_number', ['02-34000']])
+        data.append(['parcel_number_new', ['4016159029035']])
+        data.append(['formated_parcel_number', ['4-010-129-090-012']])
         # data.append(['parcel_number', ['10-33009']])
 
         return data
