@@ -211,17 +211,9 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                 fileNameArray = self.getDirectoryElementBykey(sourceDataPath, 'txt')
 
                 if fileNameArray:
-
                     locatorDirectoryWithFileName = dict()
-                    i = 0
-                    print(len(fileNameArray))
 
                     for eachTextFile in fileNameArray:
-                        i = i+1
-                        print("\rComplete: ", i, "%", end="")
-                        sys.stdout.flush()
-                        sys.stdout.write('{0} imported\r'.format(i))
-
                         textFileData = self.getFileData(sourceDataPath+eachTextFile)
                         if textFileData:
                             locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
