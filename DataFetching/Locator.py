@@ -1,4 +1,5 @@
 from fuzzywuzzy import process
+import re
 
 from ExceptionHandling.DirecotryHandling import DrectoryHandling
 from DataFetching.StringHandling import StringHandling
@@ -88,15 +89,18 @@ class Locator(LocatorValidation, DrectoryHandling):
             return False
 
     def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed) -> str:
+        """
+        This one does the core logic of pattern build, need lot of improvement need to perform better
+        :param eachLocatorArray: Locator array
+        :param sourceDataProcessed: Processed locator data
+        :return: pattern if match else False
+        """
         try:
             patternBuild = '('
             for i in range(0, len(eachLocatorArray)):
                 stringHandling = StringHandling(self.path)
-                import re
                 eachLocator = eachLocatorArray[i].upper()
-                """
-                :Todo:considering if a string contains number, prevent it for fuzzy search
-                """
+                """considering if a string contains number, prevent it for fuzzy search"""
                 # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
                 searchOnlyNumAndCharObj = re.search(r'[0-9]', eachLocator)
                 if searchOnlyNumAndCharObj:
@@ -108,9 +112,13 @@ class Locator(LocatorValidation, DrectoryHandling):
                     else:
                         patternBuild = patternBuild + '(.*)' + bestMatch
                 else:
+                    """ Get fuzzy matching string array """
                     matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocator, sourceDataProcessed)
+                    print('matchingFuzzyWord', matchingFuzzyWord)
                     if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
+                        """ Find the best amoung them """
                         bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord)[0]
+                        print('best match', bestMatch)
 
 
                         if len(matchingFuzzyWord) > 0:
@@ -119,8 +127,13 @@ class Locator(LocatorValidation, DrectoryHandling):
                                 patternBuild = patternBuild + bestMatch
                             else:
                                 patternBuild = patternBuild + '(.*)' + bestMatch
+                    elif len(matchingFuzzyWord) == 0 and i == 0:
+                        """ if first locator doesnot match then no need for further process (Improvement in searching) """
+                        print('returning false')
+                        return False
 
             patternBuild = patternBuild + ')'
+            print(patternBuild, eachLocatorArray)
             return patternBuild
         except Exception as e:
             print('error in buildLocatorPattern', e)
@@ -133,6 +146,7 @@ class Locator(LocatorValidation, DrectoryHandling):
         :param sourceDataProcessed: processed source data, that is capitalize, remove new line...
         :param sourceData: original source file
         :return: match data if error then :return: False
+        :Todo: reSelect() might take too long for unstructured pattern build, need to rectify it
         """
         try:
             if locatorDataArray:
@@ -142,9 +156,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                     if patternBuild:
                         stringHandling = StringHandling(self.path)
                         locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
-                        self.locatorData = locatorData
-                        self.patternBuild = patternBuild
-                        self.sourceDataProcessed = sourceDataProcessed
 
                         if locatorData:
                             # print('found;;;;', locatorData)
@@ -197,6 +208,7 @@ class Locator(LocatorValidation, DrectoryHandling):
 
     def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath) -> dict:
         try:
+            import sys
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             locatorFilePathWithFileName = locatorFilePath+layerName+'.json'
 
@@ -206,8 +218,15 @@ class Locator(LocatorValidation, DrectoryHandling):
                 if fileNameArray:
 
                     locatorDirectoryWithFileName = dict()
+                    i = 0
+                    print(len(fileNameArray))
 
                     for eachTextFile in fileNameArray:
+                        i = i+1
+                        print("\rComplete: ", i, "%", end="")
+                        sys.stdout.flush()
+                        sys.stdout.write('{0} imported\r'.format(i))
+
                         textFileData = self.getFileData(sourceDataPath+eachTextFile)
                         if textFileData:
                             locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)

@@ -80,9 +80,6 @@ class StringHandling(GeneralExceptionHandling):
         print(self.getMatchOfEach(compareText, dataSet, self.stringMatchConfidence))
         print(self.getMathcFromSet(compareText, dataSet, self.stringMatchConfidence))
 
-    def test3(self):
-        self.addStringWriteFile('test2', 'testFile', 'id1')
-
     def addStringWriteFile(self, writeData, fileName, locatorId, filePath) -> bool:
         """Read data in a json file and add write data to the existing file and remove duplicate"""
         try:
@@ -100,12 +97,7 @@ class StringHandling(GeneralExceptionHandling):
             arrayElement = jsonData[locatorId]
             jsonData[locatorId] = self.removeArrayDuplicate(arrayElement)
 
-            fp  = open(self.getJsonDataRecurssive('DataFetching,filesPath', self.path) + fileName+'.json', 'w')
-
-            if fp.writable():
-                jsonObj = json.dumps(jsonData)
-                fp.write(jsonObj)
-                fp.close()
+            if self.writeJsonDataToFile(jsonData, self.getJsonDataRecurssive('DataFetching,filesPath', self.path) + fileName+'.json'):
                 return True
             else:
                 return False

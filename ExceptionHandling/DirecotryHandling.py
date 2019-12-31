@@ -70,12 +70,26 @@ class DrectoryHandling:
             print('error in copyToAnotherDirectory in DirectoryHandling', e)
             return False
 
+    def deleteFileWithKey(self, location, key, osFileSeperator):
+        try:
+            print('deletion')
+            files =self.getDirectoryElementBykey(location, key)
+
+            for eachFile in files:
+                print('removeing', eachFile)
+                os.remove(location+osFileSeperator+eachFile)
+
+            return True
+        except Exception as e:
+            print('error in deleteFileWithKey in DirectoryHandling', e)
+            return False
 # import json
 # obj = DrectoryHandling()
 # fp = open('../path.json')
 # path = json.loads(fp.read())['linux']
 # fp.flush()
 # fp.close()
+# obj.deleteFileWithKey('/root/Documents/Test/ocr','pdf','/')
 #
 #
 # textFileArray = obj.getTextFileFromDiffDirectory('/root/Documents/Test/all_files', path['directorySeperator'])

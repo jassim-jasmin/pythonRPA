@@ -101,6 +101,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             self.addValidationLayer('layer2', self.getValidation2())
 
             layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
+            print('layer1 completed')
 
             # print('layer1 out', layerData)
             if not self.saveDataAsCSV('layer1Out', layerData, 'layer1Out'):
@@ -109,7 +110,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
 
             locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, self.connectingLocator())
 
-            # print('layer2 out', locatorDataDictionary)
+            print('layer2 out', locatorDataDictionary)
             if locatorDataDictionary:
                 if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
                     print('error saving csv layer2')
@@ -152,15 +153,16 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         """
         Custom locator asigning
         :return: locator array
+        :Todo: Direct regular expression need to add (To improve fetching)
         """
         data = []
         # data.append(['legal', ['lot', 'block', 'plat']])
         # data.append(['legal', ['lot', 'block', 'plat', 'county']])
         # data.append(['legal', ['lot', 'plat', 'thereof']])
         # data.append(['parcel', ['271-02171-0101', 'parcel']])
-        # data.append(['parcel', ['APN', ' #; R', '0235662']])
-        # data.append(['parcel_1', ['APN ', '17-02421']])
-        data.append(['parcel', ['A.P.N. R', '1605212']])
+        data.append(['parcel', ['APN #;', 'R0235662']])
+        data.append(['parcel', ['A.P.N.', 'R1605212']])
+        data.append(['parcel', ['APN ', '17-02421']])
 
         return data
 
@@ -168,13 +170,14 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         """
         Custom validation asigning
         :return: validation array
+        :Todo: Pattern build need to add, only direct regular expressions are allowed
         """
         data = []
         # data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d', 'True'))
         # data.append(('legal', '^ *\d', 'False'))
         # data.append(('parcel', '\d\d\d-\d\d\d\d\d-\d\d\d\d \d\d\d-\d\d\d\d\d-\d\d\d\d', 'False'))
         # data.append(('parcel', '\d\d\d\d\d\d\d\d', 'True'))
-        data.append(('parcel', '^A', 'True'))
+        # data.append(('parcel', '^A', 'True'))
 
         return data
 
