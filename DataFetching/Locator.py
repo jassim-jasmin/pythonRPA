@@ -5,9 +5,10 @@ from ExceptionHandling.DirecotryHandling import DrectoryHandling
 from DataFetching.StringHandling import StringHandling
 from DataFetching.validation import LocatorValidation
 
-class Locator(LocatorValidation, DrectoryHandling):
+class Locator(LocatorValidation, DrectoryHandling, StringHandling):
     def __init__(self, path):
         self.path = path
+        StringHandling.__init__(self, path)
         LocatorValidation.__init__(self, path)
         DrectoryHandling.__init__(self)
         self.mainLocator = dict()
@@ -27,7 +28,6 @@ class Locator(LocatorValidation, DrectoryHandling):
                     else:
                         locationString = locationString + '::' + locationStringArray[i].replace('::',':|:')
 
-                stringHandling = StringHandling(self.path)
                 self.createDirectory(locatorDirectory)
 
                 locatorJsonFileNamewithPath = locatorDirectory + locatorJsonFileName + '.json'
@@ -36,22 +36,22 @@ class Locator(LocatorValidation, DrectoryHandling):
                 if locatorData:
                     if locatorId in locatorData:
                         fileData = locatorData[locatorId]
-                        data = stringHandling.getMathcFromSetInverse(locationString, fileData, stringHandling.stringMatchConfidence+10)
+                        data = self.getMathcFromSetInverse(locationString, fileData, self.stringMatchConfidence+10)
                         if data:
-                            if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
+                            if self.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                                 return True
                             else:
                                 return False
                         else:
                             print('locator adding failed, similar pattern available', locationString, fileData)
                             return False
-                    elif stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
+                    elif self.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                         return True
                     else:
                         print('write error', locatorJsonFileName)
                         return False
                 else:
-                    if stringHandling.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
+                    if self.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):
                         return True
                     else:
                         return False
@@ -94,11 +94,11 @@ class Locator(LocatorValidation, DrectoryHandling):
         :param eachLocatorArray: Locator array
         :param sourceDataProcessed: Processed locator data
         :return: pattern if match else False
+        :Todo: Need more optimaization can improve speed and accurate
         """
         try:
             patternBuild = '('
             for i in range(0, len(eachLocatorArray)):
-                stringHandling = StringHandling(self.path)
                 eachLocator = eachLocatorArray[i].upper()
                 """considering if a string contains number, prevent it for fuzzy search"""
                 # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
@@ -113,12 +113,10 @@ class Locator(LocatorValidation, DrectoryHandling):
                         patternBuild = patternBuild + '(.*)' + bestMatch
                 else:
                     """ Get fuzzy matching string array """
-                    matchingFuzzyWord = stringHandling.getFuzzySearchData(eachLocator, sourceDataProcessed)
-                    print('matchingFuzzyWord', matchingFuzzyWord)
+                    matchingFuzzyWord = self.getFuzzySearchData(eachLocator, sourceDataProcessed)
                     if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
                         """ Find the best amoung them """
                         bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord)[0]
-                        print('best match', bestMatch)
 
 
                         if len(matchingFuzzyWord) > 0:
@@ -129,11 +127,9 @@ class Locator(LocatorValidation, DrectoryHandling):
                                 patternBuild = patternBuild + '(.*)' + bestMatch
                     elif len(matchingFuzzyWord) == 0 and i == 0:
                         """ if first locator doesnot match then no need for further process (Improvement in searching) """
-                        print('returning false')
                         return False
 
             patternBuild = patternBuild + ')'
-            print(patternBuild, eachLocatorArray)
             return patternBuild
         except Exception as e:
             print('error in buildLocatorPattern', e)
@@ -154,8 +150,7 @@ class Locator(LocatorValidation, DrectoryHandling):
                     patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
 
                     if patternBuild:
-                        stringHandling = StringHandling(self.path)
-                        locatorData = stringHandling.reSelect(patternBuild, sourceDataProcessed, sourceData)
+                        locatorData = self.reSelect(patternBuild, sourceDataProcessed, sourceData)
 
                         if locatorData:
                             # print('found;;;;', locatorData)
