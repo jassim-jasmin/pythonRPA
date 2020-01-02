@@ -125,26 +125,57 @@ class StringHandling(GeneralExceptionHandling):
         '''fuzzy matches 'qs' in 'ls' and returns list of
         tuples of (word,index)
         '''
-        for word, _ in process.extractBests(qs, (ls,), score_cutoff=threshold):
-            print('word {}'.format(word))
-            for match in find_near_matches(qs, word, max_l_dist=1):
+
+        optimumLength = 4
+        if len(qs) < optimumLength:
+            processThreshold = 60
+            max_l_dist = 0
+        else:
+            processThreshold = threshold
+            max_l_dist = 1
+
+        for word, confidence in process.extractBests(qs, (ls,), score_cutoff=processThreshold):
+            print('word {}'.format(word), confidence)
+            for match in find_near_matches(qs, word, max_l_dist=max_l_dist):
                 match = word[match.start:match.end]
                 print('match {}'.format(match))
                 index = ls.find(match)
-                yield (match, index)
+                # yield (match, index)
 
     def getFuzzySearchData(self, qs, ls, threshold=30) -> list:
+        """
+        Fuzzy search data,
+        This part play major role of selecting fuzzy string amoung list
+        String length less than optimum result need to process seperately
+        :param qs: String for serching
+        :param ls: Main set of string to search in
+        :param threshold: threshold for fuzzy
+        :return: Fuzzy array
+        :Todo: qs length might getting verry low upto 1, need to check on it, This will get wrong result
+        """
         try:
-            """fuzzy matches 'qs' in 'ls' and returns list of
-            tuples of (word,index)
-            """
-
+            optimumLength = 4
             fuzzyWordArray = []
-            for word, _ in process.extractBests(qs, (ls,), score_cutoff=threshold):
+
+            if len(qs)<optimumLength:
+                processThreshold=90
+                max_l_dist = 0
+            else:
+                processThreshold = threshold
+                max_l_dist = 1
+
+            for word, confidence in process.extractBests(qs, (ls,), score_cutoff=processThreshold):
+                # print('fuzzy', qs, confidence)
                 # print('word {}'.format(word))
-                for match in find_near_matches(qs, word, max_l_dist=1):
+
+                for match in find_near_matches(qs, word, max_l_dist=max_l_dist):
                     match = word[match.start:match.end]
                     fuzzyWordArray.append(match)
+
+
+
+                    # if word == 'RECORDING REQUESTED BY FIRST AMERICAN TITLE AND WHEN RECORDED MAIL DOCUMENT TO: MR. AND MRS. DAVID PARRISH 14216 HALPER ROAD POWAY, CA 92064 SPACE ABOVE THIS LINE FOR RECORDER':
+                    #     print(word, confidence, qs, match)
             return fuzzyWordArray
         except Exception as e:
             print('error in getFuzzySearchData in stringHandling', e)
@@ -183,3 +214,8 @@ class StringHandling(GeneralExceptionHandling):
             print(patternBuild)
             print('patter: ', patternMatch)
             print('patter other: ', sourceData)
+
+# obj = StringHandling('')
+#
+# test = obj.fuzzyExtract('FNT', "FNTG Builder Services", 30)
+# print(test)

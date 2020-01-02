@@ -94,6 +94,8 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
         :param sourceDataProcessed: Processed locator data
         :return: pattern if match else False
         :Todo: Need more optimaization can improve speed and accurate
+        :Todo: Move to StringHandling class
+        :Todo: if a number encounter then only the word contain that part need to process, not the whole
         """
         try:
             patternBuild = '('
@@ -115,18 +117,31 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                     """ Get fuzzy matching string array """
                     matchingFuzzyWord = self.getFuzzySearchData(eachLocator, sourceDataProcessed)
                     if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
-                        """ Find the best amoung them """
-                        bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord)[0]
+                        """ 
+                            Find the best amoung them
+                            It is very importent for selecting appropriate confidence limit, one thing is based on string length
+                            :todo: find other parameters for improving
+                        """
+                        if len(eachLocator)<5:
+                            confidenceLimit = 90
+                        else:
+                            confidenceLimit = 80
+
+                        bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord, limit=1)[0]
 
 
-                        if len(matchingFuzzyWord) > 0:
+                        if len(matchingFuzzyWord) > 0 and confidenceLimit<confidence:
                             bestMatch = self.regularExpressionHandling(bestMatch, 0)
                             if i == 0:
                                 patternBuild = patternBuild + bestMatch
                             else:
                                 patternBuild = patternBuild + '(.*)' + bestMatch
-                    elif len(matchingFuzzyWord) == 0 and i == 0:
-                        """ if first locator doesnot match then no need for further process (Improvement in searching) """
+                        else:
+                            if i == 0 or len(eachLocatorArray) == i+1:
+                                """ if first or last locator doesnot match then no need for further process (Improvement in searching) """
+                                return False
+                    elif len(matchingFuzzyWord) == 0 and (i == 0 or len(eachLocatorArray) == i+1):
+                        """ if first or last locator doesnot match then no need for further process (Improvement in searching) """
                         return False
 
             patternBuild = patternBuild + ')'
@@ -173,19 +188,21 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
 
                     locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
                     self.locatorMissMatchArray = []
+                    locatorArray = []
 
                     if locatorDictionary:
                         for locatorId, locatorDataArray in locatorDictionary.items():
-                            locatorArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
+                            locatorArray.append(locatorId)
+                            locatorDataArray = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
 
-                            if locatorArray:
-                                locatorDataDictionary[locatorId] = locatorArray
+                            if locatorDataArray:
+                                locatorDataDictionary[locatorId] = locatorDataArray
                             else:
                                 if self.locatorMissMatchFlag:
                                     self.locatorMissMatchArray.append(locatorId)
-                        return locatorDataDictionary
+                        return locatorDataDictionary, locatorArray
                     else:
-                        print('error Layer ', locatorFilePathWithFileName, ' has no data', locatorDictionary)
+                        print('error Layer ', locatorFilePathWithFileName, ' has no data', locatorDictionary, locatorFilePathWithFileName)
                         exit()
 
                 except Exception as e:
@@ -200,6 +217,13 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
             return False
 
     def processLocatorAndGetDataFromFileAll(self, layerName, sourceDataPath) -> dict:
+        """
+
+        :param layerName: Name of layer
+        :param sourceDataPath: location of directory
+        :return: Locator directory :return: False if error
+        :todo: miss match logic need to change
+        """
         try:
             import sys
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
@@ -210,25 +234,29 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
 
                 if fileNameArray:
                     locatorDirectoryWithFileName = dict()
+                    layerDictionary = dict()
+                    locatorArrayMain = []
 
                     for eachTextFile in fileNameArray:
                         textFileData = self.getFileData(sourceDataPath+eachTextFile)
                         if textFileData:
-                            locatorDataDictionary = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                            locatorDataDictionary, locatorArray = self.processLocatorAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                            locatorArrayMain.extend(locatorArray)
                             if locatorDataDictionary:
-                                if self.locatorMissMatchFlag:
-                                    if len(self.locatorMissMatchArray)>0:
-                                         self.locatorMissMatchDictionary[eachTextFile] = self.locatorMissMatchArray[:]
-                                    else:
-                                        self.locatorMissMatchDictionary[eachTextFile] = ['no match']
                                 fileNameSplit = eachTextFile.split('.')
                                 if len(fileNameSplit)>0:
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
                         else:
                             exit()
-
-                    validation = LocatorValidation(self.path)
-                    return validation.validateLayer(locatorDirectoryWithFileName, layerName)
+                    """ If validation file available then only need of validation """
+                    validationStatus = self.fileStatus(locatorFilePath+layerName+'_validation.json')
+                    if validationStatus:
+                        self.validateLayer(locatorDirectoryWithFileName, layerName)
+                    else:
+                        locatorArrayMain = self.removeArrayDuplicate(locatorArrayMain)
+                        layerDictionary['locator'] = locatorArrayMain
+                        layerDictionary['locatorData'] = locatorDirectoryWithFileName
+                        return layerDictionary
                 else:
                     print('error no data in ', sourceDataPath, ' Processing locator failed')
                     return False
@@ -248,7 +276,7 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                 with open(csvNameWithPath, 'w') as csvfile:
                     # print('opening csv', layerDictionary)
                     csvfile.write(tag)
-                    fieldNames = ['file name', 'no match']
+                    fieldNames = ['file name']
                     if 'locator' in layerDictionary:
                         fieldNames.extend(layerDictionary['locator'])
 
@@ -317,6 +345,8 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
         :return: new layer data
         :Todo: if existing dictionary has no data then new layer further process is no need
         :Todo: Locator id is always appending to the dictionary can avoid that
+        :todo: locator array and locator data in layer need to optimize, it is updating after checking validation can modify either from validation or before giving to validation
+        :todo: dictionary is creating unecessorly, need to find other methodes to replace this strategy
         """
         try:
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
@@ -364,10 +394,7 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                                                                                            sourceDataProcessed,
                                                                                            eachLocatorInData)
                                                 if locatorFinalData:
-                                                    print(fileName, locatorId, locatorFinalData)
                                                     locatorDataDictionary[locatorId] = locatorFinalData
-                                                    print(locatorDataDictionary)
-                                                    print(fileName)
                                                     locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
                                                     locatorArray.append(locatorId)
                                         else:
@@ -380,11 +407,16 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                             if validatedLayer:
                                 return validatedLayer
                             else:
-                                return locatorDictionaryMain
+                                locatorArray = self.removeArrayDuplicate(locatorArray)
+                                layerDictionaryFinal = dict()
+                                layerDictionaryFinal['locator'] = locatorArray
+                                layerDictionaryFinal['locatorData'] = locatorDictionaryMain
+                                return layerDictionaryFinal
                         else:
-                            print('empty layer:', processLayerName)
+                            print('empty layer:', processLayerName, locatorDictionaryMain)
                             return False
                     else:
+                        print('layer ' + processLayerName + ' is not defined')
                         return False
 
                 except Exception as e:
@@ -392,7 +424,7 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
                     return False
                 return True
             else:
-                print('error in source dictionary Locator sourceData', layerDataMain)
+                print('error in source dictionary Locator sourceData', layerDataMain, layerDictionary)
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)

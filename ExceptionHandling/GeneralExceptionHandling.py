@@ -2,6 +2,20 @@ import os
 import json
 
 class GeneralExceptionHandling:
+    def fileStatus(self, fileNameWithPath):
+        """ For checking file is empty or not """
+        try:
+            fp = open(fileNameWithPath, 'r')
+            if os.stat(fileNameWithPath).st_size == 0:
+                fp.flush()
+                fp.close()
+                return False
+            fp.flush()
+            fp.close()
+            return True
+        except Exception as e:
+            return False
+
     def getFileData(self, fileNameWithPath):
         """
 
@@ -152,8 +166,10 @@ class GeneralExceptionHandling:
         """
         try:
             if fileNameWithPath:
+                fileData = self.getFileData(fileNameWithPath)
 
-                return self.returnsDictionaryFromString(self.getFileData(fileNameWithPath))
+                if fileData:
+                    return self.returnsDictionaryFromString(fileData)
             else:
                 print('error json file name with path is error')
                 return False

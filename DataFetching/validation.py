@@ -41,8 +41,9 @@ class LocatorValidation(GeneralExceptionHandling):
                                     return False
                     else:
                         return True
-
-            return True
+                return True
+            else:
+                return False
         except Exception as e:
             print('error in assignValidationStatus in validation', e)
             return False
@@ -113,41 +114,43 @@ class LocatorValidation(GeneralExceptionHandling):
             validationLayer = dataFetchingFilesPath + layerName + '_validation.json'
             layerDictionaryMain  = dict()
 
-            if 'locatorData' in layerDictionaryOrData:
-                layerData  = layerDictionaryOrData['locatorData']
-            else:
-                layerData = layerDictionaryOrData
+            if self.fileStatus(validationLayer):
+                if 'locatorData' in layerDictionaryOrData:
+                    layerData  = layerDictionaryOrData['locatorData']
+                else:
+                    layerData = layerDictionaryOrData
 
-            locatorArray = []
-            if 'locator' in layerDictionaryOrData:
-                locatorArray = layerDictionaryOrData['locator']
-
-            if layerData:
-                validDictionary = dict()
-                for fileName, locatorDirectory in layerData.items():
-                    valid = []
-                    for locatorId, locatorData in locatorDirectory.items():
-                        if self.getValidity(locatorId, locatorData, validationLayer):
-                            valid.append(locatorId)
-                            locatorArray.append(locatorId)
-                    validDictionary[fileName] = valid
-
-                #final out
-                validatedLayer = dict()
                 locatorArray = []
-                for fileName, locatorData in layerData.items():
-                    layerDictionary = dict()
-                    if fileName in validDictionary:
-                        for locatorIdMain, locatorDataMain in locatorData.items():
-                            if locatorIdMain in validDictionary[fileName]:
-                                layerDictionary[locatorIdMain] = locatorDataMain
-                                locatorArray.append(locatorIdMain)
+                if 'locator' in layerDictionaryOrData:
+                    locatorArray = layerDictionaryOrData['locator']
 
-                        validatedLayer[fileName] = layerDictionary.copy()
+                if layerData:
+                    validDictionary = dict()
+                    for fileName, locatorDirectory in layerData.items():
+                        valid = []
+                        for locatorId, locatorData in locatorDirectory.items():
+                            if self.getValidity(locatorId, locatorData, validationLayer):
+                                valid.append(locatorId)
+                                locatorArray.append(locatorId)
 
-                layerDictionaryMain['locator'] = self.removeArrayDuplicate(locatorArray)
-                layerDictionaryMain['locatorData'] = validatedLayer
-                return layerDictionaryMain
+                        validDictionary[fileName] = valid
+
+                    #final out
+                    validatedLayer = dict()
+                    locatorArray = []
+                    for fileName, locatorData in layerData.items():
+                        layerDictionary = dict()
+                        if fileName in validDictionary:
+                            for locatorIdMain, locatorDataMain in locatorData.items():
+                                if locatorIdMain in validDictionary[fileName]:
+                                    layerDictionary[locatorIdMain] = locatorDataMain
+                                    locatorArray.append(locatorIdMain)
+
+                            validatedLayer[fileName] = layerDictionary.copy()
+
+                    layerDictionaryMain['locator'] = self.removeArrayDuplicate(locatorArray)
+                    layerDictionaryMain['locatorData'] = validatedLayer
+                    return layerDictionaryMain
             return False
 
         except Exception as e:

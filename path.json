@@ -49,6 +49,7 @@
     "imagProcessing": {
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
+      "ocrTextPath_temp": "/root/Documents/Test/x/ocr/",
       "ocrTextPath": "/root/Documents/Test/ocr/diago/",
       "ocrTextPath_old": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
@@ -60,6 +61,7 @@
     "unzipOption": " -xvzf ",
     "directorySeperator": "/",
     "DataFetching": {
+      "filesPath_temp": "/root/Documents/Test/x/",
       "filesPath": "/root/Documents/Test/",
       "filesPath_old": "DataFetching/files/",
       "startStringFiles": "startString.txt",
