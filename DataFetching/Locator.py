@@ -7,6 +7,12 @@ from DataFetching.validation import LocatorValidation
 
 class Locator(LocatorValidation, DrectoryHandling, StringHandling):
     def __init__(self, path):
+        """
+        :todo: need to add profile for locator,
+        :todo: rename Locator to profile layer
+        :todo: cannot map two parent locator to a single child locator
+        :param path: Basic argument
+        """
         self.path = path
         StringHandling.__init__(self, path)
         LocatorValidation.__init__(self, path)
@@ -16,6 +22,14 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
         self.locatorMissMatchDictionary = dict()
         self.DataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
         self.dataFetchingLocatorMissMatch = self.getJsonDataRecurssive('DataFetching,locatorMissMatch', self.path)
+
+    def addLayerProfile(self, profileName):
+        try:
+            return self.createDirectory(self.DataFetchingFilesPath+profileName)
+        except Exception as e:
+            print('error in addLayerProfile in Locator', e)
+            return False
+
 
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory) -> bool:
         try:
@@ -95,7 +109,7 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
         :return: pattern if match else False
         :Todo: Need more optimaization can improve speed and accurate
         :Todo: Move to StringHandling class
-        :Todo: if a number encounter then only the word contain that part need to process, not the whole
+        :Todo: if a number encounter then only the word contain that part need to process, not the whole string
         """
         try:
             patternBuild = '('
