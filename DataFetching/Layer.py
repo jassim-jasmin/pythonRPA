@@ -6,8 +6,7 @@ from DataFetching.Locator import Locator
 class Layer(LocatorValidation, DrectoryHandling, Locator):
     def __init__(self, path):
         """
-        :todo: need to add profile for locator,
-        :todo: rename Locator to profile layer
+        :todo: need to add profile for Layer
         :todo: cannot map two parent locator to a single child locator
         :param path: Basic argument
         """
@@ -50,7 +49,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                         for locatorId, locatorDataArray in locatorDictionary.items():
                             locatorArray.append(locatorId)
                             """ From locator array first matching will return """
-                            locatorData = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData)
+                            locatorData = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData, 'stringLength')
 
                             if locatorData:
                                 locatorDataDictionary[locatorId] = locatorData
@@ -101,6 +100,8 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
                         else:
                             exit()
+                        # print('Test break')
+                        # break
                     """ If validation file available then only need of validation """
                     validationStatus = self.fileStatus(locatorFilePath+layerName+'_validation.json')
                     if validationStatus:
@@ -244,7 +245,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                                                 locatorArray.append(locatorId)
                                                 locatorFinalData = self.processLocatorData(locatorDataArray,
                                                                                            sourceDataProcessed,
-                                                                                           eachLocatorInData)
+                                                                                           eachLocatorInData, 'stringLength')
                                                 if locatorFinalData:
                                                     locatorDataDictionary[locatorId] = locatorFinalData
                                                     locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
@@ -276,7 +277,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     return False
                 return True
             else:
-                print('error in source dictionary Locator sourceData', layerDataMain, layerDictionary)
+                print('error in source dictionary Layer sourceData', layerDataMain, layerDictionary)
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)

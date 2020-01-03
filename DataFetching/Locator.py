@@ -4,31 +4,6 @@ class Locator(StringHandling):
     def __init__(self, path):
         StringHandling.__init__(self, path)
 
-    def processLocatorData(self, locatorDataArray, sourceDataProcessed, sourceData):
-        """
-        pattern match math source file
-        :param locatorDataArray: loactor array
-        :param sourceDataProcessed: processed source data, that is capitalize, remove new line...
-        :param sourceData: original source file
-        :return: match data if error then :return: False
-        """
-        try:
-            if locatorDataArray:
-                for eachLocatorArray in locatorDataArray:
-                    patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
-
-                    if patternBuild:
-                        locatorData = self.reSelect(patternBuild, sourceDataProcessed, sourceData)
-
-                        if locatorData:
-                            # print('found;;;;', locatorData)
-                            return locatorData
-            return False
-
-        except Exception as e:
-            print('error in processLocatorData in Locator', e)
-            return False
-
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory) -> bool:
         try:
 
@@ -125,4 +100,72 @@ class Locator(StringHandling):
                 return False
         except Exception as e:
             print('error in getLocatorDataArray in Locator', e)
+            return False
+
+    def processLocatorData(self, locatorDataArray, sourceDataProcessed, sourceData, priority=None):
+        """
+        pattern match math source file
+        :param locatorDataArray: loactor array
+        :param sourceDataProcessed: processed source data, that is capitalize, remove new line...
+        :param sourceData: original source file
+        :return: match data if error then :return: False
+        :todo: Prioritize
+        """
+        try:
+            if locatorDataArray:
+                if priority == None:
+                    for eachLocatorArray in locatorDataArray:
+                        patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
+
+                        if patternBuild:
+                            locatorData = self.reSelect(patternBuild, sourceDataProcessed, sourceData)
+
+                            if locatorData:
+                                # print('found;;;;', locatorData)
+                                return locatorData
+                else:
+                    index = 0
+                    locatorIndexArray = []
+                    for eachLocatorArray in locatorDataArray:
+                        index = index + 1
+                        patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
+
+                        if patternBuild:
+                            locatorData = self.reSelect(patternBuild, sourceDataProcessed, sourceData)
+
+                            if locatorData:
+                                # print('found;;;;', locatorData)
+                                locatorIndexArray.append((locatorData, index))
+                    if len(locatorIndexArray):
+                        filterData = self.filterLocatorArray(locatorIndexArray, priority)
+                        if filterData:
+                            return filterData
+            return False
+
+        except Exception as e:
+            print('error in processLocatorData in Locator', e)
+            return False
+
+    def filterLocatorArray(self, locatorIndexArray, priority):
+        """
+        To avoid terminating the first occurence of multiple locator
+        :param locatorIndexArray: For futer index wise prioritizing
+        :param priority: prioirty method flag
+        :return: priority result
+        :todo: only prioritizing string length is done. If necessory of other methode add the logic
+        """
+        try:
+            string = False
+            length = 0
+            if priority == 'stringLength':
+                for locator, index in locatorIndexArray:
+                    locatorLength = len(locator)
+                    # print(locator, index)
+                    if locatorLength > length:
+                        string = locator
+                        length = locatorLength
+                        # print(locator, length, 'max')
+                return string
+        except Exception as e:
+            print('error in filterLcatorArray in Locator',e)
             return False
