@@ -101,69 +101,6 @@ class Locator(LocatorValidation, DrectoryHandling, StringHandling):
             print('error in getLocatorDataArray in Locator', e)
             return False
 
-    def buildLocatorPattern(self, eachLocatorArray, sourceDataProcessed) -> str:
-        """
-        This one does the core logic of pattern build, need lot of improvement need to perform better
-        :param eachLocatorArray: Locator array
-        :param sourceDataProcessed: Processed locator data
-        :return: pattern if match else False
-        :Todo: Need more optimaization can improve speed and accurate
-        :Todo: Move to StringHandling class
-        :Todo: if a number encounter then only the word contain that part need to process, not the whole string
-        """
-        try:
-            patternBuild = '('
-            for i in range(0, len(eachLocatorArray)):
-                eachLocator = eachLocatorArray[i].upper()
-                """considering if a string contains number, prevent it for fuzzy search"""
-                # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
-                searchOnlyNumAndCharObj = re.search(r'[0-9]', eachLocator)
-                if searchOnlyNumAndCharObj:
-                    """ Converting number to coresponding regular expression """
-                    bestMatch = re.sub('\d', '\d', eachLocator)
-                    # print('pattern found', bestMatch)
-
-                    if i == 0:
-                        patternBuild = patternBuild + bestMatch
-                    else:
-                        patternBuild = patternBuild + '(.*)' + bestMatch
-                else:
-                    """ Get fuzzy matching string array """
-                    matchingFuzzyWord = self.getFuzzySearchData(eachLocator, sourceDataProcessed)
-                    if len(process.extractBests(eachLocator, matchingFuzzyWord)) > 0:
-                        """ 
-                            Find the best amoung them
-                            It is very importent for selecting appropriate confidence limit, one thing is based on string length
-                            :todo: find other parameters for improving
-                        """
-                        if len(eachLocator)<5:
-                            confidenceLimit = 90
-                        else:
-                            confidenceLimit = 80
-
-                        bestMatch, confidence = process.extractBests(eachLocator, matchingFuzzyWord, limit=1)[0]
-
-
-                        if len(matchingFuzzyWord) > 0 and confidenceLimit<confidence:
-                            bestMatch = self.regularExpressionHandling(bestMatch, 0)
-                            if i == 0:
-                                patternBuild = patternBuild + bestMatch
-                            else:
-                                patternBuild = patternBuild + '(.*)' + bestMatch
-                        else:
-                            if i == 0 or len(eachLocatorArray) == i+1:
-                                """ if first or last locator doesnot match then no need for further process (Improvement in searching) """
-                                return False
-                    elif len(matchingFuzzyWord) == 0 and (i == 0 or len(eachLocatorArray) == i+1):
-                        """ if first or last locator doesnot match then no need for further process (Improvement in searching) """
-                        return False
-
-            patternBuild = patternBuild + ')'
-            return patternBuild
-        except Exception as e:
-            print('error in buildLocatorPattern', e)
-            return False
-
     def processLocatorData(self, locatorDataArray, sourceDataProcessed, sourceData):
         """
         pattern match math source file

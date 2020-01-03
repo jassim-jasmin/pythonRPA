@@ -120,9 +120,9 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             #     print('error saving csv layer1')
             #     return False
             #
-            # if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
-            #     print('error saving csv layer1')
-            #     return False
+            if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
+                print('error saving csv layer1')
+                return False
 
             # locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, connectingLocator())
 
