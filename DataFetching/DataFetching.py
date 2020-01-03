@@ -1,15 +1,15 @@
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
-from DataFetching.Locator import Locator
+from DataFetching.Layer import Layer
 from DataFetching.customData import *
 
-class DataFetchingMain(Locator, GeneralExceptionHandling):
+class DataFetchingMain(Layer, GeneralExceptionHandling):
     def __init__(self, path):
         """
         Class designed for fetching data
         :param path: General argument json file
         """
         self.path = path
-        Locator.__init__(self, path)
+        Layer.__init__(self, path)
         GeneralExceptionHandling.__init__(self)
 
     def generateOCR(self, imagesPath, ocrTextPath) -> bool:
@@ -54,33 +54,6 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             print('error in pdfHandling in DataFetching', e)
             return False
 
-    def addLoatorLayer(self, layerName, data) -> bool:
-        """
-        Dictionary generation with locator
-        :param layerName: name of layer
-        :param data: json data for a layer
-        :return: True if sucess else :return: False
-        """
-        try:
-            locatorDirectory = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
-            print(locatorDirectory+layerName+'.json')
-            fp = open(locatorDirectory+layerName+'.json', 'w')
-            fp.flush()
-            fp.close()
-
-            if data:
-                for locatorId, locatorData in data:
-                    if not self.addLocatorToDictionary(locatorData, locatorId, layerName, locatorDirectory):
-                        return False
-
-                return True
-            else:
-                print('json data input for layer ' + layerName + ' is empty')
-                return False
-        except Exception as e:
-            print('error in addLocatorLayer in DataFetching', e)
-            return False
-
     def imageDataProcessing(self) -> bool:
         """
         Collect images and  perform ocr for each images
@@ -90,7 +63,7 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
         :return: True if success else :return: False
         """
         try:
-            imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
+            # imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
 
             # if not self.generateOCR(imagesPath, ocrTextDirectoryPath):
@@ -105,28 +78,36 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             if not self.addLoatorLayer('layer3', getLayer3()):
                 return False
 
+            if not self.addLoatorLayer('layer4', getLayer4()):
+                print('error adding locator')
+                return False
+
             # self.addValidationLayer('layer1', getValidation1())
             # self.addValidationLayer('layer2', getValidation2())
-            self.addValidationLayer('layer3', [])
-            self.addValidationLayer('layer4', [])
+            # self.addValidationLayer('layer3', [])
+            # self.addValidationLayer('layer4', [])
 
             # layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
             # print('layer1 completed')
             #
-            layer3Data = self.processLocatorAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
+            layer3Data = self.processLayerAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
 
             # print('layer1 out', layerData)
             # if not self.saveDataAsCSV('layer1Out', layerData, 'layer1Out'):
             #     print('error saving csv layer1')
             #     return False
             #
-            if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
-                print('error saving csv layer1')
-                return False
+            # if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
+            #     print('error saving csv layer1')
+            #     return False
+
+            layer4Direct = self.processLayerAndGetDataFromFileAll('layer4', ocrTextDirectoryPath)
 
             # locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, connectingLocator())
 
             titleCompay = self.processLayerFromLayer('layer4', layer3Data, connectingLocator())
+
+            # self.writeJsonDataToFile(titleCompay, '/root/Documents/Test/layer4Out.json')
 
             # print('layer2 out', locatorDataDictionary)
             # if locatorDataDictionary:
@@ -137,13 +118,29 @@ class DataFetchingMain(Locator, GeneralExceptionHandling):
             #     print('processing layer1 with layer2 failed')
             #     return False
 
-            if titleCompay:
-                if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
-                    print('error saving csv layer2')
-                    return False
-            else:
-                print('no data in layer4')
-                return False
+            # if titleCompay:
+            #     if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
+            #         print('error saving csv layer2')
+            #         return False
+
+            # if layer4Direct:
+            #     if not self.saveDataAsCSV('layer4Direct', layer4Direct, 'Direct Matching'):
+            #         print("error in saving csv layer 4 direct")
+            #         return False
+            # else:
+            #     print('no data in layer4')
+            #     return False
+
+            #test
+            # test = self.readFileAndReturnJson('/root/Documents/Test/layer4Out.json')
+            # print(test)
+
+            allData = self.fetchDataOverLayers([layer4Direct, titleCompay])
+
+            if allData:
+                if not self.saveDataAsCSV('allData', allData, 'Compained data'):
+                    print('error compaining data')
+
 
 
             print('completed')
