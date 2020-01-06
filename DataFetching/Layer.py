@@ -122,65 +122,6 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
             print('errror in processLayerAndGetDataFromFileAll in locator', e)
             return False
 
-    def saveAsCsv(self, csvNameWithPath, tag,layerDictionary) -> bool:
-        """
-
-        :param csvNameWithPath:
-        :param tag:
-        :param layerDictionary:
-        :return:
-        :todo: removed tag that need to update in saveAsCSv
-        """
-        try:
-            import csv
-
-            if layerDictionary:
-                with open(csvNameWithPath, 'w') as csvfile:
-                    # print('opening csv', layerDictionary)
-                    # csvfile.write(tag)
-                    fieldNames = ['file_name']
-                    if 'locator' in layerDictionary:
-                        fieldNames.extend(layerDictionary['locator'])
-
-                    if 'locatorData' in layerDictionary:
-                        layerData = layerDictionary['locatorData']
-                        # print('layer data: ', layerData)
-                        csvfile.newlines
-                        writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
-                        writer.writeheader()
-                        print('csv save file:', csvNameWithPath)
-                        for fileName, locatorData in layerData.items():
-                            csvEacRowLocator = dict()
-                            csvEacRowLocator['file_name'] = fileName
-
-                            for data in locatorData:
-                                array = []
-                                dictionary = dict()
-
-                                if type(locatorData) is  type(array):
-                                    csvEacRowLocator[data] = data
-                                elif type(locatorData) is type(dictionary):
-                                    if data in locatorData:
-                                        csvEacRowLocator[data] = locatorData[data]
-                                    else:
-                                        print('Error json error key' + data + ' not in ')
-                                        print(locatorData)
-                                        return False
-                                else:
-                                    print('not a dictionary', locatorData)
-                                    return False
-
-                            writer.writerow(csvEacRowLocator)
-                        return True
-                    else:
-                        print('error creating csv invalid layer data')
-                        return False
-            else:
-                print('error in csv dictionary in saveAsCsv in Locator', layerDictionary)
-                return False
-        except Exception as e:
-            print("error in saveAsCsv in Layer", e)
-
     def getValidatedLocatorData(self, locatorDataDirectory, validation) -> dict:
         try:
             locatorDirectry = dict()

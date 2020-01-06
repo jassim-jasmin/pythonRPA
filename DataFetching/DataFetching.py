@@ -86,8 +86,6 @@ class DataFetchingMain(Layer, Analyse):
 
             # self.addValidationLayer('layer1', getValidation1())
             # self.addValidationLayer('layer2', getValidation2())
-            # self.addValidationLayer('layer3', [])
-            # self.addValidationLayer('layer4', [])
 
             # layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
             # print('layer1 completed')
@@ -157,27 +155,4 @@ class DataFetchingMain(Layer, Analyse):
             return True
         except Exception as e:
             print('error in imageDataProcessing in DataFetching', e)
-            return False
-
-    def saveDataAsCSV(self, fileName, dataDictionary, tag) -> bool:
-        """
-        Convert data for General Exception saveAsCsv format
-        :param fileName: Name
-        :param dataDictionary: csv content
-        :param tag: Heading for csv if any
-        :return: True if success else :return: False
-        """
-        try:
-            csvName = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
-            csvName = csvName+fileName+'.csv'
-            fp = open(csvName, 'w')
-            fp.flush()
-            fp.close()
-
-            if self.saveAsCsv(csvName, tag+'\n', dataDictionary):
-                return True
-            else:
-                return False
-        except Exception as e:
-            print('error in saveDataAsCSV in DataFetching', e)
             return False
