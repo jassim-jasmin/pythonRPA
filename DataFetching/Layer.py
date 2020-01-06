@@ -123,14 +123,22 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
             return False
 
     def saveAsCsv(self, csvNameWithPath, tag,layerDictionary) -> bool:
+        """
+
+        :param csvNameWithPath:
+        :param tag:
+        :param layerDictionary:
+        :return:
+        :todo: removed tag that need to update in saveAsCSv
+        """
         try:
             import csv
 
             if layerDictionary:
                 with open(csvNameWithPath, 'w') as csvfile:
                     # print('opening csv', layerDictionary)
-                    csvfile.write(tag)
-                    fieldNames = ['file name']
+                    # csvfile.write(tag)
+                    fieldNames = ['file_name']
                     if 'locator' in layerDictionary:
                         fieldNames.extend(layerDictionary['locator'])
 
@@ -143,7 +151,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                         print('csv save file:', csvNameWithPath)
                         for fileName, locatorData in layerData.items():
                             csvEacRowLocator = dict()
-                            csvEacRowLocator['file name'] = fileName
+                            csvEacRowLocator['file_name'] = fileName
 
                             for data in locatorData:
                                 array = []
@@ -171,7 +179,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                 print('error in csv dictionary in saveAsCsv in Locator', layerDictionary)
                 return False
         except Exception as e:
-            print("error in saveAsCsv in Locator", e)
+            print("error in saveAsCsv in Layer", e)
 
     def getValidatedLocatorData(self, locatorDataDirectory, validation) -> dict:
         try:
@@ -275,9 +283,9 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                 except Exception as e:
                     print('error in  processLocatorAndGetDataFromDictionary in Locator',e)
                     return False
-                return True
+                # return True
             else:
-                print('error in source dictionary Layer sourceData', layerDataMain, layerDictionary)
+                print('error in source dictionary Layer sourceData', layerData, layerDictionary)
                 return False
         except Exception as e:
             print('errror in processLocatorAndGetDataFromDictionary in locator', e)

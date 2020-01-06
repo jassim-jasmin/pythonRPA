@@ -1,8 +1,9 @@
-from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+# from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 from DataFetching.Layer import Layer
+from DataFetching.analyse import Analyse
 from DataFetching.customData import *
 
-class DataFetchingMain(Layer, GeneralExceptionHandling):
+class DataFetchingMain(Layer, Analyse):
     def __init__(self, path):
         """
         Class designed for fetching data
@@ -10,7 +11,8 @@ class DataFetchingMain(Layer, GeneralExceptionHandling):
         """
         self.path = path
         Layer.__init__(self, path)
-        GeneralExceptionHandling.__init__(self)
+        # GeneralExceptionHandling.__init__(self)
+        Analyse.__init__(self, path)
 
     def generateOCR(self, imagesPath, ocrTextPath) -> bool:
         """
@@ -75,8 +77,8 @@ class DataFetchingMain(Layer, GeneralExceptionHandling):
             # if not self.addLoatorLayer('layer2', getLayer2()):
             #     return False
 
-            if not self.addLoatorLayer('layer3', getLayer3()):
-                return False
+            # if not self.addLoatorLayer('layer3', getLayer3()):
+            #     return False
 
             if not self.addLoatorLayer('layer4', getLayer4()):
                 print('error adding locator')
@@ -118,18 +120,18 @@ class DataFetchingMain(Layer, GeneralExceptionHandling):
             #     print('processing layer1 with layer2 failed')
             #     return False
 
-            # if titleCompay:
-            #     if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
-            #         print('error saving csv layer2')
-            #         return False
+            if titleCompay:
+                if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
+                    print('error saving csv layer2')
+                    return False
 
-            # if layer4Direct:
-            #     if not self.saveDataAsCSV('layer4Direct', layer4Direct, 'Direct Matching'):
-            #         print("error in saving csv layer 4 direct")
-            #         return False
-            # else:
-            #     print('no data in layer4')
-            #     return False
+            if layer4Direct:
+                if not self.saveDataAsCSV('layer4Direct', layer4Direct, 'Direct Matching'):
+                    print("error in saving csv layer 4 direct")
+                    return False
+            else:
+                print('no data in layer4')
+                return False
 
             #test
             # test = self.readFileAndReturnJson('/root/Documents/Test/layer4Out.json')
@@ -141,8 +143,13 @@ class DataFetchingMain(Layer, GeneralExceptionHandling):
                 if not self.saveDataAsCSV('allData', allData, 'Compained data'):
                     print('error compaining data')
 
+            if layer4Direct:
+                if not self.saveDataAsCSV('allData', layer4Direct, 'final'):
+                    print('error in ccccc')
+                    return False
 
-
+            if not self.getUnprocessedFiles():
+                return False
             print('completed')
 
             # self.pdfHandling(locatorFilePathWithFileName)
