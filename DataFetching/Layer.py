@@ -2,6 +2,7 @@ from ExceptionHandling.DirecotryHandling import DrectoryHandling
 # from DataFetching.StringHandling import StringHandling
 from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
+from ExceptionHandling.CSVHandling import CsvHandling
 
 class Layer(LocatorValidation, DrectoryHandling, Locator):
     def __init__(self, path):
@@ -71,15 +72,15 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
 
     def processLayerAndGetDataFromFileAll(self, layerName, sourceDataPath) -> dict:
         """
-
+        Layer arrangement
         :param layerName: Name of layer
         :param sourceDataPath: location of directory
         :return: Locator directory :return: False if error
         """
         try:
             import sys
-            locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
-            locatorFilePathWithFileName = locatorFilePath+layerName+'.json'
+            layerFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+            locatorFilePathWithFileName = layerFilePath+layerName+'.json'
 
             if sourceDataPath:
                 fileNameArray = self.getDirectoryElementBykey(sourceDataPath, 'txt')
@@ -103,7 +104,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                         # print('Test break')
                         # break
                     """ If validation file available then only need of validation """
-                    validationStatus = self.fileStatus(locatorFilePath+layerName+'_validation.json')
+                    validationStatus = self.fileStatus(layerFilePath+layerName+'_validation.json')
                     if validationStatus:
                         self.validateLayer(locatorDirectoryWithFileName, layerName)
                     else:
@@ -272,5 +273,5 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
 
             return True
         except Exception as e:
-            print('error in fetchSpecificDataOverLayer in Locator', e)
+            print('error in fetchSpecificDataOverLayer in Layer', e)
             return False

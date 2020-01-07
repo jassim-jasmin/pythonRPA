@@ -65,6 +65,9 @@ class DataFetchingMain(Layer, Analyse):
         :return: True if success else :return: False
         """
         try:
+            import time
+            start = time.time()
+
             # imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
 
@@ -77,17 +80,21 @@ class DataFetchingMain(Layer, Analyse):
             # if not self.addLoatorLayer('layer2', getLayer2()):
             #     return False
 
-            # if not self.addLoatorLayer('layer3', getLayer3()):
-            #     return False
+            if not self.addLoatorLayer('layer3', getLayer3()):
+                return False
 
             if not self.addLoatorLayer('layer4', getLayer4()):
                 print('error adding locator')
+                return False
+            #
+            if not self.addLoatorLayer('layer5', getLayer5()):
+                print('error adding layer5')
                 return False
 
             # self.addValidationLayer('layer1', getValidation1())
             # self.addValidationLayer('layer2', getValidation2())
 
-            # layerData = self.processLocatorAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
+            # layerData = self.processLayerAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
             # print('layer1 completed')
             #
             layer3Data = self.processLayerAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
@@ -97,17 +104,18 @@ class DataFetchingMain(Layer, Analyse):
             #     print('error saving csv layer1')
             #     return False
             #
-            # if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
-            #     print('error saving csv layer1')
-            #     return False
+            if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
+                print('error saving csv layer1')
+                return False
 
             layer4Direct = self.processLayerAndGetDataFromFileAll('layer4', ocrTextDirectoryPath)
+            layer5 = self.processLayerAndGetDataFromFileAll('layer5', ocrTextDirectoryPath)
 
             # locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, connectingLocator())
 
             titleCompay = self.processLayerFromLayer('layer4', layer3Data, connectingLocator())
 
-            # self.writeJsonDataToFile(titleCompay, '/root/Documents/Test/layer4Out.json')
+            self.writeJsonDataToFile(titleCompay, '/root/Documents/Test/layer4Out.json')
 
             # print('layer2 out', locatorDataDictionary)
             # if locatorDataDictionary:
@@ -120,7 +128,7 @@ class DataFetchingMain(Layer, Analyse):
 
             if titleCompay:
                 if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
-                    print('error saving csv layer2')
+                    print('error saving csv layer4Out')
                     return False
 
             if layer4Direct:
@@ -135,22 +143,38 @@ class DataFetchingMain(Layer, Analyse):
             # test = self.readFileAndReturnJson('/root/Documents/Test/layer4Out.json')
             # print(test)
 
-            allData = self.fetchDataOverLayers([layer4Direct, titleCompay])
 
-            if allData:
-                if not self.saveDataAsCSV('allData', allData, 'Compained data'):
-                    print('error compaining data')
+            if layer4Direct and titleCompay:
+                allData = self.fetchDataOverLayers([layer4Direct, titleCompay])
 
-            if layer4Direct:
-                if not self.saveDataAsCSV('allData', layer4Direct, 'final'):
-                    print('error in ccccc')
+                if allData:
+                    if not self.saveDataAsCSV('allData', allData, 'Compained data'):
+                        print('error compaining data')
+            else:
+                print('layer4 and title empty')
+
+            # if layer4Direct:
+            #     if not self.saveDataAsCSV('allData', layer4Direct, 'final'):
+            #         print('error saving all data layer 4')
+            #         return False
+
+            if layer5:
+                if not self.saveDataAsCSV('layer5', layer5, 'final'):
+                    print('error saving layer5')
                     return False
+            #     else:
+            #         self.validateLayerBylayer('allData', 'layer5')
 
-            if not self.getUnprocessedFiles():
+            self.validateLayerBylayer('allData', 'layer5')
+
+            if not self.getUnprocessedFiles('allData'):
                 return False
             print('completed')
 
             # self.pdfHandling(locatorFilePathWithFileName)
+
+            end = time.time()
+            print("Complete execution time: ", end - start)
 
             return True
         except Exception as e:

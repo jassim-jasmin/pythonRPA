@@ -91,15 +91,11 @@ class DrectoryHandling:
 # path = json.loads(fp.read())['linux']
 # fp.flush()
 # fp.close()
-
-
-
-# textFileArray = obj.getTextFileFromDiffDirectory('/root/Documents/Test/ocr/diago', path['directorySeperator'])
-# textFileArray = obj.getTextFileFromDiffDirectory('/run/user/0/gvfs/smb-share:server=192.168.15.65,share=aishare/result_data/CA/SAN_DIEGO/CASANDIEGO_20191212', '/')
 #
-# print(textFileArray)
-# print('finally')
-# #
+#
+#
+# # textFileArray = obj.getTextFileFromDiffDirectory('/root/Documents/Test/CASANDIEGO_20191109', path['directorySeperator'])
+# textFileArray = obj.getTextFileFromDiffDirectory('/run/user/0/gvfs/smb-share:server=192.168.15.65,share=aishare/result_data/CA/LOS_ANGELES/CALOSANGELES_20191220', '/')
 # if textFileArray:
 #     for eachTextFileArray in textFileArray:
 #         obj.copyToAnotherDirectory(path['imagProcessing']['ocrTextPath'], eachTextFileArray)

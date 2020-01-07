@@ -110,3 +110,56 @@ class CsvHandling:
         except Exception as e:
             print('error in saveDataAsCSV in CSVHandling', e)
             return False
+
+    def csvNotInCSV(self, mainCSV, subCSV, mainCSVConnColumn, subCSVConnColumn):
+        try:
+            notInCSV = mainCSV[~mainCSV[mainCSVConnColumn].isin(subCSV[subCSVConnColumn])]
+
+            return notInCSV
+        except Exception as e:
+            print('error in csvNotInCSV in CSVHandling', e)
+            return False
+
+    def replaceSingleRow(self, dataFrame, columnName, string, replaceString):
+        try:
+            return dataFrame[columnName].str.replace(string, replaceString, case=False)
+        except Exception as e:
+            print('error in  replaceSingleRow in CSVHandling', e)
+            return False
+
+    def getDataFrameFromCSV(self, csvPathWithFileName):
+        try:
+            return pd.read_csv(csvPathWithFileName)
+        except Exception as e:
+            print('error in getDataFrameFromCSV in CSVHandling', e)
+            return False
+
+    def renameADataFrameColumn(self, dataFrame, columnName, rename):
+        try:
+            dataFrame.rename(columns={columnName: rename}, inplace=True)
+            return dataFrame
+        except Exception as e:
+            print('error in renameADataFrameColumn in CSVHandling', e)
+            return False
+
+    def makeDataFrameFromArray(self, array, columnName):
+        try:
+            return pd.DataFrame(array, columns=[columnName])
+        except  Exception as e:
+            print('error in makeDataFrameFromArray in CSVHandling', e)
+            return False
+
+    def mergeTwoDataFrame(self, leftData, rightData, leftDataColumn, rightDataColumn):
+        try:
+            return pd.merge(leftData, rightData, left_on=leftDataColumn, right_on=rightDataColumn)
+        except Exception as e:
+            print('error in mergeTwoDataFrame in CSVHandling', e)
+            return False
+
+    def dataFrameToCSV(self, dataFrame, csvpathWithFileName):
+        try:
+            dataFrame.to_csv(csvpathWithFileName, index=False)
+            return True
+        except Exception as e:
+            print('error in dataFrameToCSV in CSVHandling', e)
+            return False

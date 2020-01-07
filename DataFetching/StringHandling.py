@@ -10,6 +10,8 @@ class StringHandling(GeneralExceptionHandling):
         GeneralExceptionHandling.__init__(self)
         self.path = path
         self.stringMatchConfidence = 90
+        self.fuzzySearchOptimumLength = 6
+        """ threshold will set to 90 and l_dist will be 0 for precision while less than fuzzySearchOptimumLength """
 
     def getMatchOfEach(self,string, stringSet, confidence) -> list:
         """It is a fuzzywuzzy process extract output only returns with confidence"""
@@ -122,12 +124,18 @@ class StringHandling(GeneralExceptionHandling):
                 return False
 
     def fuzzyExtract(self, qs, ls, threshold):
+        '''
+        todo fuzzy search seperation in words
+        :param qs: query string
+        :param ls: large string
+        :param threshold: threshold
+        :return:
+        '''
         '''fuzzy matches 'qs' in 'ls' and returns list of
         tuples of (word,index)
         '''
 
-        optimumLength = 4
-        if len(qs) < optimumLength:
+        if len(qs) < self.fuzzySearchOptimumLength:
             processThreshold = 60
             max_l_dist = 0
         else:
@@ -142,7 +150,7 @@ class StringHandling(GeneralExceptionHandling):
                 index = ls.find(match)
                 # yield (match, index)
 
-    def getFuzzySearchData(self, qs, ls, threshold=30) -> list:
+    def getFuzzySearchData(self, qs, ls, threshold=60) -> list:
         """
         Fuzzy search data,
         This part play major role of selecting fuzzy string amoung list
@@ -154,10 +162,9 @@ class StringHandling(GeneralExceptionHandling):
         :Todo: qs length might getting verry low upto 1, need to check on it, This will get wrong result
         """
         try:
-            optimumLength = 4
             fuzzyWordArray = []
 
-            if len(qs)<optimumLength:
+            if len(qs)<self.fuzzySearchOptimumLength:
                 processThreshold=90
                 max_l_dist = 0
             else:

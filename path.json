@@ -50,8 +50,9 @@
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
       "ocrTextPath_temp": "/root/Documents/Test/x/ocr/",
-      "ocrTextPath": "/root/Documents/Test/sampleOCR/",
-      "ocrTextPath_o": "/root/Documents/Test/ocr/diago/",
+      "ocrTextPath_o": "/root/Documents/Test/sampleOCR/",
+      "ocrTextPath": "/root/Documents/Test/ocr/diago/",
+      "ocrTextPath_o1": "/root/Documents/Test/CALOSANGELES_20191220/ocr/",
       "ocrTextPath_old": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
       "tesseract": "None"
@@ -63,6 +64,7 @@
     "directorySeperator": "/",
     "DataFetching": {
       "filesPath_temp": "/root/Documents/Test/x/",
+      "filesPath_o": "/root/Documents/Test/CALOSANGELES_20191220/",
       "filesPath": "/root/Documents/Test/",
       "filesPath_old": "DataFetching/files/",
       "startStringFiles": "startString.txt",
