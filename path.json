@@ -29,7 +29,8 @@
       "locatorMissMatch": "locatorMissMatch",
       "processedDataPath": "Data\\final.csv",
       "locatorFinalDictionary": "locatorFinalDictionary",
-      "finalValidation": "finalValidation"
+      "finalValidation": "finalValidation",
+      "comparisonFile": "/root/Documents/Test/comparisonFile.csv"
     },
     "Data": {
       "path": "Data\\",

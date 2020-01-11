@@ -115,7 +115,7 @@ class DataFetchingMain(Layer, Analyse):
 
             titleCompay = self.processLayerFromLayer('layer4', layer3Data, connectingLocator())
 
-            self.writeJsonDataToFile(titleCompay, '/root/Documents/Test/layer4Out.json')
+            self.writeJsonDataToFile(titleCompay, self.getJsonDataRecurssive('DataFetching,filesPath', self.path)+'layer4Out.json')
 
             # print('layer2 out', locatorDataDictionary)
             # if locatorDataDictionary:

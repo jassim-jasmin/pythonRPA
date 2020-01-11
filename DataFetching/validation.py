@@ -1,7 +1,9 @@
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
+from ExceptionHandling.CSVHandling import CsvHandling
 
-class LocatorValidation(GeneralExceptionHandling):
+class LocatorValidation(GeneralExceptionHandling, CsvHandling):
     def __init__(self, path):
+        CsvHandling.__init__(self)
         GeneralExceptionHandling.__init__(self)
         self.path = path
         self.locatorValidationArray = dict()
