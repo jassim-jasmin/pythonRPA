@@ -163,3 +163,11 @@ class CsvHandling:
         except Exception as e:
             print('error in dataFrameToCSV in CSVHandling', e)
             return False
+
+    def csvToDataFrame(self, filePahtWithName):
+        try:
+            data = pd.read_csv(filePahtWithName)
+            return data
+        except Exception as e:
+            print('error in csvToDataFrame in CSVHandling', e)
+            return False

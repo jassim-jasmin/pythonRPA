@@ -47,7 +47,8 @@ class Analyse(CsvHandling):
                 pendingFiles[allFileColumnName] = self.replaceSingleRow(pendingFiles, allFileColumnName, '.txt', '')
 
                 mainCompare = self.getJsonDataRecurssive('DataFetching,comparisonFile', self.path)
-                test = self.mergeTwoDataFrame(pendingFiles, mainCompare, allFileColumnName, 'Image_Name')
+                mainCompareData = self.csvToDataFrame(mainCompare)
+                test = self.mergeTwoDataFrame(pendingFiles, mainCompareData, allFileColumnName, 'Image_Name')
                 self.dataFrameToCSV(test, csvPathWithFile + 'test.csv')
                 return True
             else:

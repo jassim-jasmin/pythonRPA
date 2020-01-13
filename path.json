@@ -51,8 +51,8 @@
       "path": "imageProcessing/",
       "imagePath": "/root/Documents/bhagya/deed/",
       "ocrTextPath_temp": "/root/Documents/Test/x/ocr/",
-      "ocrTextPath_o": "/root/Documents/Test/sampleOCR/",
-      "ocrTextPath": "/root/Documents/Test/ocr/diago/",
+      "ocrTextPath": "/root/Documents/Test/sampleOCR/",
+      "ocrTextPath_o": "/root/Documents/Test/ocr/diago/",
       "ocrTextPath_o1": "/root/Documents/Test/CALOSANGELES_20191220/ocr/",
       "ocrTextPath_old": "/root/Documents/mj/ocr/ocrTextData/new/",
       "pdfPath": "/root/Documents/mj/ocr/pdfTextData/new/",
@@ -75,7 +75,8 @@
       "locatorMissMatch": "locatorMissMatch",
       "processedDataPath": "DataFetching/files/final.csv",
       "locatorFinalDictionary": "locatorFinalDictionary",
-      "finalValidation": "finalValidation"
+      "finalValidation": "finalValidation",
+      "comparisonFile": "/root/Documents/Test/comparisonFile.csv"
     },
     "Data": {
       "path": "Data/",

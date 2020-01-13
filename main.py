@@ -106,6 +106,11 @@ if __name__ == '__main__':
                         exit()
                 except Exception as e:
                     print('error in dataFetching in main', e)
+            elif sys.argv[2] == 'test':
+                try:
+                    from DataFetching.test import *
+                except Exception as e:
+                    print('error in test main in main', e)
 
         elif len(sys.argv) == 2:
             from automation.automation import Automation

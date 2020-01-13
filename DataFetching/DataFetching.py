@@ -93,6 +93,7 @@ class DataFetchingMain(Layer, Analyse):
 
             # self.addValidationLayer('layer1', getValidation1())
             # self.addValidationLayer('layer2', getValidation2())
+            self.addValidationLayer('layer4', getValidation4())
 
             # layerData = self.processLayerAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
             # print('layer1 completed')

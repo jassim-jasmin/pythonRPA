@@ -5,6 +5,14 @@ class Locator(StringHandling):
         StringHandling.__init__(self, path)
 
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory) -> bool:
+        """
+        todo getMathcFromSetInverse need to sync with locator data fetch
+        :param locationStringArray:
+        :param locatorId:
+        :param locatorJsonFileName:
+        :param locatorDirectory:
+        :return:
+        """
         try:
 
             if locatorDirectory and locationStringArray:
@@ -27,6 +35,10 @@ class Locator(StringHandling):
                 if locatorData:
                     if locatorId in locatorData:
                         fileData = locatorData[locatorId]
+                        """
+                        stringMatchConfidence = 90
+                        + 10 will result 100%
+                        """
                         data = self.getMathcFromSetInverse(locationString, fileData, self.stringMatchConfidence+10)
                         if data:
                             if not self.addStringWriteFile(locationString, locatorJsonFileName, locatorId, locatorDirectory):

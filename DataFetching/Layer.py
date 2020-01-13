@@ -106,7 +106,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     """ If validation file available then only need of validation """
                     validationStatus = self.fileStatus(layerFilePath+layerName+'_validation.json')
                     if validationStatus:
-                        self.validateLayer(locatorDirectoryWithFileName, layerName)
+                        return self.validateLayer(locatorDirectoryWithFileName, layerName)
                     else:
                         locatorArrayMain = self.removeArrayDuplicate(locatorArrayMain)
                         layerDictionary['locator'] = locatorArrayMain
@@ -206,8 +206,10 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
 
                         if bool(locatorDictionaryMain):
                             validatedLayer = self.validateLayer(locatorDictionaryMain, processLayerName)
+                            # print('validation', validatedLayer)
                             """ validation performs """
                             if validatedLayer:
+                                # print('validation performed')
                                 return validatedLayer
                             else:
                                 locatorArray = self.removeArrayDuplicate(locatorArray)
