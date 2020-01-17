@@ -2,7 +2,7 @@ from ExceptionHandling.DirecotryHandling import DrectoryHandling
 # from DataFetching.StringHandling import StringHandling
 from DataFetching.validation import LocatorValidation
 from DataFetching.Locator import Locator
-from ExceptionHandling.CSVHandling import CsvHandling
+from DataFetching.LocatorFromDB import SqlConnect
 
 class Layer(LocatorValidation, DrectoryHandling, Locator):
     def __init__(self, path):
@@ -18,6 +18,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
         Locator.__init__(self, path)
         self.mainLocator = dict()
         self.DataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+        self.sqlConnect = SqlConnect(self.path)
 
     def addLayerProfile(self, profileName):
         try:
@@ -26,7 +27,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
             print('error in addLayerProfile in Locator', e)
             return False
 
-    def processLayerAndGetDataFromFile(self, locatorFilePathWithFileName, sourceData):
+    def processLayerAndGetDataFromFile(self, layerName, sourceData):
         """
         Single file layer processing
         :param locatorFilePathWithFileName: Layer name with path extension
@@ -43,20 +44,31 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                     locatorDataDictionary = dict()
 
-                    locatorDictionary = self.getLocatorDataArray(locatorFilePathWithFileName)
+                    locatorDictionary = self.getLocatorDataArray(layerName)# mj
+
+                    # locatorDictionary = self.sqlConnect.buildLocatorJsonFileFromDb(layerName)
+                    # print(locatorDictionary)
+
                     locatorArray = []
+                    # print(locatorDictionary)
 
                     if locatorDictionary:
                         for locatorId, locatorDataArray in locatorDictionary.items():
                             locatorArray.append(locatorId)
                             """ From locator array first matching will return """
                             locatorData = self.processLocatorData(locatorDataArray, sourceDataProcessed, sourceData, 'stringLength')
+                            # print('locator data', locatorData, locatorDataArray)
 
                             if locatorData:
                                 locatorDataDictionary[locatorId] = locatorData
-                        return locatorDataDictionary, locatorArray
+
+                        if bool(locatorDictionary):
+                            return locatorDataDictionary, locatorArray
+                        else:
+                            print('No data found using layer', layerName)
+                            return False
                     else:
-                        print('error Layer ', locatorFilePathWithFileName, ' has no data', locatorDictionary, locatorFilePathWithFileName)
+                        print('error Layer ', layerName, ' has no data', locatorDictionary, layerName)
                         exit()
 
                 except Exception as e:
@@ -80,7 +92,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
         try:
             import sys
             layerFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
-            locatorFilePathWithFileName = layerFilePath+layerName+'.json'
+            # locatorFilePathWithFileName = layerFilePath+layerName+'.json'
 
             if sourceDataPath:
                 fileNameArray = self.getDirectoryElementBykey(sourceDataPath, 'txt')
@@ -93,7 +105,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     for eachTextFile in fileNameArray:
                         textFileData = self.getFileData(sourceDataPath+eachTextFile)
                         if textFileData:
-                            locatorDataDictionary, locatorArray = self.processLayerAndGetDataFromFile(locatorFilePathWithFileName, textFileData)
+                            locatorDataDictionary, locatorArray = self.processLayerAndGetDataFromFile(layerName, textFileData)
                             locatorArrayMain.extend(locatorArray)
                             if locatorDataDictionary:
                                 fileNameSplit = eachTextFile.split('.')
@@ -173,6 +185,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
 
                     """ Collecting new layer dictionary """
                     locatorDictionary = self.getLocatorDataArray(layerPath)
+                    # locatorDictionary = self.sqlConnect.buildLocatorJsonFileFromDb(processLayerName)
                     if locatorDictionary and dataDictionary:
                         locatorDictionaryMain = dict()
 

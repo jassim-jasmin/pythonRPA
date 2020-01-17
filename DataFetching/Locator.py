@@ -1,4 +1,5 @@
 from DataFetching.StringHandling import StringHandling
+from DataFetching.LocatorFromDB import SqlConnect
 
 class Locator(StringHandling):
     def __init__(self, path):
@@ -87,12 +88,14 @@ class Locator(StringHandling):
             print('error in addLocatorLayer in Locator', e)
             return False
 
-    def getLocatorDataArray(self, locatorFilePathWithFileName) -> dict:
+    def getLocatorDataArray(self, layer_name) -> dict:
         try:
             locator = []
             locatorDictionary = dict()
 
-            locatorJson = self.readFileAndReturnJson(locatorFilePathWithFileName)
+            # locatorJson = self.readFileAndReturnJson(locatorFilePathWithFileName)# mj
+            sqlConnect = SqlConnect(self.path)
+            locatorJson = sqlConnect.buildLocatorJsonFileFromDb(layer_name)
 
             if locatorJson:
                 for locatorId, locatorArray in locatorJson.items():
@@ -127,6 +130,7 @@ class Locator(StringHandling):
             if locatorDataArray:
                 if priority == None:
                     for eachLocatorArray in locatorDataArray:
+                        print('array',eachLocatorArray)
                         patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
 
                         if patternBuild:

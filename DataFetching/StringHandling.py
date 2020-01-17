@@ -227,7 +227,7 @@ class StringHandling(GeneralExceptionHandling):
         try:
             import re
 
-            eachLocator = eachLocatorArray[i].upper()
+            eachLocator = eachLocatorArray[i].upper()# mjj
             """considering if a string contains number, prevent it for fuzzy search"""
             # searchOnlyNumAndCharObj = re.search(r'^[0-9-`!@#$%^&*()_+=\\|}\]\[{\';:\/\?>\.,<~ ]+$', eachLocator)
             searchOnlyNumAndCharObj = re.search(r'[0-9]', eachLocator)
@@ -291,6 +291,8 @@ class StringHandling(GeneralExceptionHandling):
             patternBuild = '('
             for i in range(0, len(eachLocatorArray)):
                 patternBuild = self.buildEachLocatorTagPattern(eachLocatorArray, i, sourceDataProcessed, patternBuild)
+                # print(eachLocatorArray)
+                # print('\n',sourceDataProcessed)
                 if not patternBuild:
                     return False
 
