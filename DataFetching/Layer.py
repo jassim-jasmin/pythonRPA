@@ -47,7 +47,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     locatorDictionary = self.getLocatorDataArray(layerName)# mj
 
                     # locatorDictionary = self.sqlConnect.buildLocatorJsonFileFromDb(layerName)
-                    # print(locatorDictionary)
+                    print(locatorDictionary)
 
                     locatorArray = []
                     # print(locatorDictionary)

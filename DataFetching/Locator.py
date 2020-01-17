@@ -130,7 +130,7 @@ class Locator(StringHandling):
             if locatorDataArray:
                 if priority == None:
                     for eachLocatorArray in locatorDataArray:
-                        print('array',eachLocatorArray)
+                        # print('array',eachLocatorArray)
                         patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
 
                         if patternBuild:

@@ -28,6 +28,7 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
         try:
             validatorDirectory = self.readFileAndReturnJson(locatorValidationDirectoryPath)
 
+
             if validatorDirectory:
                 for flag, seperatedValidation in validatorDirectory.items():
                     if locatorId in seperatedValidation:
@@ -111,6 +112,12 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
             return False
 
     def validateLayer(self, layerDictionaryOrData, layerName):
+        """
+        todo validation file moved to db need to update
+        :param layerDictionaryOrData:
+        :param layerName:
+        :return:
+        """
         try:
             dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             validationLayer = dataFetchingFilesPath + layerName + '_validation.json'
@@ -131,7 +138,7 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
                     for fileName, locatorDirectory in layerData.items():
                         valid = []
                         for locatorId, locatorData in locatorDirectory.items():
-                            if self.getValidity(locatorId, locatorData, validationLayer):
+                            if self.getValidity(locatorId, locatorData, validationLayer):# mj
                                 valid.append(locatorId)
                                 locatorArray.append(locatorId)
 
