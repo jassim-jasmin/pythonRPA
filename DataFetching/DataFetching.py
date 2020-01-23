@@ -71,64 +71,12 @@ class DataFetchingMain(Layer, Analyse):
             # imagesPath = self.getJsonDataRecurssive('imagProcessing,imagePath', self.path)
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
 
-            # if not self.generateOCR(imagesPath, ocrTextDirectoryPath):
-            #     exit()
-
-            # if not self.addLoatorLayer('layer1', getLayer1()):
-            #     return False
-            #
-            # if not self.addLoatorLayer('layer2', getLayer2()):
-            #     return False
-
-            # if not self.addLoatorLayer('layer3', getLayer3()):
-            #     return False
-            #
-            # if not self.addLoatorLayer('layer4', getLayer4()):
-            #     print('error adding locator')
-            #     return False
-            #
-            # if not self.addLoatorLayer('layer5', getLayer5()):
-            #     print('error adding layer5')
-            #     return False
-
-            # self.addValidationLayer('layer1', getValidation1())
-            # self.addValidationLayer('layer2', getValidation2())
-            # self.addValidationLayer('layer4', getValidation4())
-
-            # layerData = self.processLayerAndGetDataFromFileAll('layer1', ocrTextDirectoryPath)
-            # print('layer1 completed')
-            #
             layer3Data = self.processLayerAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
-
-            # print('layer1 out', layerData)
-            # if not self.saveDataAsCSV('layer1Out', layerData, 'layer1Out'):
-            #     print('error saving csv layer1')
-            #     return False
-            #
-            if not self.saveDataAsCSV('layer3Out', layer3Data, 'layer3'):
-                print('error saving csv layer1')
-                return False
-
             layer4Direct = self.processLayerAndGetDataFromFileAll('layer4', ocrTextDirectoryPath)
-            print('layer 4 direct', layer4Direct)
             layer5 = self.processLayerAndGetDataFromFileAll('layer5', ocrTextDirectoryPath)
-            print('layer 5', layer5)
-
-            # locatorDataDictionary = self.processLayerFromLayer('layer2', layerData, connectingLocator())
-
-            titleCompay = self.processLayerFromLayer('layer4', layer3Data, connectingLocator())
-            print('titlecompany', titleCompay)
+            titleCompay = self.processLayerFromLayer('layer4', layer3Data, 'layer3')
 
             self.writeJsonDataToFile(titleCompay, self.getJsonDataRecurssive('DataFetching,filesPath', self.path)+'layer4Out.json')
-
-            # print('layer2 out', locatorDataDictionary)
-            # if locatorDataDictionary:
-            #     if not self.saveDataAsCSV('layer2Out', locatorDataDictionary, 'layer2Out'):
-            #         print('error saving csv layer2')
-            #         return False
-            # else:
-            #     print('processing layer1 with layer2 failed')
-            #     return False
 
             if titleCompay:
                 if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
@@ -143,10 +91,6 @@ class DataFetchingMain(Layer, Analyse):
                 print('no data in layer4')
                 return False
 
-            #test
-            # test = self.readFileAndReturnJson('/root/Documents/Test/layer4Out.json')
-            # print(test)
-
 
             if layer4Direct and titleCompay:
                 allData = self.fetchDataOverLayers([layer4Direct, titleCompay])
@@ -157,17 +101,10 @@ class DataFetchingMain(Layer, Analyse):
             else:
                 print('layer4 and title empty')
 
-            # if layer4Direct:
-            #     if not self.saveDataAsCSV('allData', layer4Direct, 'final'):
-            #         print('error saving all data layer 4')
-            #         return False
-
             if layer5:
                 if not self.saveDataAsCSV('layer5', layer5, 'final'):
                     print('error saving layer5')
                     return False
-            #     else:
-            #         self.validateLayerBylayer('allData', 'layer5')
 
             self.validateLayerBylayer('allData', 'layer5')
 

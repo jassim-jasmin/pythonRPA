@@ -94,6 +94,8 @@ class Locator(StringHandling):
             locatorDictionary = dict()
 
             # locatorJson = self.readFileAndReturnJson(locatorFilePathWithFileName)# mj
+
+            # print('getlocatordataarray', layer_name)
             sqlConnect = SqlConnect(self.path)
             locatorJson = sqlConnect.buildLocatorJsonFileFromDb(layer_name)
 

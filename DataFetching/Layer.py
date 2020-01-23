@@ -44,10 +44,10 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
                     locatorDataDictionary = dict()
 
-                    locatorDictionary = self.getLocatorDataArray(layerName)# mj
+                    locatorDictionary = self.getLocatorDataArray(layerName)
 
                     # locatorDictionary = self.sqlConnect.buildLocatorJsonFileFromDb(layerName)
-                    print(locatorDictionary)
+                    # print(locatorDictionary)
 
                     locatorArray = []
                     # print(locatorDictionary)
@@ -116,9 +116,12 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                         # print('Test break')
                         # break
                     """ If validation file available then only need of validation """
-                    validationStatus = self.fileStatus(layerFilePath+layerName+'_validation.json')
-                    if validationStatus:
-                        return self.validateLayer(locatorDirectoryWithFileName, layerName)
+                    # validationStatus = self.fileStatus(layerFilePath+layerName+'_validation.json')
+                    # if validationStatus:# mj
+                    validation = self.validateLayer(locatorDirectoryWithFileName, layerName)
+
+                    if validation:
+                        return validation
                     else:
                         locatorArrayMain = self.removeArrayDuplicate(locatorArrayMain)
                         layerDictionary['locator'] = locatorArrayMain
@@ -152,12 +155,12 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
             print('error in printLocatorDataWithLocatorId in locator', e)
             return False
 
-    def processLayerFromLayer(self, processLayerName, layerDictionary, connectorKeys) -> dict:
+    def processLayerFromLayer(self, processLayerName, layerDictionary, layerName) -> dict:
         """
         Locator selection on another layer
         :param processLayerName: new layer name
         :param layerDictionary: Already processed layer dictionary
-        :param connectorKeys: connector for new layer and existing dictionary layer
+        :param layerName: Old layer name
         :return: new layer data
         :Todo: if existing dictionary has no data then new layer further process is no need
         :Todo: Locator id is always appending to the dictionary can avoid that
@@ -168,7 +171,6 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
             locatorFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             layerPath = locatorFilePath+processLayerName+'.json'
             locatorArray = []
-            layerDataMain = dict()
 
             if 'locatorData' in layerDictionary:
                 layerData = layerDictionary['locatorData']
@@ -179,13 +181,12 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                 try:
                     """ Collecting existing layer DATA dictionary """
                     dataDictionary = layerData  # primary dictionary
+                    # print(dataDictionary)
                     if 'locator' in layerDictionary:
                         locatorArray = layerDictionary['locator']
-                    locatorDataDictionary = dict()
 
                     """ Collecting new layer dictionary """
-                    locatorDictionary = self.getLocatorDataArray(layerPath)
-                    # locatorDictionary = self.sqlConnect.buildLocatorJsonFileFromDb(processLayerName)
+                    locatorDictionary = self.getLocatorDataArray(processLayerName)
                     if locatorDictionary and dataDictionary:
                         locatorDictionaryMain = dict()
 
@@ -197,27 +198,37 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                                     sourceDataProcessed = sourceDataProcessed.replace('\n', ' ')
 
                                     for locatorId, locatorDataArray in locatorDictionary.items():
+                                        # print(locatorDataArray)
                                         locatorDataDictionary = dict()
                                         """ new layer locator id is available in connector keys """
-                                        if locatorId in connectorKeys:
+                                        connectionStatus = self.sqlConnect.getLayerConnect(processLayerName, locatorId,
+                                                                                           layerName, loactorIdInData)
+                                        if connectionStatus:
                                             """
                                                 new layer id equals existing layer data dictionary id
                                                 only then need to process locator
                                             """
-                                            if connectorKeys[locatorId] == loactorIdInData:
+                                            # print(connectorKeys[locatorId], loactorIdInData)
+                                            """ Update to DB """
+                                            # if connectorKeys[locatorId] == loactorIdInData:
+                                            locatorArray.append(locatorId)
+                                            locatorFinalData = self.processLocatorData(locatorDataArray,
+                                                                                       sourceDataProcessed,
+                                                                                       eachLocatorInData, 'stringLength')
+                                            # print(locatorFinalData)
+                                            if locatorFinalData:
+                                                locatorDataDictionary[locatorId] = locatorFinalData
+                                                locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
                                                 locatorArray.append(locatorId)
-                                                locatorFinalData = self.processLocatorData(locatorDataArray,
-                                                                                           sourceDataProcessed,
-                                                                                           eachLocatorInData, 'stringLength')
-                                                if locatorFinalData:
-                                                    locatorDataDictionary[locatorId] = locatorFinalData
-                                                    locatorDictionaryMain[fileName] = dict(locatorDataDictionary)# need correction
-                                                    locatorArray.append(locatorId)
-                                        else:
-                                            print('invalid locator connector ', locatorId , ' not in ', connectorKeys)
-                                            return False
+                                        # else:
+                                        #     print('invalid locator connector ', locatorId , ' not in ')
+                                        #     return False
+
+                        # print(processLayerName)
 
                         if bool(locatorDictionaryMain):
+                            """" :todo: need to callect from db """
+
                             validatedLayer = self.validateLayer(locatorDictionaryMain, processLayerName)
                             # print('validation', validatedLayer)
                             """ validation performs """

@@ -115,11 +115,12 @@ if __name__ == '__main__':
                 from DataFetching.LocatorFromDB import SqlConnect
                 path = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
                 sc = SqlConnect(path)
-                sc.loadJsonToDb('layer3')
-                sc.loadJsonToDb('layer4')
-                sc.loadJsonToDb('layer5')
-                sc.loadValidtionLocatorToDb('layer4')
-                sc.dBLocatorValidationToJson('layer4')
+                sc.getLayerConnect('','','','')
+                # sc.loadJsonToDb('layer3')
+                # sc.loadJsonToDb('layer4')
+                # sc.loadJsonToDb('layer5')
+                # sc.loadValidtionLocatorToDb('layer4')
+                # sc.dBLocatorValidationToJson('layer4')
 
 
         elif len(sys.argv) == 2:

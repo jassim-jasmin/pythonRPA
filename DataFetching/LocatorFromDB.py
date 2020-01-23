@@ -11,6 +11,7 @@ class SqlConnect:
         self.LocatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
                                                                           'DataFetching,filesPath', self.path)
         self.getConnection()
+        self.layerConnect = self.getLocatorFromDb('layer_connect')
 
     def getConnection(self):
         try:
@@ -146,6 +147,7 @@ class SqlConnect:
         :return: Json data
         """
         try:
+            # print('layer name:::', layer_name)
             dbOptions = self.getDbOptions()['mysql']['default']
             engine = create_engine(
                 f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
@@ -155,7 +157,7 @@ class SqlConnect:
             # print(df)
             return df
         except Exception  as e:
-            print('error in getLocatorFromDb in LocatorFromDB', e)
+            # print('error in getLocatorFromDb in LocatorFromDB', e)
             return pd.DataFrame()
 
 
@@ -166,6 +168,7 @@ class SqlConnect:
         :return: json data
         """
         try:
+            # print('buildlocator:::', layer_name)
             df = self.getLocatorFromDb(layer_name)
             if not df.empty:
                 """ Get distinct elements from dataframe """
@@ -189,11 +192,17 @@ class SqlConnect:
             print('Layer Name:', layer_name, df)
             return False
 
+    def getLayerConnect(self, leftLayerName, leftValue, rigthLayerName, rightValue):
+        try:
+            # For debugg
+            # print(leftLayerName+':'+leftValue+' = '+rigthLayerName+':'+rightValue)
 
-if __name__ == '__main__':
-    fp = open('../path.json', 'r')
-    path = json.loads(fp.read())
-    sqlObj = SqlConnect(path)
+            test = self.layerConnect.loc[(self.layerConnect['left_layer_name'] == leftLayerName) & (self.layerConnect['right_layer'] == rigthLayerName) & (self.layerConnect['left_connect'] == leftValue) & (self.layerConnect['right_connect'] == rightValue)]
 
-    sqlObj.loadJsonToDb('layer4')
-    sqlObj.buildLocatorJsonFile('layer4')
+            if test.empty:
+                return False
+            else:
+                return True
+        except Exception as e:
+            print('error in getLayer in LocatorFromDB', e)
+
