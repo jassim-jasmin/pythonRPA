@@ -72,19 +72,19 @@ class DataFetchingMain(Layer, Analyse):
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
 
             layer3Data = self.processLayerAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
-            layer4Direct = self.processLayerAndGetDataFromFileAll('layer4', ocrTextDirectoryPath)
+            layer4Direct = self.processLayerAndGetDataFromFileAll('title_lookkup', ocrTextDirectoryPath)
             layer5 = self.processLayerAndGetDataFromFileAll('layer5', ocrTextDirectoryPath)
-            titleCompay = self.processLayerFromLayer('layer4', layer3Data, 'layer3')
+            titleCompay = self.processLayerFromLayer('title_lookkup', layer3Data, 'layer3')
 
             self.writeJsonDataToFile(titleCompay, self.getJsonDataRecurssive('DataFetching,filesPath', self.path)+'layer4Out.json')
 
             if titleCompay:
-                if not self.saveDataAsCSV('layer4Out', titleCompay, 'Title Company'):
+                if not self.saveDataAsCSV('title_lookkup_Out', titleCompay, 'Title Company'):
                     print('error saving csv layer4Out')
                     return False
 
             if layer4Direct:
-                if not self.saveDataAsCSV('layer4Direct', layer4Direct, 'Direct Matching'):
+                if not self.saveDataAsCSV('title_lookkup_Direct', layer4Direct, 'Direct Matching'):
                     print("error in saving csv layer 4 direct")
                     return False
             else:
