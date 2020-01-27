@@ -121,8 +121,11 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     validation = self.validateLayer(locatorDirectoryWithFileName, layerName)
 
                     if validation:
+                        # print('validation', layerName)
+                        # print(validation)
                         return validation
                     else:
+                        print('no validation', layerName)
                         locatorArrayMain = self.removeArrayDuplicate(locatorArrayMain)
                         layerDictionary['locator'] = locatorArrayMain
                         layerDictionary['locatorData'] = locatorDirectoryWithFileName

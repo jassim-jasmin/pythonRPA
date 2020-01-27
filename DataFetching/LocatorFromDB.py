@@ -11,7 +11,13 @@ class SqlConnect:
         self.LocatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
                                                                           'DataFetching,filesPath', self.path)
         self.getConnection()
+        self.layerConnectorName = 'datafeth_locator_'
         self.layerConnect = self.getLocatorFromDb('layer_connect')
+
+        if self.layerConnect.empty:
+            print('not data in layer_connect')
+            exit()
+
 
     def getConnection(self):
         try:
@@ -81,7 +87,7 @@ class SqlConnect:
                 isolation_level='READ UNCOMMITTED')
 
             dataFrame.reset_index(drop=True, inplace=True)
-            table_name_for_df = 'datafeth_locator_' + layerName
+            table_name_for_df = self.layerConnectorName + layerName
             dataFrame.to_sql(con=engine, name=table_name_for_df, if_exists='replace', index=False)
             return True
         except Exception as e:
@@ -119,7 +125,9 @@ class SqlConnect:
 
     def dBLocatorValidationToJson(self, layerName):
         try:
-            dataFrame = self.getLocatorFromDb(layerName+'_validation')
+            dataFrame = self.getLocatorFromDb(layerName+'_validation') #mj
+            if dataFrame.empty:
+                return False
             flagArray = pd.unique(dataFrame['flag'])
             layerDictionary = dict()
 
@@ -137,7 +145,8 @@ class SqlConnect:
 
             return layerDictionary
         except Exception as e:
-            print('errro in dBLocatorValidationToJson in LocatorFromDB', e)
+            print('errro in dBLocatorValidationToJson in LocatorFromDB', e, self.layerConnectorName + layerName+'_validation')
+            # print(dataFrame)
             return False
 
     def getLocatorFromDb(self, layer_name) ->dict:
@@ -152,9 +161,11 @@ class SqlConnect:
             engine = create_engine(
                 f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
 
+            # print(f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
+            # print('select * from ' + self.layerConnectorName + layer_name)
 
-            df = pd.read_sql('select * from datafeth_locator_'+layer_name, con= engine)
-            # print(df)
+
+            df = pd.read_sql('select * from ' +self.layerConnectorName+layer_name, con= engine)
             return df
         except Exception  as e:
             # print('error in getLocatorFromDb in LocatorFromDB', e)
@@ -204,5 +215,8 @@ class SqlConnect:
             else:
                 return True
         except Exception as e:
-            print('error in getLayer in LocatorFromDB', e)
+            print('error in getLayerConnect in LocatorFromDB', e)
+            print(leftLayerName)
+            print(self.layerConnect)
+            exit()
 
