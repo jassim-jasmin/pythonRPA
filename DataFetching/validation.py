@@ -14,6 +14,8 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
 
         self.sqlConnect = SqlConnect(path)
 
+        self.validationDebug = False
+
     def patternCheck(self, pattern, string):
         try:
             import re
@@ -39,6 +41,12 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
                         validatorPatternArray = seperatedValidation[locatorId]
                         for validatorPattern in validatorPatternArray:
                             patternValidation = self.patternCheck(validatorPattern, locatorData)
+
+                            if self.validationDebug:
+                                print('layer:', layerName)
+                                print('validation ', validatorPattern, patternValidation)
+                                print('data:'+locatorData+ '#')
+                                print('flag:', flag)
 
                             if flag == 'True':
                                 if not patternValidation:
@@ -123,7 +131,7 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
         :return:
         """
         try:
-            dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+            # dataFetchingFilesPath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             # validationLayer = dataFetchingFilesPath + layerName + '_validation.json'
             layerDictionaryMain  = dict()
 
