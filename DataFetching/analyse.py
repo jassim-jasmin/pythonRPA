@@ -49,7 +49,7 @@ class Analyse(CsvHandling):
                 mainCompare = self.getJsonDataRecurssive('DataFetching,comparisonFile', self.path)
                 mainCompareData = self.csvToDataFrame(mainCompare)
                 test = self.mergeTwoDataFrame(pendingFiles, mainCompareData, allFileColumnName, 'Image_Name')
-                self.dataFrameToCSV(test, csvPathWithFile + 'test.csv')
+                self.dataFrameToCSV(test, csvPathWithFile + 'Test.csv')
                 return True
             else:
                 return False

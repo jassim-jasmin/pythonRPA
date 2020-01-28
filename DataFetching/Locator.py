@@ -5,6 +5,23 @@ class Locator(StringHandling):
     def __init__(self, path):
         StringHandling.__init__(self, path)
 
+    def addLocatorTag(self, layerName, locator, tag, group) -> bool:
+        """
+        Adding new tag to data set
+        :param locationStringArray:
+        :param locatorId:
+        :param locatorJsonFileName:
+        :param locatorDirectory:
+        :return:
+        """
+        try:
+            print('Layer name:', layerName, 'Locator:', locator, 'tag:', tag, 'group:', group)
+            print('table:', group+layerName)
+            return True
+        except Exception as e:
+            print('error in addNewStringToDictionary in Locator', e)
+            return False
+
     def addLocatorToDictionary(self, locationStringArray, locatorId, locatorJsonFileName, locatorDirectory) -> bool:
         """
         todo getMathcFromSetInverse need to sync with locator data fetch

@@ -94,7 +94,7 @@ class DrectoryHandling:
 #
 # dpath = '/run/user/0/gvfs/smb-share:server=192.168.15.65,share=aishare/result_data/CA/RIVERSIDE/CARIVERSIDE_20200109'
 # opath = '/root/Documents/Test/cariver/ocr'
-# opath = '/root/Documents/Test/cariver/test/ocr/'
+# opath = '/root/Documents/Test/cariver/Test/ocr/'
 #
 # # textFileArray = obj.getTextFileFromDiffDirectory('/root/Documents/Test/CASANDIEGO_20191109', path['directorySeperator'])
 # textFileArray = obj.getTextFileFromDiffDirectory(dpath, '/')

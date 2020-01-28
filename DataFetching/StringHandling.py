@@ -73,7 +73,7 @@ class StringHandling(GeneralExceptionHandling):
 
     def printAllFuzzyComparison(self):
         """Testing each word with compare text Fuzzy monitoring"""
-        dataSet = ['test', 'geekodrive', 'geeksgeeks', 'Geeks For Geeks ', "geeks for geeks!", "geeks geeks",
+        dataSet = ['Test', 'geekodrive', 'geeksgeeks', 'Geeks For Geeks ', "geeks for geeks!", "geeks geeks",
                    "for geeks geeks", "geeks for for geeks", 'geeks for geeks!!!']
 
         compareText = 'geeksforgeeks'
@@ -304,5 +304,5 @@ class StringHandling(GeneralExceptionHandling):
 
 # obj = StringHandling('')
 #
-# test = obj.fuzzyExtract('FNT', "FNTG Builder Services", 30)
-# print(test)
+# Test = obj.fuzzyExtract('FNT', "FNTG Builder Services", 30)
+# print(Test)

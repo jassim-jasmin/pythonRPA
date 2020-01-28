@@ -48,5 +48,5 @@ def desisionTreeTest(self):
 
     # stringHandling = StringHandling(self.path)
 
-    # stringHandling.test()
-    # self.test()
+    # stringHandling.Test()
+    # self.Test()

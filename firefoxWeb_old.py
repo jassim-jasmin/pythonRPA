@@ -50,8 +50,8 @@ browser.close()
 
 
 
-# username = "test"
-# password = "test"
+# username = "Test"
+# password = "Test"
 #
 # # signin element clicked
 # browser.find_element_by_xpath("//a[@id ='signin-link']").click()

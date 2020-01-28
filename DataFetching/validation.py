@@ -31,7 +31,6 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
 
     def getValidity(self, locatorId, locatorData, layerName):
         try:
-            # validatorDirectory = self.readFileAndReturnJson(locatorValidationDirectoryPath)
             validatorDirectory = self.sqlConnect.dBLocatorValidationToJson(layerName)
 
 

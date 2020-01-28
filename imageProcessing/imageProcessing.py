@@ -257,13 +257,13 @@ class ImageProcessing():
 #
 # obj = imageProcessing()
 #
-# image = cv2.imread('../images/test.png')
+# image = cv2.imread('../images/Test.png')
 #
 # contors = obj.getContours(image)
 #
 # obj.drawContours(image,contors)
 # for i in range(0, len(contors)):
-#     outputImage = obj.cropContors(obj.getContours(image), i, '../images/test.png')
+#     outputImage = obj.cropContors(obj.getContours(image), i, '../images/Test.png')
 #     # print(outputImage.shape)
 #     try:
 #         height, width = outputImage.shape
@@ -285,5 +285,5 @@ class ImageProcessing():
 # cv2.imshow('final', image)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-# # ocrImage('test', 'png', 'test_ocr.txt')
-# # print(pytesseract.image_to_string('../images/test.png'))
+# # ocrImage('Test', 'png', 'test_ocr.txt')
+# # print(pytesseract.image_to_string('../images/Test.png'))

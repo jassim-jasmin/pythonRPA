@@ -106,11 +106,11 @@ if __name__ == '__main__':
                         exit()
                 except Exception as e:
                     print('error in dataFetching in main', e)
-            elif sys.argv[2] == 'test':
+            elif sys.argv[2] == 'Test':
                 try:
                     from DataFetching.test import *
                 except Exception as e:
-                    print('error in test main in main', e)
+                    print('error in Test main in main', e)
             elif sys.argv[2] == 'dataFetchingDb':
                 from DataFetching.LocatorFromDB import SqlConnect
                 path = GeneralExceptionHandling.getJsonData(GeneralExceptionHandling, sys.argv[1], path)
