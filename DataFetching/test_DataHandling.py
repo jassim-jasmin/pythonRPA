@@ -1,5 +1,4 @@
 from unittest import TestCase
-import unittest
 from DataFetching.DataHandling import DataHandling
 from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 import json
@@ -50,7 +49,6 @@ class TestDataHandling(TestCase):
         self.dataHandling.insertLayer('test', 'locatorId', 'locatorData')
 
         count = self.dataHandling.getLayerDataCount('test')
-        print('count;;;', count)
         if count:
             if count != 1:
                 self.assertTrue(False, 'count miss match, should contain only one record, delete layer might not working well')
@@ -60,14 +58,12 @@ class TestDataHandling(TestCase):
             self.assertTrue(self.dataHandling.insertLayer('test', 'locatorId', 'locatorData2'), 'should not insert duplicate locator tag')
 
             count = self.dataHandling.getLayerDataCount('test')
-            print('duplicate count', count)
             if count != 2:
                 self.assertTrue(False, 'Locator Re insertion failed, count shold be 1')
 
             # inserting duplicate entry with validation
             self.assertFalse(self.dataHandling.insertLayer('test', 'locatorId', 'locatorData'),
                             'should not insert duplicate locator tag')
-            print('duplicate count', count)
             if count == 3:
                 self.assertTrue(False, 'Locator Re insertion duplicate success, count shold be 2')
 
