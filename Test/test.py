@@ -5,6 +5,8 @@ from DataFetching.Locator import Locator
 import sys
 import json
 
+from DataFetching.test_DataHandling import *
+
 class ValidationTestCase(unittest.TestCase):
     def setUp(self) -> None:
         # initial run

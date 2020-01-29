@@ -7,13 +7,15 @@ from ExceptionHandling.GeneralExceptionHandling import GeneralExceptionHandling
 class DataHandling:
     def __init__(self, path, group):
         self.path = path
-        self.dbOption = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DB', self.path)
-        self.LocatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
-                                                                          'DataFetching,filesPath', self.path)
+        # self.dbOption = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling, 'DB', self.path)
+        self.dbOptions = path
+        # self.LocatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
+        #                                                                   'DataFetching,filesPath', self.path)
         # self.getConnection()
         self.layerConnectorName = group
         self.locatorId = 'locator_id'
         self.locatorData = 'locatorData'
+        self.layerConnectorName = 'datafeth_locator_'
 
     def __del__(self):
         try:
@@ -27,11 +29,7 @@ class DataHandling:
                 self.mydb.close()
             except:
                 pass
-            fp = open(self.dbOption, 'r')
-            dbOptons = json.loads(fp.read())
-            fp.close()
-            # print(dbOptons['mysql']['default'])
-            self.mydb = mysql.connector.connect(host=dbOptons['mysql']['default']['HOST'], user=dbOptons['mysql']['default']['USER'], password=dbOptons['mysql']['default']['PASSWORD'], database=dbOptons['mysql']['default']['DB'])
+            self.mydb = mysql.connector.connect(host=self.dbOptions['mysql']['default']['HOST'], user=self.dbOptions['mysql']['default']['USER'], password=self.dbOptions['mysql']['default']['PASSWORD'], database=self.dbOptions['mysql']['default']['DB'])
             # print(self.mydb)
             return True
         except Exception as e:
@@ -113,13 +111,12 @@ class DataHandling:
     def checkSimilarRecord(self, layerName, locatorId, locatorData):
         tableName = self.layerConnectorName + layerName
         sql = f"select count({self.locatorId}) from {tableName} where {self.locatorId} = '{locatorId}' and {self.locatorData} = '{locatorData}'"
-        print(sql)
+        # print(sql)
         self.getConnection()
         cursor = self.mydb.cursor()
         cursor.execute(sql)
         count = cursor.fetchone()
 
-        print('count::', count)
         if count:
             if count[0] != 0:
                 return True
@@ -129,17 +126,21 @@ class DataHandling:
             return False
 
     def insertRecord(self, layerName, locatorId, locatorData):
-        tableName = self.layerConnectorName + layerName
-        self.getConnection()
+        try:
+            tableName = self.layerConnectorName + layerName
+            self.getConnection()
 
-        sql = f"insert into {tableName} ({self.locatorId},{self.locatorData}) values ('{locatorId}','{locatorData}')"
-        print(sql)
-        cursor = self.mydb.cursor()
-        cursor.execute(sql)
-        cursor.close()
-        self.mydb.commit()
-        self.mydb.close()
-        return True
+            sql = f"insert into {tableName} ({self.locatorId},{self.locatorData}) values ('{locatorId}','{locatorData}')"
+            # print(sql)
+            cursor = self.mydb.cursor()
+            cursor.execute(sql)
+            cursor.close()
+            self.mydb.commit()
+            self.mydb.close()
+            return True
+        except Exception as e:
+            print('error in insertRecord in DataHandling', e)
+            return False
 
     def insertLayer(self, layerName, locatorId, locatorData):
         try:
@@ -160,5 +161,35 @@ class DataHandling:
             print('error in insertLayer in DataHandling', e)
             return False
 
+    def generateLocatorFromTableField(self, layerName, locatorId, schemaName, tableName, fieldNameFromTable):
+        try:
+            dataFrameFromDB = self.getDataFromDBAsDF(schemaName, tableName, fieldNameFromTable)
+            dataFrameFromDB[self.locatorId]=locatorId
 
+            if not dataFrameFromDB.empty:
+                sql = f"create table {self.layerConnectorName+layerName} ({self.locatorId} varchar(200), {self.locatorData} varchar(500));"
+                print(sql)
 
+            dataFrameFromDB.rename(columns={fieldNameFromTable: self.locatorData}, inplace=True)
+
+            print(dataFrameFromDB)
+            return dataFrameFromDB
+        except Exception as e:
+            print('error in generateLocatorFromTableField in DataHandling', e)
+            return pd.DataFrame()
+
+    def getDataFromDBAsDF(self, dataBaseForFetching, tableName, filedName):
+            try:
+                dbOptions = self.dbOptions['mysql']['default']
+                engine = create_engine(
+                    f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dataBaseForFetching}')
+
+                sql = f"select distinct {filedName} from {tableName}"
+                where = f" where {filedName} is not null"
+
+                df = pd.read_sql(sql+where , con=engine)
+
+                return df
+            except Exception  as e:
+                # print('error in getLocatorFromDb in LocatorFromDB', e)
+                 return pd.DataFrame()

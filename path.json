@@ -89,6 +89,29 @@
       "dataFileName": "testData.txt",
       "imageFile": "sample"
     },
-    "DB": "db.json"
+    "DB": {
+      "mysql":
+              {
+                  "default": {
+                    "USER": "root",
+                    "PASSWORD": "softinc",
+                    "HOST": "192.168.15.63",
+                    "PORT": "3306",
+                    "DB": "mj_db"
+                  }
+              },
+      "test": {
+        "mysql":
+              {
+                  "default": {
+                    "USER": "root",
+                    "PASSWORD": "softinc",
+                    "HOST": "192.168.15.63",
+                    "PORT": "3306",
+                    "DB": "mj_db"
+                  }
+              }
+      }
+    }
   }
 }

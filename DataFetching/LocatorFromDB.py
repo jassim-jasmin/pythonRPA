@@ -24,7 +24,6 @@ class SqlConnect:
             fp = open(self.dbOption, 'r')
             dbOptons = json.loads(fp.read())
             fp.close()
-            # print(dbOptons['mysql']['default'])
             self.mydb = mysql.connector.connect(host=dbOptons['mysql']['default']['HOST'], user=dbOptons['mysql']['default']['USER'], password=dbOptons['mysql']['default']['PASSWORD'], database=dbOptons['mysql']['default']['DB'])
             # print(self.mydb)
         except Exception as e:
@@ -161,10 +160,6 @@ class SqlConnect:
             engine = create_engine(
                 f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
 
-            # print(f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
-            # print('select * from ' + self.layerConnectorName + layer_name)
-
-
             df = pd.read_sql('select * from ' +self.layerConnectorName+layer_name, con= engine)
             return df
         except Exception  as e:
@@ -208,7 +203,10 @@ class SqlConnect:
             # For debugg
             # print(leftLayerName+':'+leftValue+' = '+rigthLayerName+':'+rightValue)
 
-            test = self.layerConnect.loc[(self.layerConnect['left_layer_name'] == leftLayerName) & (self.layerConnect['right_layer'] == rigthLayerName) & (self.layerConnect['left_connect'] == leftValue) & (self.layerConnect['right_connect'] == rightValue)]
+            test = self.layerConnect.loc[(self.layerConnect['left_layer_name'] == leftLayerName) &
+                                         (self.layerConnect['right_layer'] == rigthLayerName) &
+                                         (self.layerConnect['left_connect'] == leftValue) &
+                                         (self.layerConnect['right_connect'] == rightValue)]
 
             if test.empty:
                 return False
