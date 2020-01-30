@@ -6,7 +6,7 @@ from DataFetching.LocatorFromDB import SqlConnect
 class TestSqlConnect(TestCase):
     def getPath(self):
         fp = open('path.json', 'r')
-        path = json.loads(fp.read())[sys.platform]
+        path = json.loads(fp.read())[sys.platform.split(' ')[0]]
         fp.close()
         return path
 
