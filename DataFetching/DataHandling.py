@@ -37,7 +37,7 @@ class DataHandling:
         """
         Layer name corresponding table from db is checked
         :param layerName: Name of layer
-        :var tableName: Converted corresponding mysql table name
+        :tableName: Converted corresponding mysql table name
         :return: True if exist else False
         :todo: Unfinished
         """
@@ -53,7 +53,7 @@ class DataHandling:
         """
         Creating table with structure for layer name
         :param layerName: Name of layer
-        :var tableName: Converted corresponding mysql table Name
+        :tableName: Converted corresponding mysql table Name
         :return:
         """
         try:
@@ -73,7 +73,7 @@ class DataHandling:
         """
         Layer name exist in db then delete
         :param layerName: Name of layer
-        :var tableName: Converted corresponding mysql table name
+        :tableName: Converted corresponding mysql table name
         :return: If no database error occure means Return True else False
         """
         try:
@@ -93,7 +93,7 @@ class DataHandling:
         """
         Confirming a layer corresponding table exists
         :param layerName: Layer name
-        :var tableName: Converting corresponding name for db table name
+        :tableName: Converting corresponding name for db table name
         :return: True if table exist else False
         """
         self.getConnection()
@@ -170,7 +170,7 @@ class DataHandling:
         :param layerName: Name of layer
         :param locatorId: Data
         :param locatorData: Data
-        :var tableName: Corresponding mysql table name
+        :tableName: Corresponding mysql table name
         :return: True if success else False
         """
         try:
@@ -223,7 +223,7 @@ class DataHandling:
         :param schemaName: Schema name
         :param tableName: Name of table
         :param fieldNameFromTable: Field name
-        :var dataFrameFromDB: Pandas dataframe
+        :dataFrameFromDB: Pandas dataframe
         :return:
         """
         try:
@@ -248,9 +248,9 @@ class DataHandling:
         :param dataBaseForFetching: Schema name
         :param tableName: Name of table
         :param filedName: Name of mysql field name
-        :var dbOptions: json data with database credentials
-        :var engine: sqlalchmy mysql connection
-        :var df: DataFrame object
+        :dbOptions: json data with database credentials
+        :engine: sqlalchmy mysql connection
+        :df: DataFrame object
         :return: DataFrame
         """
         try:
