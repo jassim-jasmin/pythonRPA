@@ -18,16 +18,24 @@ class SqlConnect:
             print('not data in layer_connect')
             exit()
 
+    def __del__(self):
+        try:
+            self.mydb.close()
+        except:
+            pass
+
 
     def getConnection(self):
         try:
-            fp = open(self.dbOption, 'r')
-            dbOptons = json.loads(fp.read())
-            fp.close()
-            self.mydb = mysql.connector.connect(host=dbOptons['mysql']['default']['HOST'], user=dbOptons['mysql']['default']['USER'], password=dbOptons['mysql']['default']['PASSWORD'], database=dbOptons['mysql']['default']['DB'])
-            # print(self.mydb)
+            try:
+                self.mydb.close()
+            except:
+                pass
+
+            self.mydb = mysql.connector.connect(host=self.dbOption['mysql']['default']['HOST'], user=self.dbOption['mysql']['default']['USER'], password=self.dbOption['mysql']['default']['PASSWORD'], database=self.dbOption['mysql']['default']['DB'])
+            return True
         except Exception as e:
-            print('error in mysql', e)
+            print('error in getConnection in LocatorFromDB', e)
             return False
 
     def __del__(self):
@@ -156,7 +164,7 @@ class SqlConnect:
         """
         try:
             # print('layer name:::', layer_name)
-            dbOptions = self.getDbOptions()['mysql']['default']
+            dbOptions = self.dbOption['mysql']['default']
             engine = create_engine(
                 f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
 

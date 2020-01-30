@@ -236,7 +236,7 @@ class DataHandling:
 
             dataFrameFromDB.rename(columns={fieldNameFromTable: self.locatorData}, inplace=True)
 
-            print(dataFrameFromDB)
+            # print(dataFrameFromDB)
             return dataFrameFromDB
         except Exception as e:
             print('error in generateLocatorFromTableField in DataHandling', e)
