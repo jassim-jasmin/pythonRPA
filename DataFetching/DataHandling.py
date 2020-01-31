@@ -158,7 +158,7 @@ class DataHandling:
 
         if count:
             if count[0] != 0:
-                return True
+                return False
             else:
                 return False
         else:
