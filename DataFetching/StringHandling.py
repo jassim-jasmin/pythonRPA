@@ -189,7 +189,6 @@ class StringHandling(GeneralExceptionHandling):
             print('error in getFuzzySearchData in stringHandling', e)
             return False
 
-
     def reSelect(self, patternBuild, sourceDataProcessed, sourceData) -> str:
         """:returns regualr expression out put of :var patternBuild
         :argument patternBuild is a regular expression
@@ -208,6 +207,8 @@ class StringHandling(GeneralExceptionHandling):
                 patternMatch = self.regularExpressionHandling(patternMatch, 0)
                 sourceData = sourceData.replace('\n', ' ')
                 sourceFileMatch = re.search(patternMatch, sourceData, re.IGNORECASE)
+                # print('sourcefile match', patternMatch)
+                # print('pattern', patternMatch)
 
                 if sourceFileMatch:
                     sourceFileMatchString = GeneralExceptionHandling.regularExpressionHandling(GeneralExceptionHandling, patternMatch, 1)

@@ -163,6 +163,7 @@ class Locator(StringHandling):
                     locatorIndexArray = []
                     for eachLocatorArray in locatorDataArray:
                         index = index + 1
+                        # print('locator array', eachLocatorArray)
                         patternBuild = self.buildLocatorPattern(eachLocatorArray, sourceDataProcessed)
 
                         if patternBuild:
@@ -203,4 +204,46 @@ class Locator(StringHandling):
                 return string
         except Exception as e:
             print('error in filterLcatorArray in Locator',e)
+            return False
+
+    def locatorDataSearchAndReplace(self, layerDataMain, searchLayer):
+        try:
+            searchLocatorDictionary = self.getLocatorDataArray(searchLayer)
+            # print(searchLocatorDictionary)
+            layerData = layerDataMain.copy()
+            if 'locatorData' in layerDataMain:
+                locatorDictionaryProcessed = layerData['locatorData']
+                # print(layerData['locatorData'])
+                # print(layerData)
+
+                for fileName, locator in list(locatorDictionaryProcessed.items()):
+                    if locator:
+                        for locatorId, locatorData in list(locator.items()):
+                            match = False
+                            if searchLocatorDictionary:
+                                for searchLocatorId, searchLocatorDataArray in searchLocatorDictionary.items():
+                                    if locatorId == searchLocatorId:
+                                        # print(locatorData)
+                                        # print(locatorData.strip())
+                                        matchTouple = self.getMathcFromSet(locatorData.strip(), searchLocatorDataArray, 90)
+                                        # print(matchTouple)
+                                        if matchTouple:
+                                            match = matchTouple[0]
+
+                            if match:
+                                locator[locatorId] = match[0]
+                            else:
+                                locator.pop(locatorId)
+                        if not locator:
+                            locatorDictionaryProcessed.pop(fileName)
+                print(layerData)
+                if layerData:
+                    return layerData
+                else:
+                    return False
+            else:
+                print('Layer structure error, locatorData is not there')
+                return False
+        except Exception as e:
+            print('error in locatorDataSearchAndReplace in Locator', e)
             return False

@@ -91,7 +91,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
         """
         try:
             import sys
-            layerFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
+            # layerFilePath = self.getJsonDataRecurssive('DataFetching,filesPath', self.path)
             # locatorFilePathWithFileName = layerFilePath+layerName+'.json'
 
             if sourceDataPath:
@@ -113,11 +113,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
                         else:
                             exit()
-                        # print('Test break')
-                        # break
                     """ If validation file available then only need of validation """
-                    # validationStatus = self.fileStatus(layerFilePath+layerName+'_validation.json')
-                    # if validationStatus:# mj
                     validation = self.validateLayer(locatorDirectoryWithFileName, layerName)
 
                     if validation:
