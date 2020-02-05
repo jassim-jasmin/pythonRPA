@@ -108,6 +108,7 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                             locatorDataDictionary, locatorArray = self.processLayerAndGetDataFromFile(layerName, textFileData)
                             locatorArrayMain.extend(locatorArray)
                             if locatorDataDictionary:
+                                """ file.txt as [file] [txt] """
                                 fileNameSplit = eachTextFile.split('.')
                                 if len(fileNameSplit)>0:
                                     locatorDirectoryWithFileName[fileNameSplit[0]] = locatorDataDictionary
@@ -117,8 +118,6 @@ class Layer(LocatorValidation, DrectoryHandling, Locator):
                     validation = self.validateLayer(locatorDirectoryWithFileName, layerName)
 
                     if validation:
-                        # print('validation', layerName)
-                        # print(validation)
                         return validation
                     else:
                         print('no validation', layerName)

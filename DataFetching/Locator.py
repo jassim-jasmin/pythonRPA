@@ -209,12 +209,9 @@ class Locator(StringHandling):
     def locatorDataSearchAndReplace(self, layerDataMain, searchLayer):
         try:
             searchLocatorDictionary = self.getLocatorDataArray(searchLayer)
-            # print(searchLocatorDictionary)
             layerData = layerDataMain.copy()
             if 'locatorData' in layerDataMain:
                 locatorDictionaryProcessed = layerData['locatorData']
-                # print(layerData['locatorData'])
-                # print(layerData)
 
                 for fileName, locator in list(locatorDictionaryProcessed.items()):
                     if locator:
@@ -223,10 +220,7 @@ class Locator(StringHandling):
                             if searchLocatorDictionary:
                                 for searchLocatorId, searchLocatorDataArray in searchLocatorDictionary.items():
                                     if locatorId == searchLocatorId:
-                                        # print(locatorData)
-                                        # print(locatorData.strip())
                                         matchTouple = self.getMathcFromSet(locatorData.strip(), searchLocatorDataArray, 90)
-                                        # print(matchTouple)
                                         if matchTouple:
                                             match = matchTouple[0]
 
@@ -236,7 +230,6 @@ class Locator(StringHandling):
                                 locator.pop(locatorId)
                         if not locator:
                             locatorDictionaryProcessed.pop(fileName)
-                print(layerData)
                 if layerData:
                     return layerData
                 else:
