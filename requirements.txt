@@ -8,3 +8,4 @@ opencv-python
 pytesseract
 fuzzysearch
 PyMuPDF
+mysql-connector-python
