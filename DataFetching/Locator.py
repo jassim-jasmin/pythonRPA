@@ -1,5 +1,6 @@
 from DataFetching.StringHandling import StringHandling
 from DataFetching.LocatorFromDB import SqlConnect
+from copy import deepcopy
 
 class Locator(StringHandling):
     def __init__(self, path):
@@ -209,8 +210,11 @@ class Locator(StringHandling):
     def locatorDataSearchAndReplace(self, layerDataMain, searchLayer):
         try:
             searchLocatorDictionary = self.getLocatorDataArray(searchLayer)
-            layerData = layerDataMain.copy()
-            if 'locatorData' in layerDataMain:
+            # layerData = layerDataMain.copy()
+
+            """ Since the dictionary has nested dictionary, it will always copy by refernce for inner dictionary """
+            layerData = deepcopy(layerDataMain)
+            if 'locatorData' in layerData:
                 locatorDictionaryProcessed = layerData['locatorData']
 
                 for fileName, locator in list(locatorDictionaryProcessed.items()):

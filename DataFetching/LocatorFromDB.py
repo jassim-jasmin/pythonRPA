@@ -11,12 +11,12 @@ class SqlConnect:
         self.LocatorDirectory = GeneralExceptionHandling.getJsonDataRecurssive(GeneralExceptionHandling,
                                                                           'DataFetching,filesPath', self.path)
         self.getConnection()
-        self.layerConnectorName = 'datafeth_locator_'
+        self.layerConnectorName = 'datafetch_locator_'
         self.layerConnect = self.getLocatorFromDb('layer_connect')
 
         if self.layerConnect.empty:
             print('not data in layer_connect')
-            exit()
+            # exit()
 
     def __del__(self):
         try:
@@ -68,11 +68,11 @@ class SqlConnect:
 
                 for locatorId, locator in locatorData.items():
                     if len(df.columns)>0:
-                        temDataFrame = pd.DataFrame({'locatorData':locator, 'locator_id':locatorId})
+                        temDataFrame = pd.DataFrame({'locator_data':locator, 'locator_id':locatorId})
                         df = df.append(temDataFrame)
                     else:
-                        df['locatorData'] = locator
-                        df.loc[df['locatorData'] == locator, 'locator_id'] = locatorId
+                        df['locator_data'] = locator
+                        df.loc[df['locator_data'] == locator, 'locator_id'] = locatorId
 
             except Exception as e:
                 print('error in json file', e)
@@ -114,12 +114,12 @@ class SqlConnect:
                 locatorData = validation[eachKey]
                 for locatorId, locator in locatorData.items():
                     if len(df.columns) > 0:
-                        temDataFrame = pd.DataFrame({'locatorData': locator, 'locator_id': locatorId})
+                        temDataFrame = pd.DataFrame({'locator_data': locator, 'locator_id': locatorId})
                         df = df.append(temDataFrame)
                     else:
-                        df['locatorData'] = locator
-                        df.loc[df['locatorData'] == locator, 'locator_id'] = locatorId
-                df.loc[df['locatorData'] == locator, 'flag'] = eachKey
+                        df['locator_data'] = locator
+                        df.loc[df['locator_data'] == locator, 'locator_id'] = locatorId
+                df.loc[df['locator_data'] == locator, 'flag'] = eachKey
             # print(df)
 
             if self.dataFrameToDb(df, layer_name+'_validation'):
@@ -145,7 +145,7 @@ class SqlConnect:
                 locatorIdArray = pd.unique(eachFlagLayer['locator_id'])
 
                 for eachId in locatorIdArray:
-                    eachLocator = eachFlagLayer[eachFlagLayer['locator_id'] == eachId]['locatorData']
+                    eachLocator = eachFlagLayer[eachFlagLayer['locator_id'] == eachId]['locator_data']
                     locatorDictionary[eachId] = eachLocator.to_list()
                 layerDictionary[eachFlag] = locatorDictionary.copy()
             # print(layerDictionary)
@@ -168,7 +168,9 @@ class SqlConnect:
             engine = create_engine(
                 f'mysql+pymysql://{dbOptions["USER"]}:{dbOptions["PASSWORD"]}@{dbOptions["HOST"]}/{dbOptions["DB"]}')
 
-            df = pd.read_sql('select * from ' +self.layerConnectorName+layer_name, con= engine)
+            selectSql = 'select * from ' +self.layerConnectorName+layer_name
+
+            df = pd.read_sql(selectSql, con= engine)
             return df
         except Exception  as e:
             # print('error in getLocatorFromDb in LocatorFromDB', e)
@@ -191,7 +193,7 @@ class SqlConnect:
 
                 """ Each locator id locator data array is inserted as rows """
                 for eachLocatorId in locator_id_array:
-                    eachLocator = df[df['locator_id'] == eachLocatorId]['locatorData']
+                    eachLocator = df[df['locator_id'] == eachLocatorId]['locator_data']
                     """ Rows to array """
                     layerDictionary[eachLocatorId] = eachLocator.to_list()
 

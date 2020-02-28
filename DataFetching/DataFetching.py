@@ -72,7 +72,7 @@ class DataFetchingMain(Layer, Analyse):
             ocrTextDirectoryPath = self.getJsonDataRecurssive('imagProcessing,ocrTextPath', self.path)
 
             # layer3Data = self.processLayerAndGetDataFromFileAll('layer3', ocrTextDirectoryPath)
-            layer4Direct = self.processLayerAndGetDataFromFileAll('title_lookup', ocrTextDirectoryPath)
+            layer4Direct = self.processLayerAndGetDataFromFileAll('locator', ocrTextDirectoryPath)
             # layer5 = self.processLayerAndGetDataFromFileAll('layer5', ocrTextDirectoryPath)
             # titleCompay = self.processLayerFromLayer('title_lookup', layer3Data, 'layer3')
 
@@ -88,7 +88,7 @@ class DataFetchingMain(Layer, Analyse):
             #         print('error saving csv layer4Out')
             #         return False
 
-            test = self.locatorDataSearchAndReplace(layer4Direct, 'title_lookup')
+            test = self.locatorDataSearchAndReplace(layer4Direct, 'locator')
 
             if test:
                 if not self.saveDataAsCSV('rematched', test, 'rematched'):

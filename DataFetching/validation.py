@@ -135,6 +135,7 @@ class LocatorValidation(GeneralExceptionHandling, CsvHandling):
             layerDictionaryMain  = dict()
 
             # if self.fileStatus(validationLayer):
+            """ need correction  in locatorData name...."""
             if 'locatorData' in layerDictionaryOrData:
                 layerData  = layerDictionaryOrData['locatorData']
             else:
