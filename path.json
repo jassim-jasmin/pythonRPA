@@ -36,7 +36,31 @@
       "path": "Data\\",
       "dataFileName": "testData.txt"
     },
-    "tesseract": "https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-v5.0.0-alpha.20191030.exe"
+    "tesseract": "https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-v5.0.0-alpha.20191030.exe",
+    "DB": {
+      "mysql":
+              {
+                  "default": {
+                    "USER": "root",
+                    "PASSWORD": "jassim1",
+                    "HOST": "127.0.0.1",
+                    "PORT": "3306",
+                    "DB": "django"
+                  }
+              },
+      "test": {
+        "mysql":
+              {
+                  "default": {
+                    "USER": "root",
+                    "PASSWORD": "softinc",
+                    "HOST": "192.168.15.63",
+                    "PORT": "3306",
+                    "DB": "mj_db"
+                  }
+              }
+      }
+    }
   },
   "linux": {
     "web": {
